@@ -1,0 +1,14 @@
+.venv
+.env
+.git
+.claude
+__pycache__
+node_modules
+frontend/dist
+backend/synthese.db
+backend/synthese.db-shm
+backend/synthese.db-wal
+backend/attachments
+*.pyc
+.vscode
+.idea
