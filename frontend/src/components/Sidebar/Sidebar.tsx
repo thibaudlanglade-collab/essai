@@ -1,18 +1,15 @@
-import { MessageSquare, Zap, Mic, Calendar, Mail, Settings2, Bot, Sun, Moon } from "lucide-react";
+import { MessageSquare, Zap, Mic, Calendar, Mail, Settings2, Bot, Sun, Moon, Camera } from "lucide-react";
 import logoSynthese from "@/assets/logo-synthese.png";
 import { cn } from "@/lib/utils";
-import { SidebarSection } from "./SidebarSection";
-import { FeatureItem } from "./FeatureItem";
-import type { Feature } from "@/types";
+
 
 interface Props {
-  features: Feature[];
-  selectedId: string | null;
-  onSelect: (feature: Feature) => void;
   onChatAssistantClick?: () => void;
   chatAssistantModeActive?: boolean;
   onSmartExtractClick?: () => void;
   smartModeActive?: boolean;
+  onPhotoToDocumentClick?: () => void;
+  photoToDocumentModeActive?: boolean;
   onMeetingTranscriberClick?: () => void;
   meetingTranscriberModeActive?: boolean;
   onPlannerClick?: () => void;
@@ -27,6 +24,8 @@ interface Props {
   onHomeClick?: () => void;
   dark?: boolean;
   onToggleDark?: () => void;
+  mobileOpen?: boolean;
+  onMobileClose?: () => void;
 }
 
 /* ── NavItem ─────────────────────────────────────────────────────────────── */
@@ -74,13 +73,12 @@ function NavItem({
 /* ── Sidebar ─────────────────────────────────────────────────────────────── */
 
 export function Sidebar({
-  features,
-  selectedId,
-  onSelect,
   onChatAssistantClick,
   chatAssistantModeActive,
   onSmartExtractClick,
   smartModeActive,
+  onPhotoToDocumentClick,
+  photoToDocumentModeActive,
   onMeetingTranscriberClick,
   meetingTranscriberModeActive,
   onPlannerClick,
@@ -95,9 +93,23 @@ export function Sidebar({
   onHomeClick,
   dark,
   onToggleDark,
+  mobileOpen,
+  onMobileClose,
 }: Props) {
   return (
-    <aside className="fixed left-0 top-[41px] bottom-0 w-60 bg-white dark:from-gray-900 dark:via-gray-900 dark:to-gray-900 dark:bg-gradient-to-b border-r border-gray-200 dark:border-gray-800 flex flex-col z-40">
+    <>
+      {/* Mobile overlay backdrop */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/40 lg:hidden"
+          onClick={onMobileClose}
+        />
+      )}
+    <aside className={cn(
+      "fixed left-0 top-[41px] bottom-0 w-60 bg-white dark:from-gray-900 dark:via-gray-900 dark:to-gray-900 dark:bg-gradient-to-b border-r border-gray-200 dark:border-gray-800 flex flex-col z-50 transition-transform duration-200 ease-in-out",
+      "lg:translate-x-0 lg:z-40",
+      mobileOpen ? "translate-x-0" : "-translate-x-full"
+    )}>
       {/* Logo / Brand – clickable, navigates to home */}
       <button
         onClick={onHomeClick}
@@ -126,6 +138,12 @@ export function Sidebar({
           label="Smart Extract"
           isActive={smartModeActive ?? false}
           onClick={onSmartExtractClick}
+        />
+        <NavItem
+          icon={Camera}
+          label="Photo → PDF/Excel"
+          isActive={photoToDocumentModeActive ?? false}
+          onClick={onPhotoToDocumentClick}
         />
         <NavItem
           icon={Mic}
@@ -172,27 +190,6 @@ export function Sidebar({
           onClick={onAgentsIaClick}
         />
 
-        {features.length > 0 && (
-          <>
-            <div className="pt-4 pb-2">
-              <span className="px-3 text-xs font-semibold text-violet-400/70 dark:text-gray-500 uppercase tracking-wider">
-                Features
-              </span>
-            </div>
-            <SidebarSection>
-              <div className="flex flex-col gap-0.5">
-                {features.map((f) => (
-                  <FeatureItem
-                    key={f.id}
-                    feature={f}
-                    isActive={f.id === selectedId}
-                    onClick={() => onSelect(f)}
-                  />
-                ))}
-              </div>
-            </SidebarSection>
-          </>
-        )}
       </nav>
 
       {/* Bottom: dark mode toggle */}
@@ -215,5 +212,6 @@ export function Sidebar({
         </button>
       </div>
     </aside>
+    </>
   );
 }

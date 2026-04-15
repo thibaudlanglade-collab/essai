@@ -33,10 +33,13 @@ const PAGE_TITLES: Record<string, string> = {
 };
 
 export default function App() {
-  const { features, loading, error: featuresError } = useFeatures();
+  const { loading, error: featuresError } = useFeatures();
   const [selected, setSelected] = useState<Feature | null>(null);
   const { run, start, reset } = useWorkflowRun();
   const [activeMode, setActiveMode] = useState<"home" | "classic" | "chat-assistant" | "smart" | "photo-to-document" | "meeting-transcriber" | "planner" | "emails" | "automations" | "agents-ia">("home");
+
+  // Mobile sidebar
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Dark mode
   const [dark, setDark] = useState(() => {
@@ -77,12 +80,6 @@ export default function App() {
       return () => clearTimeout(timer);
     }
   }, [activeMode]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  function handleSelectFeature(feature: Feature) {
-    reset();
-    setActiveMode("classic");
-    setSelected(feature);
-  }
 
   function handleRun(file: File) {
     if (selected) start(selected.id, file);
@@ -143,10 +140,11 @@ export default function App() {
   return (
     <div className="min-h-screen bg-stone-100 dark:bg-gradient-to-br dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
       {/* Demo banner */}
-      <div className="fixed top-0 left-0 right-0 z-50 bg-blue-50 dark:bg-blue-900/30 border-b border-blue-100 dark:border-blue-800 px-6 py-2.5 text-center">
-        <span className="text-xs text-blue-700 dark:text-blue-300">
-          <Sparkles className="inline h-3 w-3 mr-1.5" />
-          Mode démo — vous explorez une version exemple de Synthèse.
+      <div className="fixed top-0 left-0 right-0 z-50 bg-blue-50 dark:bg-blue-900/30 border-b border-blue-100 dark:border-blue-800 px-3 sm:px-6 py-2 sm:py-2.5 text-center">
+        <span className="text-[10px] sm:text-xs text-blue-700 dark:text-blue-300">
+          <Sparkles className="inline h-3 w-3 mr-1 sm:mr-1.5" />
+          <span className="hidden sm:inline">Mode démo — vous explorez une version exemple de Synthèse.</span>
+          <span className="sm:hidden">Mode démo</span>
           <a href={BOOKING_LINK} className="underline font-medium ml-1 hover:text-blue-900 dark:hover:text-blue-100 transition-colors">
             Parlons de votre activité
           </a>
@@ -156,41 +154,43 @@ export default function App() {
       {/* Floating CTA */}
       <a
         href={BOOKING_LINK}
-        className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-violet-500 to-blue-500 text-white text-sm font-medium rounded-full hover:from-violet-600 hover:to-blue-600 transition-all shadow-lg hover:shadow-xl"
+        className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 flex items-center gap-2 px-4 py-2.5 sm:px-5 sm:py-3 bg-gradient-to-r from-violet-500 to-blue-500 text-white text-xs sm:text-sm font-medium rounded-full hover:from-violet-600 hover:to-blue-600 transition-all shadow-lg hover:shadow-xl"
       >
         <CalendarCheck className="h-4 w-4" />
-        Réserver une démo
+        <span className="hidden sm:inline">Réserver une démo</span>
+        <span className="sm:hidden">Démo</span>
       </a>
 
       {/* Sidebar */}
       <Sidebar
-        features={features}
-        selectedId={selected?.id ?? null}
-        onSelect={handleSelectFeature}
-        onChatAssistantClick={handleChatAssistantClick}
+        onChatAssistantClick={() => { handleChatAssistantClick(); setSidebarOpen(false); }}
         chatAssistantModeActive={activeMode === "chat-assistant"}
-        onSmartExtractClick={handleSmartExtractClick}
+        onSmartExtractClick={() => { handleSmartExtractClick(); setSidebarOpen(false); }}
         smartModeActive={activeMode === "smart"}
-        onMeetingTranscriberClick={handleMeetingTranscriberClick}
+        onPhotoToDocumentClick={() => { reset(); setSelected(null); setActiveMode("photo-to-document"); setSidebarOpen(false); }}
+        photoToDocumentModeActive={activeMode === "photo-to-document"}
+        onMeetingTranscriberClick={() => { handleMeetingTranscriberClick(); setSidebarOpen(false); }}
         meetingTranscriberModeActive={activeMode === "meeting-transcriber"}
-        onPlannerClick={handlePlannerClick}
+        onPlannerClick={() => { handlePlannerClick(); setSidebarOpen(false); }}
         plannerModeActive={activeMode === "planner"}
-        onEmailsClick={handleEmailsClick}
+        onEmailsClick={() => { handleEmailsClick(); setSidebarOpen(false); }}
         emailsModeActive={activeMode === "emails"}
         emailsBadgeCount={briefingBadgeCount}
-        onAutomationsClick={handleAutomationsClick}
+        onAutomationsClick={() => { handleAutomationsClick(); setSidebarOpen(false); }}
         automationsModeActive={activeMode === "automations"}
-        onAgentsIaClick={handleAgentsIaClick}
+        onAgentsIaClick={() => { handleAgentsIaClick(); setSidebarOpen(false); }}
         agentsIaModeActive={activeMode === "agents-ia"}
-        onHomeClick={handleHomeClick}
+        onHomeClick={() => { handleHomeClick(); setSidebarOpen(false); }}
         dark={dark}
         onToggleDark={() => setDark((d) => !d)}
+        mobileOpen={sidebarOpen}
+        onMobileClose={() => setSidebarOpen(false)}
       />
 
       {/* Main area offset by sidebar + demo banner */}
-      <div className="ml-60 flex flex-col h-screen pt-[41px]">
+      <div className="lg:ml-60 flex flex-col h-screen pt-[41px]">
         {/* Topbar */}
-        <Topbar pageTitle={pageTitle} />
+        <Topbar pageTitle={pageTitle} onMenuClick={() => setSidebarOpen(true)} />
 
         {/* Content */}
         <main className="flex-1 overflow-y-auto">
