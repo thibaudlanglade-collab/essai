@@ -773,6 +773,191 @@ export default function HomeView() {
 
       </div>
 
+      {/* SECTION — COMMENT ÇA MARCHE / EXEMPLE CONCRET */}
+      <div className="mb-20">
+
+        {/* Header */}
+        <div className="text-center mb-12">
+          <span className="inline-block text-xs font-bold uppercase tracking-widest text-violet-600 mb-3">
+            Comment ça marche
+          </span>
+          <h2 className="text-2xl md:text-3xl font-semibold text-gray-900 dark:text-white mb-4">
+            Les possibilités sont infinies.<br />
+            <span className="text-gray-400 dark:text-gray-500">Vraiment.</span>
+          </h2>
+          <p className="text-base text-gray-600 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed">
+            Ce qui rend Synthèse unique, c'est son architecture. On ne part pas d'un logiciel existant qu'on essaie d'adapter.
+            On part de <span className="font-semibold text-gray-800 dark:text-gray-200">votre façon de travailler</span>, et on construit autour.
+            Le résultat : si vous pouvez le décrire, on peut le construire.
+          </p>
+        </div>
+
+        {/* Infinity cards */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-14">
+          {[
+            { label: "Un email reçu déclenche une mise à jour dans votre Excel" },
+            { label: "Une photo de chantier devient un rapport d'intervention classé" },
+            { label: "Votre planning se réorganise quand un client annule" },
+            { label: "Vos devis PDF se transforment en tableau comparatif" },
+            { label: "Chaque matin, un briefing de vos priorités du jour" },
+            { label: "Un bon de commande WhatsApp devient une ligne de suivi" },
+            { label: "Vos factures se saisissent toutes seules dans votre logiciel" },
+            { label: "Vos réunions se transcrivent et s'archivent automatiquement" },
+          ].map((item, i) => (
+            <div
+              key={i}
+              className="rounded-xl border border-dashed border-violet-200 dark:border-violet-800/50 bg-violet-50/50 dark:bg-violet-950/20 px-4 py-3"
+            >
+              <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{item.label}</p>
+            </div>
+          ))}
+        </div>
+        <p className="text-center text-sm text-gray-400 dark:text-gray-500 mb-14 -mt-10">
+          Et des centaines d'autres combinaisons possibles, selon votre activité.
+        </p>
+
+        {/* Exemple concret — Vauclaire Industrie */}
+        <div className="rounded-3xl border border-gray-100 dark:border-gray-800 overflow-hidden mb-14">
+
+          {/* Header entreprise */}
+          <div className="bg-gradient-to-r from-slate-800 to-slate-700 px-8 py-6 flex flex-col sm:flex-row sm:items-center gap-4">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center shrink-0">
+                <span className="text-2xl">🏭</span>
+              </div>
+              <div>
+                <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-0.5">Exemple concret</p>
+                <p className="text-lg font-semibold text-white">Vauclaire Industrie</p>
+                <p className="text-sm text-slate-400">Fabrication de pièces métalliques · 28 employés · Normandie</p>
+              </div>
+            </div>
+            <div className="sm:ml-auto flex flex-wrap gap-2">
+              {["Outlook", "Excel", "WhatsApp", "PDF fournisseurs"].map((t) => (
+                <span key={t} className="text-xs px-2.5 py-1 rounded-full bg-white/10 text-slate-300 font-medium">{t}</span>
+              ))}
+            </div>
+          </div>
+
+          {/* Situation initiale */}
+          <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-gray-100 dark:divide-gray-800">
+            <div className="px-8 py-6 bg-red-50/40 dark:bg-red-950/10">
+              <p className="text-xs font-bold uppercase tracking-widest text-red-500 mb-4">Avant Synthèse</p>
+              <ul className="space-y-3">
+                {[
+                  "2h par jour à trier des emails de commandes et fournisseurs",
+                  "Le planning de production refait manuellement chaque lundi matin",
+                  "Les factures PDF re-saisies à la main dans Excel",
+                  "Les techniciens envoient des photos sur WhatsApp, les rapports se perdent",
+                ].map((item) => (
+                  <li key={item} className="flex items-start gap-2.5 text-sm text-gray-600 dark:text-gray-400">
+                    <span className="text-red-400 mt-0.5 shrink-0">✗</span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="px-8 py-6 bg-emerald-50/40 dark:bg-emerald-950/10">
+              <p className="text-xs font-bold uppercase tracking-widest text-emerald-600 mb-4">Avec Synthèse</p>
+              <ul className="space-y-3">
+                {[
+                  "Les emails sont triés, classés et résumés chaque matin automatiquement",
+                  "Le planning se génère en 30 secondes à partir des commandes du jour",
+                  "Les factures PDF alimentent Excel sans qu'on touche à rien",
+                  "Les photos WhatsApp deviennent des rapports d'intervention archivés",
+                ].map((item) => (
+                  <li key={item} className="flex items-start gap-2.5 text-sm text-gray-600 dark:text-gray-400">
+                    <span className="text-emerald-500 mt-0.5 shrink-0">✓</span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          <div className="px-8 py-4 bg-gray-50 dark:bg-gray-900/50 border-t border-gray-100 dark:border-gray-800">
+            <p className="text-xs text-gray-400 dark:text-gray-500 text-center italic">
+              Cet exemple est fictif mais représentatif de ce qu'on construit. Chaque Synthèse est différent — le vôtre sera construit autour de votre réalité.
+            </p>
+          </div>
+        </div>
+
+        {/* Notre process */}
+        <div className="text-center mb-10">
+          <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+            Notre façon de travailler ensemble
+          </h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            On ne livre pas un logiciel. On construit quelque chose avec vous.
+          </p>
+        </div>
+
+        <div className="relative">
+          {/* Ligne de connexion desktop */}
+          <div className="absolute top-8 left-[10%] right-[10%] h-px bg-gradient-to-r from-violet-200 via-blue-200 to-violet-200 dark:from-violet-800/50 dark:via-blue-800/50 dark:to-violet-800/50 hidden md:block" />
+
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-6 relative">
+            {[
+              {
+                num: "1",
+                emoji: "🗣️",
+                title: "On écoute",
+                desc: "Un rendez-vous pour comprendre votre activité, vos outils, vos douleurs quotidiennes. On pose les bonnes questions.",
+                color: "from-violet-500 to-violet-600",
+              },
+              {
+                num: "2",
+                emoji: "🔍",
+                title: "On décortique",
+                desc: "On analyse votre façon de travailler. On identifie ce qui vous coûte du temps et ce dont vous avez vraiment besoin — pas juste ce que vous pensez.",
+                color: "from-blue-500 to-blue-600",
+              },
+              {
+                num: "3",
+                emoji: "🏗️",
+                title: "On construit",
+                desc: "On développe une V1 en quelques semaines. Pas un prototype vague — quelque chose que vous pouvez utiliser dès le départ.",
+                color: "from-indigo-500 to-indigo-600",
+              },
+              {
+                num: "4",
+                emoji: "🧪",
+                title: "Vous testez",
+                desc: "Vous utilisez, vous faites vos retours. Ce qui marche, ce qui manque, ce qu'on n'avait pas anticipé. Tout est noté.",
+                color: "from-teal-500 to-teal-600",
+              },
+              {
+                num: "5",
+                emoji: "🔄",
+                title: "On améliore",
+                desc: "On itère chaque semaine. Synthèse évolue avec vous, indéfiniment. Votre activité change ? Synthèse change aussi.",
+                color: "from-emerald-500 to-emerald-600",
+              },
+            ].map((step) => (
+              <div key={step.num} className="flex flex-col items-center text-center gap-3">
+                <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${step.color} flex flex-col items-center justify-center shadow-md shrink-0 z-10`}>
+                  <span className="text-2xl">{step.emoji}</span>
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-gray-900 dark:text-white mb-1">{step.title}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">{step.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Objectif final */}
+        <div className="mt-14 rounded-2xl bg-gradient-to-r from-violet-600 to-blue-600 p-8 text-white text-center">
+          <p className="text-lg font-semibold mb-2">L'objectif, au fond, c'est simple.</p>
+          <p className="text-base text-white/80 max-w-xl mx-auto leading-relaxed">
+            Profiter des nouvelles technologies pour vous aider dans votre travail.
+            Vous faire gagner du temps sur ce qui est répétitif, vous libérer la tête pour ce qui compte vraiment,
+            et vous permettre de mieux travailler — sans changer votre façon de fonctionner.
+          </p>
+        </div>
+
+      </div>
+
       {/* SECTION INTÉGRATIONS */}
       <div className="mb-20">
         {/* Animated carousel hero */}
