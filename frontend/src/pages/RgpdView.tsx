@@ -284,45 +284,55 @@ export default function RgpdView() {
           })}
         </div>
 
+        {/* Titre "Nos scanners" */}
+        <div className="mb-5 sm:mb-6">
+          <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-1.5">
+            Nos 4 scanners de sécurité
+          </h3>
+          <p className="text-[13px] sm:text-sm text-gray-500 leading-relaxed">
+            Chacun couvre un angle différent. Ensemble, ils couvrent l'intégralité de la surface d'exposition de votre Synthèse.
+          </p>
+        </div>
+
         {/* Les 4 auditeurs */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
           {[
             {
-              name: "SSL Labs",
-              organism: "par Qualys",
+              name: "Qualys SSL Labs",
+              organism: "Qualys · Fortune 500 cybersécurité",
               color: "#dc2626",
               icon: Lock,
-              checks: "Vérifie le chiffrement TLS, la robustesse du HTTPS et la résistance aux attaques par interception.",
+              checks: "Vérifie le chiffrement TLS, la robustesse du HTTPS et la résistance aux attaques par interception. Utilisé par les plus grandes banques mondiales.",
               grade: "A+",
               gradeLabel: "Note attendue",
               url: "https://www.ssllabs.com/ssltest/",
             },
             {
               name: "Mozilla Observatory",
-              organism: "par Mozilla Foundation",
+              organism: "Mozilla Foundation · éditeur de Firefox",
               color: "#ea580c",
               icon: Eye,
-              checks: "Analyse les en-têtes HTTP, les politiques de sécurité de contenu (CSP) et les protections anti-XSS.",
+              checks: "Analyse les en-têtes HTTP, les politiques de sécurité de contenu (CSP) et les protections contre les attaques XSS et clickjacking.",
               grade: "A+",
               gradeLabel: "Note attendue",
               url: "https://observatory.mozilla.org",
             },
             {
-              name: "Security Headers",
-              organism: "par Scott Helme",
-              color: "#2563eb",
+              name: "Snyk",
+              organism: "Snyk Ltd · utilisé par Google, Salesforce",
+              color: "#4c2889",
               icon: ShieldCheck,
-              checks: "Scanne toutes les en-têtes de sécurité HTTP (HSTS, X-Frame-Options, Content-Security-Policy...).",
-              grade: "A+",
-              gradeLabel: "Note attendue",
-              url: "https://securityheaders.com",
+              checks: "Scanne en continu les dépendances logicielles et détecte les vulnérabilités connues (CVE). Correctifs appliqués dès qu'une faille est publiée.",
+              grade: "0 faille",
+              gradeLabel: "Résultat attendu",
+              url: "https://snyk.io",
             },
             {
               name: "OWASP ZAP",
-              organism: "par OWASP Foundation",
+              organism: "OWASP Foundation · standard mondial",
               color: "#7c3aed",
               icon: FileSearch,
-              checks: "Scanner automatisé de vulnérabilités couvrant le Top 10 OWASP : injections, XSS, CSRF, authentification, etc.",
+              checks: "Scanner de vulnérabilités couvrant le Top 10 OWASP : injections SQL, XSS, CSRF, failles d'authentification, exposition de données, etc.",
               grade: "0 critique",
               gradeLabel: "Résultat attendu",
               url: "https://www.zaproxy.org",
