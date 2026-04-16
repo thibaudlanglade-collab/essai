@@ -377,19 +377,9 @@ export default function RgpdView() {
                     </div>
                   </div>
 
-                  <p className="text-[13px] sm:text-xs text-gray-600 leading-relaxed mb-4">
+                  <p className="text-[13px] sm:text-xs text-gray-600 leading-relaxed">
                     {auditor.checks}
                   </p>
-
-                  <a
-                    href={auditor.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 text-xs font-medium text-blue-600 hover:text-blue-800 transition-colors"
-                  >
-                    <ExternalLink className="h-3 w-3" />
-                    Voir le site de l'auditeur
-                  </a>
                 </div>
               </div>
             );
