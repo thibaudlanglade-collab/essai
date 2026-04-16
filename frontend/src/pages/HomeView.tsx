@@ -531,7 +531,7 @@ export default function HomeView() {
 
             {/* RIGHT — Contenu "Jarvis" */}
             <div className="flex flex-col justify-center px-8 md:px-12 py-10">
-              <h2 className="text-2xl md:text-3xl font-semibold text-gray-900 mb-8">
+              <h2 className="text-2xl md:text-3xl font-display text-gray-900 mb-8">
                 Synthèse, c'est cette petite voix que vous avez tous les jours.
               </h2>
 
@@ -591,6 +591,186 @@ export default function HomeView() {
             bas sur cette page — pour ceux qui aiment bien les détails.
           </p>
         </div>
+      </div>
+
+      {/* SECTION — POURQUOI ÇA N'EXISTAIT PAS AVANT */}
+      <div className="mb-20">
+
+        {/* Titre */}
+        <div className="text-center mb-12">
+          <span className="inline-block text-xs font-bold uppercase tracking-widest text-violet-600 mb-3">
+            Une opportunité historique
+          </span>
+          <h2 className="text-2xl md:text-3xl font-semibold text-gray-900 dark:text-white mb-4">
+            Pourquoi Synthèse n'existait pas il y a 5 ans
+          </h2>
+          <p className="text-base text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+            Ce n'est pas qu'on n'y avait pas pensé. C'est que les technologies pour le construire n'existaient tout simplement pas.
+          </p>
+        </div>
+
+        {/* Timeline avant / maintenant */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-14">
+          {[
+            {
+              era: "Avant",
+              color: "border-gray-200 bg-gray-50 dark:bg-gray-900/40",
+              badge: "text-gray-500 bg-gray-100",
+              items: [
+                "Un outil IA sur-mesure = 200 000 € minimum",
+                "Une équipe de 10 développeurs pendant 6 mois",
+                "Réservé aux grandes entreprises du CAC 40",
+                "Obsolète au bout de 2 ans, sans mise à jour",
+              ],
+            },
+            {
+              era: "Le tournant",
+              color: "border-violet-200 bg-violet-50 dark:bg-violet-900/20",
+              badge: "text-violet-700 bg-violet-100",
+              items: [
+                "GPT-4 rend l'IA accessible via API en 2023",
+                "Le cloud certifié devient abordable pour tous",
+                "Les outils no-code explosent en qualité",
+                "L'IA passe de laboratoire à production en 6 mois",
+              ],
+            },
+            {
+              era: "Aujourd'hui",
+              color: "border-emerald-200 bg-emerald-50 dark:bg-emerald-900/20",
+              badge: "text-emerald-700 bg-emerald-100",
+              items: [
+                "Un outil sur-mesure accessible à toutes les entreprises",
+                "Configuré en semaines, pas en années",
+                "Évolue chaque semaine avec vos besoins",
+                "Même niveau de sécurité que les grandes entreprises",
+              ],
+            },
+          ].map((col) => (
+            <div key={col.era} className={`rounded-2xl border p-6 ${col.color}`}>
+              <span className={`inline-block text-xs font-bold uppercase tracking-widest px-2 py-1 rounded-md mb-5 ${col.badge}`}>
+                {col.era}
+              </span>
+              <ul className="space-y-3">
+                {col.items.map((item) => (
+                  <li key={item} className="flex items-start gap-2.5 text-sm text-gray-700 dark:text-gray-300">
+                    <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-current shrink-0 opacity-50" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+
+        {/* Les mêmes outils que les meilleurs */}
+        <div className="rounded-3xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900/50 overflow-hidden">
+          <div className="px-8 py-8 border-b border-gray-100 dark:border-gray-800">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+              Pour vous offrir le meilleur, on s'est inspiré des meilleurs
+            </h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400 max-w-2xl">
+              On n'a pas réinventé la roue. On a simplement choisi les mêmes matériaux que ceux utilisés par les entreprises tech les plus exigeantes au monde — et on les a mis à votre service.
+            </p>
+          </div>
+
+          <div className="divide-y divide-gray-50 dark:divide-gray-800">
+            {[
+              {
+                tool: "OpenAI API",
+                role: "Intelligence artificielle",
+                color: "#10a37f",
+                desc: "Le même moteur IA que",
+                trustedBy: [
+                  { name: "Notion", color: "#000" },
+                  { name: "Shopify", color: "#96bf48" },
+                  { name: "Duolingo", color: "#58cc02" },
+                  { name: "Stripe", color: "#635bff" },
+                ],
+              },
+              {
+                tool: "Anthropic Claude",
+                role: "Agent IA avancé",
+                color: "#c96442",
+                desc: "Le même agent IA que",
+                trustedBy: [
+                  { name: "Slack", color: "#611f69" },
+                  { name: "Salesforce", color: "#009edb" },
+                  { name: "DoorDash", color: "#ff3008" },
+                  { name: "GitLab", color: "#e24329" },
+                ],
+              },
+              {
+                tool: "Supabase",
+                role: "Base de données & auth",
+                color: "#3ecf8e",
+                desc: "La même infrastructure que",
+                trustedBy: [
+                  { name: "Mozilla", color: "#e66000" },
+                  { name: "PwC", color: "#d04a02" },
+                  { name: "1Password", color: "#1a8cff" },
+                  { name: "Pika", color: "#8b5cf6" },
+                ],
+              },
+              {
+                tool: "Railway",
+                role: "Hébergement cloud",
+                color: "#6366f1",
+                desc: "Le même standard (SOC 2 Type II) que",
+                trustedBy: [
+                  { name: "Stripe", color: "#635bff" },
+                  { name: "Twilio", color: "#f22f46" },
+                  { name: "Datadog", color: "#632ca6" },
+                  { name: "GitHub", color: "#24292e" },
+                ],
+              },
+            ].map((row) => (
+              <div key={row.tool} className="flex flex-col sm:flex-row sm:items-center gap-4 px-8 py-5">
+                {/* Tool */}
+                <div className="flex items-center gap-3 w-52 shrink-0">
+                  <div
+                    className="w-2 h-8 rounded-full shrink-0"
+                    style={{ backgroundColor: row.color }}
+                  />
+                  <div>
+                    <p className="text-sm font-semibold text-gray-900 dark:text-white">{row.tool}</p>
+                    <p className="text-xs text-gray-400">{row.role}</p>
+                  </div>
+                </div>
+
+                {/* Desc */}
+                <p className="text-xs text-gray-400 w-44 shrink-0 hidden sm:block">{row.desc}</p>
+
+                {/* Companies */}
+                <div className="flex items-center gap-2 flex-wrap">
+                  {row.trustedBy.map((co) => (
+                    <span
+                      key={co.name}
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full border"
+                      style={{
+                        color: co.color,
+                        borderColor: co.color + "30",
+                        backgroundColor: co.color + "0f",
+                      }}
+                    >
+                      {co.name}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Footer de la carte */}
+          <div className="px-8 py-5 bg-gradient-to-r from-violet-50 to-blue-50 dark:from-violet-900/20 dark:to-blue-900/20 border-t border-gray-100 dark:border-gray-800">
+            <p className="text-sm text-gray-600 dark:text-gray-400 text-center max-w-2xl mx-auto">
+              Ces entreprises ont choisi ces outils après des audits rigoureux de sécurité, de performance et de conformité.{" "}
+              <span className="font-semibold text-gray-900 dark:text-white">
+                Vous bénéficiez du même niveau d'exigence — sans avoir à le chercher vous-même.
+              </span>
+            </p>
+          </div>
+        </div>
+
       </div>
 
       {/* SECTION INTÉGRATIONS */}
