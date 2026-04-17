@@ -56,17 +56,11 @@ export default function App() {
     window.scrollTo(0, 0);
   }, [activeMode]);
 
-  // Dark mode
-  const [dark] = useState(() => {
-    const stored = localStorage.getItem("synthese-dark");
-    if (stored !== null) return stored === "true";
-    return window.matchMedia("(prefers-color-scheme: dark)").matches;
-  });
-
+  // Force light mode
   useEffect(() => {
-    document.documentElement.classList.toggle("dark", dark);
-    localStorage.setItem("synthese-dark", String(dark));
-  }, [dark]);
+    document.documentElement.classList.remove("dark");
+    localStorage.setItem("synthese-dark", "false");
+  }, []);
 
   // Briefing badge: poll every 5 minutes at the App level
   const [briefingBadgeCount, setBriefingBadgeCount] = useState(0);
