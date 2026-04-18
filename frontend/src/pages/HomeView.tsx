@@ -900,8 +900,8 @@ export default function HomeView({ onComprendreClick, onRgpdClick }: { onCompren
                 À l'origine de Synthèse
               </h3>
               <p className="text-sm text-gray-600 leading-relaxed mb-5">
-                Une entreprise basée à Avignon qui se calque à votre activité.
-                On écoute, on comprend votre métier, et on construit ensemble.
+                Une équipe qui se calque à votre activité. On écoute, on
+                comprend votre métier, et on construit ensemble.
               </p>
               <span className="inline-flex items-center gap-1.5 text-sm font-medium text-violet-600 group-hover:gap-2.5 transition-all">
                 En savoir plus

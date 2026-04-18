@@ -109,7 +109,7 @@ export default function Footer() {
               </li>
               <li className="flex items-center gap-2">
                 <MapPin className="h-3.5 w-3.5 text-gray-400" />
-                Avignon, France
+                France
               </li>
             </ul>
           </div>

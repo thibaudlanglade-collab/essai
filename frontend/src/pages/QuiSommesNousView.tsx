@@ -20,9 +20,9 @@ export default function QuiSommesNousView() {
           À l'origine de Synthèse
         </h1>
         <p className="text-lg text-gray-600 leading-relaxed">
-          Une idée née à Avignon, d'un constat simple : les pros passent
-          trop d'heures à dompter des logiciels pensés pour quelqu'un
-          d'autre. Alors on a pris la feuille blanche. Depuis, chaque
+          Une idée née d'un constat simple : les pros passent trop
+          d'heures à dompter des logiciels pensés pour quelqu'un d'autre.
+          Alors on a pris la feuille blanche. Depuis, chaque
           Synthèse se construit comme un costume sur-mesure — avec vous,
           pour votre métier, à votre rythme. Pas un outil de plus. Le vôtre.
         </p>
@@ -185,7 +185,7 @@ export default function QuiSommesNousView() {
               </div>
               <div>
                 <h3 className="text-sm font-semibold text-gray-900">Durand BTP</h3>
-                <p className="text-xs text-gray-500">14 employés · Avignon</p>
+                <p className="text-xs text-gray-500">14 employés</p>
               </div>
             </div>
 
@@ -229,7 +229,7 @@ export default function QuiSommesNousView() {
               </div>
               <div>
                 <h3 className="text-sm font-semibold text-gray-900">Précision Métal</h3>
-                <p className="text-xs text-gray-500">25 employés · Vaucluse</p>
+                <p className="text-xs text-gray-500">25 employés</p>
               </div>
             </div>
 
@@ -321,7 +321,7 @@ export default function QuiSommesNousView() {
           <div className="flex flex-wrap items-center gap-6">
             <div className="flex items-center gap-2 text-sm text-gray-600">
               <MapPin className="h-4 w-4 text-violet-400" />
-              Avignon, France
+              France
             </div>
             <div className="flex items-center gap-2 text-sm text-gray-600">
               <Mail className="h-4 w-4 text-violet-400" />

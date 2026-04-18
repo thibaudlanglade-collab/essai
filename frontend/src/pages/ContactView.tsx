@@ -219,7 +219,7 @@ export default function ContactView() {
                 <div className="w-9 h-9 rounded-lg bg-white/15 flex items-center justify-center shrink-0">
                   <MapPin className="h-4 w-4" />
                 </div>
-                <span>Avignon, France</span>
+                <span>France</span>
               </li>
             </ul>
           </div>
