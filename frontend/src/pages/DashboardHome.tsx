@@ -70,13 +70,22 @@ export default function DashboardHome() {
             informations utiles, et vous propose un rangement que vous pouvez
             ajuster avant de valider.
           </p>
-          <button
-            type="button"
-            onClick={() => navigate("/dashboard/extract")}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded bg-gray-900 text-white text-sm font-medium hover:bg-gray-700 transition-colors"
-          >
-            Ouvrir Smart Extract
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => navigate("/dashboard/extract")}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded bg-gray-900 text-white text-sm font-medium hover:bg-gray-700 transition-colors"
+            >
+              Ouvrir Smart Extract
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate("/dashboard/automations")}
+              className="text-sm text-gray-600 hover:text-gray-900 underline underline-offset-2"
+            >
+              Voir les automatisations →
+            </button>
+          </div>
         </section>
 
         <section className="bg-white rounded-lg p-6 border border-gray-200 mb-6">

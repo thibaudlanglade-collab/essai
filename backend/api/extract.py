@@ -34,6 +34,7 @@ from auth.dependencies import get_current_user
 from db.database import get_db
 from db.models import AccessToken, Extraction, Invoice, Supplier
 from services.extract_service import ExtractError, extract_document
+from services.file_organizer import organize_invoice_file
 
 logger = logging.getLogger(__name__)
 
@@ -197,16 +198,16 @@ async def save_extraction(
     target_folder = body.get("target_folder") or extraction.target_folder
     final_filename = body.get("final_filename")
 
+    # Keep the original upload basename BEFORE we rename anything — the file
+    # organizer below needs it to locate the actual file on disk.
+    original_stored = extraction.stored_filename
+
     extraction.extracted_data = validated
     extraction.target_folder = target_folder
-    if final_filename:
-        # Keep the original suggested filename untouched in the model output —
-        # we only update the *stored* filename projection so /history surfaces
-        # what the prospect actually chose.
-        extraction.stored_filename = final_filename
 
     commit_to_invoices = bool(body.get("commit_to_invoices"))
     invoice_id: Optional[str] = None
+    organize_result: Optional[dict[str, Any]] = None
 
     if commit_to_invoices and extraction.document_type == "invoice":
         invoice_id = await _spawn_invoice(
@@ -218,6 +219,29 @@ async def save_extraction(
             final_filename=final_filename,
         )
 
+        # File classement + Excel (brief §6.1, volet 1). Best-effort: never
+        # fails the save, just surfaces "impossible" steps to the UI.
+        original_source = (
+            _STORAGE_ROOT / user.id / "extractions" / original_stored
+            if original_stored
+            else None
+        )
+        organize_result = organize_invoice_file(
+            user_id=user.id,
+            source_path=original_source,
+            target_folder=target_folder or "",
+            final_filename=final_filename or original_stored or "document.pdf",
+            invoice_data=validated,
+        )
+
+    # Keep `stored_filename` pointing at where the file actually lives. If
+    # organize moved it, use that new basename; otherwise honour the
+    # prospect's chosen filename; else keep the upload basename.
+    if organize_result and organize_result.get("final_path"):
+        extraction.stored_filename = Path(organize_result["final_path"]).name
+    elif final_filename:
+        extraction.stored_filename = final_filename
+
     await db.commit()
     await db.refresh(extraction)
 
@@ -225,6 +249,7 @@ async def save_extraction(
         "saved": True,
         "extraction": extraction.to_dict(),
         "invoice_id": invoice_id,
+        "organize": organize_result,
     }
 
 

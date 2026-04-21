@@ -85,10 +85,18 @@ export interface SaveExtractionBody {
   commit_to_invoices?: boolean;
 }
 
+export interface OrganizeResult {
+  steps: string[];
+  final_path: string | null;
+  excel_path: string | null;
+  ok: boolean;
+}
+
 export interface SaveExtractionResult {
   saved: boolean;
   extraction: ExtractionResult;
   invoice_id: string | null;
+  organize: OrganizeResult | null;
 }
 
 class ApiError extends Error {

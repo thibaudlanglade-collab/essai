@@ -87,9 +87,12 @@ check "GET employees with fake cookie → 401" "[[ '$FAKE' == '401' ]]"
 
 echo ""
 echo "▶ RGPD export…"
-EXP_A=$(curl -sb "$CA" $BASE/api/my-data/export)
-check "Export A contains Alice Worker"       "echo '$EXP_A' | grep -q 'Alice Worker'"
-check "Export A does NOT contain Bob Worker" "! echo '$EXP_A' | grep -q 'Bob Worker'"
+# Write to a file — the seed data pushes the JSON past 70 KB with French
+# apostrophes that break inline `echo '...' | grep` quoting.
+curl -sb "$CA" $BASE/api/my-data/export > /tmp/test_iso_export_A.json
+check "Export A contains Alice Worker"       "grep -q 'Alice Worker' /tmp/test_iso_export_A.json"
+check "Export A does NOT contain Bob Worker" "! grep -q 'Bob Worker' /tmp/test_iso_export_A.json"
+check "Export A contains 30 seed emails"     "[[ \$(python3 -c 'import json; print(len(json.load(open(\"/tmp/test_iso_export_A.json\"))[\"data\"][\"emails\"]))') -eq 30 ]]"
 
 echo ""
 echo "▶ Cross-tenant attempt on automations…"

@@ -50,6 +50,7 @@ except ImportError:
 
 from db.access_tokens import create_token  # noqa: E402
 from db.database import async_session_maker, init_db  # noqa: E402
+from scripts.seed_btp_data import seed_btp_data  # noqa: E402
 
 
 DEFAULT_BASE_URL = os.environ.get("SYNTHESE_BASE_URL", "http://localhost:8000")
@@ -70,7 +71,14 @@ async def _create_one(
     company_name: Optional[str],
     duration_days: int,
     base_url: str,
-) -> tuple[str, str]:
+    seed_data: bool = True,
+) -> tuple[str, str, dict]:
+    """Create a prospect's access + optionally seed the BTP demo data.
+
+    Returns `(token, url, seed_counts)` where `seed_counts` is the dict
+    returned by `seed_btp_data` — zero counts if seeding was skipped or
+    was a no-op because the tenant already had seed rows.
+    """
     async with async_session_maker() as db:
         token = await create_token(
             db,
@@ -79,24 +87,40 @@ async def _create_one(
             company_name=company_name,
             duration_days=duration_days,
         )
+        counts = (
+            await seed_btp_data(db, user_id=token.id)
+            if seed_data
+            else {"suppliers": 0, "clients": 0, "invoices": 0, "quotes": 0, "emails": 0}
+        )
     url = f"{base_url.rstrip('/')}/app/{token.token}"
-    return token.token, url
+    return token.token, url, counts
 
 
 async def _cmd_create(args: argparse.Namespace) -> None:
     await _ensure_schema()
-    token, url = await _create_one(
+    token, url, counts = await _create_one(
         prospect_name=args.name,
         prospect_email=args.email,
         company_name=args.company,
         duration_days=args.days,
         base_url=args.base_url,
+        seed_data=not args.no_seed,
     )
     label = args.name or args.company or "(anonyme)"
     print(f"Token créé pour {label}")
     print(f"  URL    : {url}")
     print(f"  Jours  : {args.days}")
     print(f"  Token  : {token}")
+    if any(counts.values()):
+        print(
+            f"  Seed   : {counts['suppliers']} fournisseurs, "
+            f"{counts['clients']} clients, "
+            f"{counts['invoices']} factures, "
+            f"{counts['quotes']} devis, "
+            f"{counts['emails']} emails"
+        )
+    elif not args.no_seed:
+        print("  Seed   : déjà présente (no-op)")
 
 
 def _pick(row: dict, *keys: str) -> Optional[str]:
@@ -127,12 +151,13 @@ async def _cmd_from_csv(args: argparse.Namespace) -> None:
             contact = _pick(row, "contact_name", "name", "nom", "contact")
             email = _pick(row, "email", "mail")
 
-            _, url = await _create_one(
+            _, url, _ = await _create_one(
                 prospect_name=contact,
                 prospect_email=email,
                 company_name=company,
                 duration_days=args.days,
                 base_url=args.base_url,
+                seed_data=not args.no_seed,
             )
             out_row = dict(row)
             out_row["access_url"] = url
@@ -173,6 +198,11 @@ def _build_parser() -> argparse.ArgumentParser:
         "--base-url", default=DEFAULT_BASE_URL,
         help=f"URL de base de l'app (défaut : {DEFAULT_BASE_URL})",
     )
+    p_create.add_argument(
+        "--no-seed",
+        action="store_true",
+        help="Ne pas injecter la seed BTP (espace vide).",
+    )
     p_create.set_defaults(func=_cmd_create)
 
     p_csv = sub.add_parser("from-csv", help="Bulk-seed depuis un CSV.")
@@ -183,6 +213,11 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     p_csv.add_argument("--days", type=int, default=14)
     p_csv.add_argument("--base-url", default=DEFAULT_BASE_URL)
+    p_csv.add_argument(
+        "--no-seed",
+        action="store_true",
+        help="Ne pas injecter la seed BTP (espaces vides).",
+    )
     p_csv.set_defaults(func=_cmd_from_csv)
 
     return parser

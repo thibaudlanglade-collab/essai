@@ -316,6 +316,28 @@ class Email(Base):
         nullable=True,
         index=True,
     )
+    # Cross-links used by the seed (§10.5) and by Sprint 4+ (assistant,
+    # rapport client) to resolve an email back to the quote/invoice/
+    # supplier it references. All SET NULL on delete — an email survives
+    # the deletion of its referents as free-form text.
+    related_supplier_id: Mapped[Optional[str]] = mapped_column(
+        String(36),
+        ForeignKey("suppliers.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
+    )
+    related_quote_id: Mapped[Optional[str]] = mapped_column(
+        String(36),
+        ForeignKey("quotes.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
+    )
+    related_invoice_id: Mapped[Optional[str]] = mapped_column(
+        String(36),
+        ForeignKey("invoices.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
+    )
     is_seed: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     is_from_gmail: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
 

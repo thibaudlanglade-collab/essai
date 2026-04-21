@@ -20,6 +20,7 @@ import ProtectedLayout from "./layouts/ProtectedLayout";
 import Welcome from "./pages/Welcome";
 import DashboardHome from "./pages/DashboardHome";
 import ExtractView from "./pages/ExtractView";
+import AutomationsView from "./pages/AutomationsView";
 
 /**
  * Renders nothing and forces a full-page navigation to /expired so the
@@ -42,6 +43,7 @@ export default function App() {
           <Route path="/welcome" element={<Welcome />} />
           <Route path="/dashboard" element={<DashboardHome />} />
           <Route path="/dashboard/extract" element={<ExtractView />} />
+          <Route path="/dashboard/automations" element={<AutomationsView />} />
           <Route path="/dashboard/*" element={<DashboardHome />} />
         </Route>
 

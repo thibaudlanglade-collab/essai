@@ -50,6 +50,8 @@ export default function ExtractView() {
   const [commitToInvoices, setCommitToInvoices] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState<string | null>(null);
+  const [organizeSteps, setOrganizeSteps] = useState<string[]>([]);
+  const [organizeRevealed, setOrganizeRevealed] = useState(0);
 
   const [history, setHistory] = useState<ExtractionResult[]>([]);
   const [historyLoading, setHistoryLoading] = useState(true);
@@ -116,6 +118,8 @@ export default function ExtractView() {
     setSaving(true);
     setError(null);
     setSaveSuccess(null);
+    setOrganizeSteps([]);
+    setOrganizeRevealed(0);
     try {
       const res = await saveExtraction({
         extraction_id: extraction.id,
@@ -124,6 +128,22 @@ export default function ExtractView() {
         final_filename: filename,
         commit_to_invoices: commitToInvoices,
       });
+      const steps = res.organize?.steps ?? [];
+      setOrganizeSteps(steps);
+
+      // Reveal steps one by one for the "en live" feel the brief §6.1 asks for.
+      // The steps themselves are already computed server-side; the timing
+      // here is pure UX polish.
+      if (steps.length > 0) {
+        for (let i = 1; i <= steps.length; i += 1) {
+          // Let React paint between reveals.
+          // eslint-disable-next-line no-await-in-loop
+          await new Promise((resolve) => setTimeout(resolve, 450));
+          setOrganizeRevealed(i);
+        }
+        await new Promise((resolve) => setTimeout(resolve, 400));
+      }
+
       setSaveSuccess(
         res.invoice_id
           ? "Document enregistré et ajouté à vos factures."
@@ -139,7 +159,9 @@ export default function ExtractView() {
         setFolder("");
         setFilename("");
         setSaveSuccess(null);
-      }, 1400);
+        setOrganizeSteps([]);
+        setOrganizeRevealed(0);
+      }, 1800);
     } catch (err) {
       setError(
         err instanceof Error
@@ -194,6 +216,8 @@ export default function ExtractView() {
             saving={saving}
             error={error}
             saveSuccess={saveSuccess}
+            organizeSteps={organizeSteps}
+            organizeRevealed={organizeRevealed}
           />
         )}
 
@@ -378,6 +402,8 @@ function ReviewPanel(props: {
   saving: boolean;
   error: string | null;
   saveSuccess: string | null;
+  organizeSteps: string[];
+  organizeRevealed: number;
 }) {
   const {
     extraction,
@@ -395,6 +421,8 @@ function ReviewPanel(props: {
     saving,
     error,
     saveSuccess,
+    organizeSteps,
+    organizeRevealed,
   } = props;
 
   function patch(partial: Partial<ExtractedData>) {
@@ -483,6 +511,12 @@ function ReviewPanel(props: {
       </div>
 
       {error && <ErrorBanner message={error} />}
+      {organizeSteps.length > 0 && (
+        <OrganizeStepsLive
+          steps={organizeSteps}
+          revealed={organizeRevealed}
+        />
+      )}
       {saveSuccess && (
         <div className="mt-5 px-4 py-2.5 rounded border border-emerald-200 bg-emerald-50 text-sm text-emerald-900">
           {saveSuccess}
@@ -947,6 +981,56 @@ function ErrorBanner({ message }: { message: string }) {
   return (
     <div className="mt-5 px-4 py-2.5 rounded border border-red-200 bg-red-50 text-sm text-red-900">
       {message}
+    </div>
+  );
+}
+
+function OrganizeStepsLive({
+  steps,
+  revealed,
+}: {
+  steps: string[];
+  revealed: number;
+}) {
+  return (
+    <div className="mt-5 px-4 py-3 rounded border border-gray-200 bg-stone-50">
+      <p className="text-xs font-medium text-gray-700 mb-2 uppercase tracking-wide">
+        Classement automatique
+      </p>
+      <ul className="space-y-1.5">
+        {steps.map((step, i) => {
+          const isRevealed = i < revealed;
+          const failed = step.toLowerCase().includes("impossible");
+          return (
+            <li
+              key={i}
+              className={`flex items-start gap-2 text-sm transition-opacity duration-300 ${
+                isRevealed ? "opacity-100" : "opacity-0"
+              }`}
+            >
+              <span
+                className={`mt-0.5 h-4 w-4 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 ${
+                  !isRevealed
+                    ? "bg-gray-200 text-gray-400"
+                    : failed
+                      ? "bg-amber-100 text-amber-800"
+                      : "bg-emerald-500 text-white"
+                }`}
+                aria-hidden
+              >
+                {!isRevealed ? "…" : failed ? "!" : "✓"}
+              </span>
+              <span
+                className={`leading-5 ${
+                  failed ? "text-amber-900" : "text-gray-800"
+                }`}
+              >
+                {step}
+              </span>
+            </li>
+          );
+        })}
+      </ul>
     </div>
   );
 }
