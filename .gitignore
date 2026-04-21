@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+*.egg-info/
+dist/
+build/
+
+# Database
+backend/synthese.db
+backend/synthese.db-shm
+backend/synthese.db-wal
+
+# Logs
+backend/.uvicorn.log
+backend/.uvicorn.err.log
+
+# Environment
+.env
+.env.local
+
+# Node
+node_modules/
+frontend/dist/
+
+# Logs
+*.log
+frontend/.dev-stderr.log
+frontend/.dev-stdout.log
+frontend/.vite.log
+
+# IDE / tooling
+.vscode/
+.idea/
+*.swp
+.claude/
+
+# Misc
+backend/attachments/

@@ -1,0 +1,73 @@
+POINT PROJET — REFONTE SITE WEB NOVATEK SOLUTIONS
+Mercredi 16 avril 2025 · 14h00 - 14h47
+Visioconférence Teams — 4 participants
+
+Participants :
+- Isabelle MARCHAND, Cheffe de projet (Digital Craft)
+- Thomas LEGRAND, Lead Developer (Digital Craft)
+- Julie ROUX, UX Designer (Digital Craft)
+- Pascal ROUSSEL, Client (Novatek Solutions)
+
+---
+
+[00:00] Isabelle MARCHAND :
+Bonjour Pascal, merci de vous être libéré. On fait le point complet sur l'avancement du projet. On est à 75% d'avancement global. Julie, tu nous présentes où on en est sur les maquettes ?
+
+[00:22] Julie ROUX :
+Oui. Alors côté maquettes desktop, tout est validé depuis la semaine dernière. On a intégré vos retours sur la page produit et le tunnel de commande. Côté mobile, j'ai finalisé la version responsive hier soir, je vous l'envoie ce soir pour review. Si vous pouvez me faire vos retours rapidement, je pourrai livrer la version définitive vendredi soir.
+
+[00:55] Pascal ROUSSEL :
+D'accord, je regarde ça ce soir et je vous envoie mes retours par mail. Pour la validation définitive, disons lundi matin ?
+
+[01:05] Isabelle MARCHAND :
+Parfait, ça nous va. Thomas, côté développement ?
+
+[01:12] Thomas LEGRAND :
+L'intégration React avance bien sur la partie vitrine. Les pages institutionnelles, le blog, le catalogue produit, tout ça est en bonne voie, on respecte le planning. En revanche, on a du retard sur le module e-commerce. On est environ à deux semaines de retard par rapport au planning initial.
+
+[01:38] Pascal ROUSSEL :
+Deux semaines ? Qu'est-ce qui coince exactement ?
+
+[01:42] Thomas LEGRAND :
+Deux choses principalement. D'abord, la gestion des frais de port : votre grille tarifaire est plus complexe que ce qu'on avait anticipé au départ, avec les zones géographiques, les paliers de poids, et les exceptions par catégorie de produit. Ensuite, l'intégration avec votre ERP Cegid pour la synchronisation des stocks en temps réel. L'API Cegid a quelques particularités qui nous ont demandé plus de travail.
+
+[02:20] Isabelle MARCHAND :
+Pascal, on a réfléchi à une solution pour ne pas décaler votre lancement du 1er juin. On vous propose de livrer une V1 du module e-commerce le 15 mai, avec les fonctionnalités essentielles : catalogue, panier, paiement, gestion des frais de port. Mais sans les codes promo et sans les ventes croisées. Ces fonctionnalités-là, on les livrerait dans une V2 fin juin.
+
+[02:55] Pascal ROUSSEL :
+Ça me paraît raisonnable. L'essentiel c'est qu'on puisse vendre en ligne pour le 1er juin. Les codes promo et les ventes croisées, c'est du nice-to-have pour le lancement. Ça représente quoi en termes de coût supplémentaire, la V2 ?
+
+[03:15] Isabelle MARCHAND :
+On a chiffré un avenant de 5 jours homme, soit 3 750 euros HT. Je vous envoie l'avenant formalisé demain pour signature.
+
+[03:28] Pascal ROUSSEL :
+OK, envoyez-le, je le signe dans la foulée.
+
+[03:35] Isabelle MARCHAND :
+Parfait. Autre sujet : les formations. On avait prévu de former vos équipes à l'utilisation du back-office. On vous propose la semaine du 26 mai, sur site chez vous. Deux demi-journées : une pour l'équipe marketing sur la gestion du contenu et du catalogue, une pour l'équipe commerciale sur la gestion des commandes.
+
+[04:05] Pascal ROUSSEL :
+La semaine du 26 mai, ça me va. Je vais demander à ma secrétaire de caler les créneaux exacts avec vous.
+
+[04:15] Isabelle MARCHAND :
+Très bien, je la contacte cette semaine. Julie, un mot sur le SEO ?
+
+[04:22] Julie ROUX :
+Oui, on a prévu un audit SEO complet après le lancement. L'idée c'est de laisser le site tourner quelques semaines, collecter les premières données Analytics, et vous livrer un rapport avec des recommandations en juillet. Si besoin, on pourra discuter d'une mission complémentaire d'optimisation à ce moment-là.
+
+[04:48] Pascal ROUSSEL :
+Très bien, on verra à ce moment-là.
+
+[04:55] Isabelle MARCHAND :
+Dernier point administratif : on a émis la facture intermédiaire de 11 000 euros le 13 avril, correspondant au jalon maquettes validées. Pascal, vous pouvez la transmettre à votre DAF ?
+
+[05:10] Pascal ROUSSEL :
+Oui, c'est noté. Paiement sous 30 jours comme convenu.
+
+[05:18] Isabelle MARCHAND :
+Parfait. Pour résumer : validation mobile lundi, avenant V2 envoyé demain, formations semaine du 26 mai, et livraison V1 le 15 mai pour tenir votre lancement du 1er juin. On est bons ?
+
+[05:35] Pascal ROUSSEL :
+On est bons. Merci à tous.
+
+[Fin de la réunion — 14h47]
