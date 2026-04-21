@@ -19,6 +19,7 @@ import LegacyLanding from "./LegacyLanding";
 import ProtectedLayout from "./layouts/ProtectedLayout";
 import Welcome from "./pages/Welcome";
 import DashboardHome from "./pages/DashboardHome";
+import ExtractView from "./pages/ExtractView";
 
 /**
  * Renders nothing and forces a full-page navigation to /expired so the
@@ -40,6 +41,7 @@ export default function App() {
         <Route element={<ProtectedLayout />}>
           <Route path="/welcome" element={<Welcome />} />
           <Route path="/dashboard" element={<DashboardHome />} />
+          <Route path="/dashboard/extract" element={<ExtractView />} />
           <Route path="/dashboard/*" element={<DashboardHome />} />
         </Route>
 

@@ -55,16 +55,39 @@ export default function DashboardHome() {
         </div>
 
         <section className="bg-white rounded-lg p-6 border border-gray-200 mb-6">
+          <div className="flex items-start justify-between gap-4 mb-3">
+            <h2 className="text-lg font-semibold text-gray-900">
+              Smart Extract, disponible tout de suite
+            </h2>
+            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-[11px] font-medium text-emerald-900">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+              Prêt
+            </span>
+          </div>
+          <p className="text-sm text-gray-700 leading-relaxed mb-4">
+            Déposez une photo, un PDF ou un texte. Synthèse identifie le type
+            de document (facture, contrat, note de chantier), extrait les
+            informations utiles, et vous propose un rangement que vous pouvez
+            ajuster avant de valider.
+          </p>
+          <button
+            type="button"
+            onClick={() => navigate("/dashboard/extract")}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded bg-gray-900 text-white text-sm font-medium hover:bg-gray-700 transition-colors"
+          >
+            Ouvrir Smart Extract
+          </button>
+        </section>
+
+        <section className="bg-white rounded-lg p-6 border border-gray-200 mb-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-3">
-            Votre espace est en cours de configuration
+            Le reste de votre espace arrive
           </h2>
           <p className="text-sm text-gray-700 leading-relaxed mb-3">
-            Les fonctionnalités de votre espace test arrivent par vagues dans
-            les prochains jours, pour vous proposer une vraie solution
-            concrète à tester sur vos propres documents.
+            Les autres fonctionnalités se mettent en place dans les prochains
+            jours. Elles vous seront proposées au fil de votre essai.
           </p>
           <ul className="text-sm text-gray-700 leading-relaxed space-y-2 pl-5 list-disc marker:text-gray-400">
-            <li>Extraction automatique de vos factures, contrats et notes de chantier.</li>
             <li>Génération de devis à partir d'un email ou d'une description.</li>
             <li>Rapport client complet en quelques secondes.</li>
             <li>Assistant en langage naturel sur vos données.</li>
