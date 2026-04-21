@@ -49,5 +49,12 @@ export default function ProtectedLayout() {
   }
 
   const outletContext: AuthContextShape = { user };
-  return <Outlet context={outletContext} />;
+  // `body { overflow: hidden }` is set globally (for the LegacyLanding's own
+  // scrollable main area), so protected routes need their own scroll
+  // container or the page silently becomes unscrollable.
+  return (
+    <div className="h-screen overflow-y-auto">
+      <Outlet context={outletContext} />
+    </div>
+  );
 }

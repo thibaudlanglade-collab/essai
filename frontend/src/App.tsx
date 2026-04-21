@@ -17,6 +17,7 @@ import { useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LegacyLanding from "./LegacyLanding";
 import ProtectedLayout from "./layouts/ProtectedLayout";
+import DashboardShell from "./layouts/DashboardShell";
 import Welcome from "./pages/Welcome";
 import DashboardHome from "./pages/DashboardHome";
 import ExtractView from "./pages/ExtractView";
@@ -40,11 +41,15 @@ export default function App() {
       <Routes>
         {/* Prospect-only protected routes */}
         <Route element={<ProtectedLayout />}>
+          {/* Welcome is standalone — no sidebar on first-visit */}
           <Route path="/welcome" element={<Welcome />} />
-          <Route path="/dashboard" element={<DashboardHome />} />
-          <Route path="/dashboard/extract" element={<ExtractView />} />
-          <Route path="/dashboard/automations" element={<AutomationsView />} />
-          <Route path="/dashboard/*" element={<DashboardHome />} />
+          {/* All /dashboard/* routes share the persistent Synthèse shell */}
+          <Route element={<DashboardShell />}>
+            <Route path="/dashboard" element={<DashboardHome />} />
+            <Route path="/dashboard/extract" element={<ExtractView />} />
+            <Route path="/dashboard/automations" element={<AutomationsView />} />
+            <Route path="/dashboard/*" element={<DashboardHome />} />
+          </Route>
         </Route>
 
         {/* Public expired page — always served by the backend */}

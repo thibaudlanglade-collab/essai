@@ -1,20 +1,17 @@
 /**
- * Sprint 1 dashboard placeholder.
+ * Dashboard landing inside the protected shell.
  *
- * Real features (Smart Extract, Assistant Synthèse, Rapport client,
- * Email → Devis, boîte Gmail) come in Sprints 2-6. This page exists so
- * the `/dashboard` route resolves to something reassuring and on-brand
- * after the prospect clicks their cold-email link.
+ * Mounted at `/dashboard`. The shell (DashboardShell) provides the
+ * sidebar, topbar (days-left, prospect name, logout) — this component
+ * focuses on the greeting + the per-sprint feature announcements.
  */
-import { useState } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
-import { logout } from "@/hooks/useAuth";
 import type { AuthContextShape } from "@/layouts/ProtectedLayout";
+
 
 export default function DashboardHome() {
   const { user } = useOutletContext<AuthContextShape>();
   const navigate = useNavigate();
-  const [loggingOut, setLoggingOut] = useState(false);
 
   const greeting = user.prospect_name?.trim()
     ? `Bonjour ${user.prospect_name.trim()}`
@@ -22,43 +19,24 @@ export default function DashboardHome() {
       ? `Bonjour ${user.company_name.trim()}`
       : "Bonjour";
 
-  async function handleLogout() {
-    setLoggingOut(true);
-    try {
-      await logout();
-    } catch {
-      // Even if logout fails, we still want to leave the authenticated view.
-    }
-    navigate("/", { replace: true });
-  }
-
   return (
-    <div className="min-h-screen bg-stone-50 py-16 px-6">
+    <div className="py-12 px-6 sm:px-10">
       <div className="max-w-3xl mx-auto">
-        <div className="flex items-start justify-between mb-8 gap-4">
-          <div>
-            <h1 className="text-3xl font-semibold text-gray-900 mb-2 leading-tight">
-              {greeting}
-            </h1>
-            <p className="text-sm text-gray-500">
-              Il vous reste {user.days_left} {user.days_left > 1 ? "jours" : "jour"} d'accès.
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={handleLogout}
-            disabled={loggingOut}
-            className="text-sm text-gray-500 hover:text-gray-900 underline underline-offset-2 disabled:opacity-60"
-          >
-            {loggingOut ? "Déconnexion…" : "Se déconnecter"}
-          </button>
+        <div className="mb-8">
+          <h2 className="text-3xl font-semibold text-gray-900 mb-2 leading-tight">
+            {greeting}
+          </h2>
+          <p className="text-sm text-gray-500">
+            Votre espace test est prêt. Utilisez le menu à gauche pour
+            circuler. Les fonctionnalités se débloquent au fil de votre essai.
+          </p>
         </div>
 
         <section className="bg-white rounded-lg p-6 border border-gray-200 mb-6">
           <div className="flex items-start justify-between gap-4 mb-3">
-            <h2 className="text-lg font-semibold text-gray-900">
-              Smart Extract, disponible tout de suite
-            </h2>
+            <h3 className="text-lg font-semibold text-gray-900">
+              Commencer avec Smart Extract
+            </h3>
             <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-[11px] font-medium text-emerald-900">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
               Prêt
@@ -89,39 +67,39 @@ export default function DashboardHome() {
         </section>
 
         <section className="bg-white rounded-lg p-6 border border-gray-200 mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-3">
+          <h3 className="text-lg font-semibold text-gray-900 mb-3">
             Le reste de votre espace arrive
-          </h2>
+          </h3>
           <p className="text-sm text-gray-700 leading-relaxed mb-3">
-            Les autres fonctionnalités se mettent en place dans les prochains
-            jours. Elles vous seront proposées au fil de votre essai.
+            Les fonctionnalités ci-dessous dans le menu latéral (marquées
+            « Bientôt ») se déverrouillent au fil des prochains jours.
           </p>
           <ul className="text-sm text-gray-700 leading-relaxed space-y-2 pl-5 list-disc marker:text-gray-400">
-            <li>Génération de devis à partir d'un email ou d'une description.</li>
-            <li>Rapport client complet en quelques secondes.</li>
-            <li>Assistant en langage naturel sur vos données.</li>
-            <li>Lecture de votre boîte Gmail avec classement et résumé du matin.</li>
+            <li>Assistant Synthèse : posez vos questions en langage naturel sur vos données.</li>
+            <li>Rapport client : dashboard complet par client en quelques secondes.</li>
+            <li>Email → Devis : devis structuré à partir d'un email ou d'une description.</li>
+            <li>Boîte Gmail : classement et résumé du matin, en lecture seule.</li>
           </ul>
         </section>
 
         <section className="bg-white rounded-lg p-6 border border-gray-200 mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-3">
+          <h3 className="text-lg font-semibold text-gray-900 mb-3">
             Vos données restent dans votre espace
-          </h2>
+          </h3>
           <p className="text-sm text-gray-700 leading-relaxed">
-            Tout ce que vous ajoutez pendant vos 14 jours est isolé, chiffré,
-            et supprimé définitivement à l'issue de votre essai. Aucun partage
-            avec un autre prospect, aucune réutilisation de nos côtés.
+            Tout ce que vous ajoutez pendant vos {user.days_left} jours
+            restants est isolé, chiffré, et supprimé définitivement à
+            l'issue de votre essai. Aucun partage avec un autre prospect,
+            aucune réutilisation de nos côtés.
           </p>
         </section>
 
         <section className="bg-white rounded-lg p-6 border border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900 mb-3">
+          <h3 className="text-lg font-semibold text-gray-900 mb-3">
             Une question pendant votre essai ?
-          </h2>
+          </h3>
           <p className="text-sm text-gray-700 leading-relaxed mb-1">
-            Écrivez-moi ou appelez-moi directement, je vous réponds en
-            personne.
+            Écrivez-moi ou appelez-moi directement, je vous réponds en personne.
           </p>
           <p className="text-sm text-gray-700 leading-relaxed">
             Thibaud Langlade

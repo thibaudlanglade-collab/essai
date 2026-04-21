@@ -226,7 +226,7 @@ async def save_extraction(
             if original_stored
             else None
         )
-        organize_result = organize_invoice_file(
+        organize_result = await organize_invoice_file(
             user_id=user.id,
             source_path=original_source,
             target_folder=target_folder or "",

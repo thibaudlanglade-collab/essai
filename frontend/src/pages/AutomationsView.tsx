@@ -49,7 +49,7 @@ export default function AutomationsView() {
   }, [refresh]);
 
   return (
-    <div className="min-h-screen bg-stone-50 py-12 px-6">
+    <div className="py-10 px-6 sm:px-10">
       <div className="max-w-4xl mx-auto">
         <Header />
         {error && (
@@ -71,16 +71,7 @@ export default function AutomationsView() {
 
 function Header() {
   return (
-    <div className="mb-8">
-      <Link
-        to="/dashboard"
-        className="text-xs text-gray-500 hover:text-gray-900 underline underline-offset-2"
-      >
-        ← Retour à mon espace
-      </Link>
-      <h1 className="text-3xl font-semibold text-gray-900 mt-2 mb-2">
-        Automatisations
-      </h1>
+    <div className="mb-6">
       <p className="text-sm text-gray-600 leading-relaxed max-w-2xl">
         Ces enchaînements s'exécutent pour vous. Le premier est actif dès que
         vous validez un document dans Smart Extract. Le second lit un dossier

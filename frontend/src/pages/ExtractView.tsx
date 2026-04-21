@@ -10,7 +10,7 @@
  * Route: /dashboard/extract (mounted by App.tsx under ProtectedLayout).
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Link, useOutletContext } from "react-router-dom";
+import { useOutletContext } from "react-router-dom";
 import type { AuthContextShape } from "@/layouts/ProtectedLayout";
 import {
   listExtractionHistory,
@@ -177,7 +177,7 @@ export default function ExtractView() {
     (extraction?.document_type as DocumentType) || "other";
 
   return (
-    <div className="min-h-screen bg-stone-50 py-12 px-6">
+    <div className="py-10 px-6 sm:px-10">
       <div className="max-w-5xl mx-auto">
         <HeaderBar />
 
@@ -237,23 +237,12 @@ export default function ExtractView() {
 
 function HeaderBar() {
   return (
-    <div className="mb-8 flex items-start justify-between gap-4">
-      <div>
-        <Link
-          to="/dashboard"
-          className="text-xs text-gray-500 hover:text-gray-900 underline underline-offset-2"
-        >
-          ← Retour à mon espace
-        </Link>
-        <h1 className="text-3xl font-semibold text-gray-900 mt-2 mb-2">
-          Smart Extract
-        </h1>
-        <p className="text-sm text-gray-600 leading-relaxed max-w-2xl">
-          Déposez une photo, un PDF ou collez le texte d'un document.
-          Synthèse lit, classe et vous propose un rangement. Vous relisez,
-          corrigez si besoin, et validez.
-        </p>
-      </div>
+    <div className="mb-6">
+      <p className="text-sm text-gray-600 leading-relaxed max-w-2xl">
+        Déposez une photo, un PDF ou collez le texte d'un document.
+        Synthèse lit, classe et vous propose un rangement. Vous relisez,
+        corrigez si besoin, et validez.
+      </p>
     </div>
   );
 }
