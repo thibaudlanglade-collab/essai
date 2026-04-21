@@ -17,8 +17,9 @@ from sqlalchemy import and_, delete, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from auth.dependencies import get_current_user, get_current_user_optional
 from db.database import get_db
-from db.models import Email, EmailAttachment, GmailConnection, MorningBriefing
+from db.models import AccessToken, Email, EmailAttachment, GmailConnection, MorningBriefing
 from services.gmail_service import (
     GmailServiceError,
     download_attachment_bytes,
@@ -44,8 +45,17 @@ def _sanitize_filename(name: str) -> str:
 # Briefing endpoints (must come before /{email_id} to avoid routing conflict)
 # ─────────────────────────────────────────────────────────────────────────────
 
+# PUBLIC demo surface: the LegacyLanding polls this to show a "briefing of the day"
+# card on its marketing mailbox demo. The underlying service does not yet know
+# how to scope by tenant — that's a Sprint 6 refactor once Gmail is fully
+# multi-tenant. For now the briefing it generates is a global snapshot of any
+# emails present in the DB (legacy rows with user_id IS NULL). Prospects'
+# per-user briefings will be served from a separate endpoint once wired up.
 @emails_router.get("/briefing/today")
-async def get_today_briefing(db: AsyncSession = Depends(get_db)) -> dict[str, Any]:
+async def get_today_briefing(
+    db: AsyncSession = Depends(get_db),
+    user: Optional[AccessToken] = Depends(get_current_user_optional),
+) -> dict[str, Any]:
     """Return today's morning briefing, generating one on the fly if needed."""
     from services.email_intelligence import generate_today_briefing
 
@@ -55,15 +65,23 @@ async def get_today_briefing(db: AsyncSession = Depends(get_db)) -> dict[str, An
         raise HTTPException(status_code=500, detail=str(exc)) from exc
 
 
+# Multi-tenant: isolated to user.id (Sprint 1).
+# Delete is scoped so that one tenant forcing a regeneration does not
+# evict another tenant's briefing for the same date.
 @emails_router.post("/briefing/generate")
-async def force_generate_briefing(db: AsyncSession = Depends(get_db)) -> dict[str, Any]:
+async def force_generate_briefing(
+    db: AsyncSession = Depends(get_db),
+    user: AccessToken = Depends(get_current_user),
+) -> dict[str, Any]:
     """Force-regenerate today's briefing (deletes existing if any)."""
     from services.email_intelligence import generate_today_briefing
 
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-    # Delete existing briefing for today
     await db.execute(
-        delete(MorningBriefing).where(MorningBriefing.briefing_date == today)
+        delete(MorningBriefing).where(
+            MorningBriefing.briefing_date == today,
+            MorningBriefing.user_id == user.id,
+        )
     )
     await db.commit()
 
@@ -73,13 +91,21 @@ async def force_generate_briefing(db: AsyncSession = Depends(get_db)) -> dict[st
         raise HTTPException(status_code=500, detail=str(exc)) from exc
 
 
+# Multi-tenant: isolated to user.id (Sprint 1).
 @emails_router.patch("/briefing/{briefing_id}/mark-read")
 async def mark_briefing_read(
     briefing_id: int,
     db: AsyncSession = Depends(get_db),
+    user: AccessToken = Depends(get_current_user),
 ) -> dict[str, Any]:
     """Mark a morning briefing as read."""
-    briefing = await db.get(MorningBriefing, briefing_id)
+    result = await db.execute(
+        select(MorningBriefing).where(
+            MorningBriefing.id == briefing_id,
+            MorningBriefing.user_id == user.id,
+        )
+    )
+    briefing = result.scalar_one_or_none()
     if briefing is None:
         raise HTTPException(status_code=404, detail=f"Briefing {briefing_id} introuvable.")
     briefing.is_read = True
@@ -92,27 +118,44 @@ async def mark_briefing_read(
 # Stats
 # ─────────────────────────────────────────────────────────────────────────────
 
+# Multi-tenant: isolated to user.id (Sprint 1).
+# Every count here was previously cross-tenant — a prospect hitting this
+# endpoint could infer the size of other tenants' inboxes. Now every
+# count filters by user.id.
 @emails_router.get("/stats/summary")
-async def email_stats(db: AsyncSession = Depends(get_db)) -> dict[str, int]:
+async def email_stats(
+    db: AsyncSession = Depends(get_db),
+    user: AccessToken = Depends(get_current_user),
+) -> dict[str, int]:
     """Return email count summary."""
     today_start = datetime.combine(date.today(), datetime.min.time()).replace(
         tzinfo=timezone.utc
     )
 
-    total = (await db.execute(select(func.count(Email.id)))).scalar_one() or 0
+    total = (
+        await db.execute(
+            select(func.count(Email.id)).where(Email.user_id == user.id)
+        )
+    ).scalar_one() or 0
     unread = (
         await db.execute(
-            select(func.count(Email.id)).where(Email.is_read.is_(False))
+            select(func.count(Email.id)).where(
+                Email.user_id == user.id, Email.is_read.is_(False)
+            )
         )
     ).scalar_one() or 0
     starred = (
         await db.execute(
-            select(func.count(Email.id)).where(Email.is_starred.is_(True))
+            select(func.count(Email.id)).where(
+                Email.user_id == user.id, Email.is_starred.is_(True)
+            )
         )
     ).scalar_one() or 0
     today = (
         await db.execute(
-            select(func.count(Email.id)).where(Email.received_at >= today_start)
+            select(func.count(Email.id)).where(
+                Email.user_id == user.id, Email.received_at >= today_start
+            )
         )
     ).scalar_one() or 0
 
@@ -123,6 +166,7 @@ async def email_stats(db: AsyncSession = Depends(get_db)) -> dict[str, int]:
 # List + get
 # ─────────────────────────────────────────────────────────────────────────────
 
+# Multi-tenant: isolated to user.id (Sprint 1).
 @emails_router.get("")
 async def list_emails(
     limit: int = Query(default=50, ge=1, le=200),
@@ -134,9 +178,10 @@ async def list_emails(
     priority: Optional[str] = Query(default=None),
     topic: Optional[str] = Query(default=None),
     db: AsyncSession = Depends(get_db),
+    user: AccessToken = Depends(get_current_user),
 ) -> dict[str, Any]:
     """List emails with pagination and optional filters."""
-    conditions = [Email.is_archived.is_(False)]
+    conditions = [Email.user_id == user.id, Email.is_archived.is_(False)]
 
     if unread_only:
         conditions.append(Email.is_read.is_(False))
@@ -197,11 +242,18 @@ async def list_emails(
     }
 
 
+# Multi-tenant: isolated to user.id (Sprint 1).
 @emails_router.get("/{email_id}")
-async def get_email(email_id: int, db: AsyncSession = Depends(get_db)) -> dict[str, Any]:
+async def get_email(
+    email_id: int,
+    db: AsyncSession = Depends(get_db),
+    user: AccessToken = Depends(get_current_user),
+) -> dict[str, Any]:
     """Return full email details including body and attachments."""
     result = await db.execute(
-        select(Email).options(selectinload(Email.attachments)).where(Email.id == email_id)
+        select(Email)
+        .options(selectinload(Email.attachments))
+        .where(Email.id == email_id, Email.user_id == user.id)
     )
     email = result.scalar_one_or_none()
     if email is None:
@@ -213,14 +265,19 @@ async def get_email(email_id: int, db: AsyncSession = Depends(get_db)) -> dict[s
 # Update (patch) — label changes call Gmail API
 # ─────────────────────────────────────────────────────────────────────────────
 
+# Multi-tenant: isolated to user.id (Sprint 1).
 @emails_router.patch("/{email_id}")
 async def update_email(
     email_id: int,
     body: dict[str, Any],
     db: AsyncSession = Depends(get_db),
+    user: AccessToken = Depends(get_current_user),
 ) -> dict[str, Any]:
     """Update email read/starred/archived state locally and in Gmail."""
-    email = await db.get(Email, email_id)
+    result = await db.execute(
+        select(Email).where(Email.id == email_id, Email.user_id == user.id)
+    )
+    email = result.scalar_one_or_none()
     if email is None:
         raise HTTPException(status_code=404, detail=f"Email {email_id} introuvable.")
 
@@ -282,22 +339,29 @@ async def update_email(
 # AI endpoints
 # ─────────────────────────────────────────────────────────────────────────────
 
+# Multi-tenant: isolated to user.id (Sprint 1).
 @emails_router.post("/{email_id}/classify-now")
 async def classify_now(
     email_id: int,
     db: AsyncSession = Depends(get_db),
+    user: AccessToken = Depends(get_current_user),
 ) -> dict[str, Any]:
     """Manually trigger classification for a single email."""
     from skills.core.classify_email import execute as classify_execute
     from skills.core.summarize_email import execute as summarize_execute
     from db.models import EmailTopic
 
-    email = await db.get(Email, email_id)
+    result = await db.execute(
+        select(Email).where(Email.id == email_id, Email.user_id == user.id)
+    )
+    email = result.scalar_one_or_none()
     if email is None:
         raise HTTPException(status_code=404, detail=f"Email {email_id} introuvable.")
 
     topics_result = await db.execute(
-        select(EmailTopic).order_by(EmailTopic.display_order.asc())
+        select(EmailTopic)
+        .where(EmailTopic.user_id == user.id)
+        .order_by(EmailTopic.display_order.asc())
     )
     topics = [
         {"name": t.name, "description": t.description or ""}
@@ -339,14 +403,24 @@ async def classify_now(
     return email.to_dict()
 
 
+# Multi-tenant: ownership check precedes the service call so the downstream
+# `generate_draft_for_email` cannot be coaxed into producing a draft against
+# an email that belongs to another tenant.
 @emails_router.post("/{email_id}/generate-draft")
 async def generate_draft(
     email_id: int,
     body: Optional[dict[str, Any]] = None,
     db: AsyncSession = Depends(get_db),
+    user: AccessToken = Depends(get_current_user),
 ) -> dict[str, str]:
     """Generate an AI reply draft for the given email."""
     from services.email_intelligence import generate_draft_for_email
+
+    owns = await db.execute(
+        select(Email.id).where(Email.id == email_id, Email.user_id == user.id)
+    )
+    if owns.scalar_one_or_none() is None:
+        raise HTTPException(status_code=404, detail=f"Email {email_id} introuvable.")
 
     user_instructions = (body or {}).get("user_instructions", "")
 
@@ -363,18 +437,26 @@ async def generate_draft(
 # ─────────────────────────────────────────────────────────────────────────────
 
 @emails_router.get("/admin/backfill-attachments")
-async def backfill_attachments_check() -> dict[str, str]:
+async def backfill_attachments_check(
+    user: AccessToken = Depends(get_current_user),
+) -> dict[str, str]:
     """Health check for the backfill endpoint."""
     return {"status": "Use POST to run backfill"}
 
 
+# Multi-tenant: backfill only scans the calling tenant's emails.
 @emails_router.post("/admin/backfill-attachments")
-async def backfill_attachments(db: AsyncSession = Depends(get_db)) -> dict[str, int]:
-    """Re-fetch Gmail metadata for all existing emails and create missing EmailAttachment rows."""
+async def backfill_attachments(
+    db: AsyncSession = Depends(get_db),
+    user: AccessToken = Depends(get_current_user),
+) -> dict[str, int]:
+    """Re-fetch Gmail metadata for the calling tenant's emails and create missing EmailAttachment rows."""
     from services.gmail_service import fetch_message_full
     from sqlalchemy import select as sa_select
 
-    emails_result = await db.execute(sa_select(Email))
+    emails_result = await db.execute(
+        sa_select(Email).where(Email.user_id == user.id)
+    )
     all_emails = emails_result.scalars().all()
 
     processed = 0
@@ -405,6 +487,7 @@ async def backfill_attachments(db: AsyncSession = Depends(get_db)) -> dict[str, 
                 if existing.scalar_one_or_none() is not None:
                     continue
                 att = EmailAttachment(
+                    user_id=user.id,
                     email_id=email.id,
                     gmail_attachment_id=att_data["gmail_attachment_id"],
                     filename=att_data["filename"],
@@ -422,24 +505,48 @@ async def backfill_attachments(db: AsyncSession = Depends(get_db)) -> dict[str, 
     return {"processed": processed, "attachments_added": attachments_added}
 
 
+# Multi-tenant: isolated to user.id (Sprint 1).
 @emails_router.get("/{email_id}/attachments")
 async def list_attachments(
-    email_id: int, db: AsyncSession = Depends(get_db)
+    email_id: int,
+    db: AsyncSession = Depends(get_db),
+    user: AccessToken = Depends(get_current_user),
 ) -> list[dict[str, Any]]:
     """Return the list of attachment metadata for an email."""
+    # Verify the email itself belongs to the caller before listing attachments.
+    owns = await db.execute(
+        select(Email.id).where(Email.id == email_id, Email.user_id == user.id)
+    )
+    if owns.scalar_one_or_none() is None:
+        raise HTTPException(status_code=404, detail=f"Email {email_id} introuvable.")
+
     result = await db.execute(
-        select(EmailAttachment).where(EmailAttachment.email_id == email_id)
+        select(EmailAttachment).where(
+            EmailAttachment.email_id == email_id,
+            EmailAttachment.user_id == user.id,
+        )
     )
     return [a.to_dict() for a in result.scalars().all()]
 
 
+# Multi-tenant: isolated to user.id (Sprint 1).
 @emails_router.get("/{email_id}/attachments/{attachment_id}/download")
 async def download_attachment(
-    email_id: int, attachment_id: int, db: AsyncSession = Depends(get_db)
+    email_id: int,
+    attachment_id: int,
+    db: AsyncSession = Depends(get_db),
+    user: AccessToken = Depends(get_current_user),
 ) -> FileResponse:
     """Download (or serve cached) an email attachment."""
-    att = await db.get(EmailAttachment, attachment_id)
-    if att is None or att.email_id != email_id:
+    att_result = await db.execute(
+        select(EmailAttachment).where(
+            EmailAttachment.id == attachment_id,
+            EmailAttachment.email_id == email_id,
+            EmailAttachment.user_id == user.id,
+        )
+    )
+    att = att_result.scalar_one_or_none()
+    if att is None:
         raise HTTPException(status_code=404, detail="Pièce jointe introuvable.")
 
     # Serve from cache if already downloaded
@@ -455,12 +562,15 @@ async def download_attachment(
                 headers={"Content-Disposition": f'{disposition}; filename="{att.filename}"'},
             )
 
-    # Fetch from Gmail API
-    email = await db.get(Email, email_id)
+    # Fetch from Gmail API — ownership already enforced via the EmailAttachment lookup.
+    email_result = await db.execute(
+        select(Email).where(Email.id == email_id, Email.user_id == user.id)
+    )
+    email = email_result.scalar_one_or_none()
     if email is None:
         raise HTTPException(status_code=404, detail="Email introuvable.")
     conn = await db.get(GmailConnection, email.connection_id)
-    if conn is None:
+    if conn is None or conn.user_id != user.id:
         raise HTTPException(status_code=404, detail="Connexion Gmail introuvable.")
 
     try:
@@ -491,26 +601,40 @@ async def download_attachment(
     )
 
 
+# Multi-tenant: isolated to user.id (Sprint 1).
 @emails_router.post("/{email_id}/attachments/{attachment_id}/extract")
 async def extract_attachment(
-    email_id: int, attachment_id: int, db: AsyncSession = Depends(get_db)
+    email_id: int,
+    attachment_id: int,
+    db: AsyncSession = Depends(get_db),
+    user: AccessToken = Depends(get_current_user),
 ) -> dict[str, Any]:
     """Run Smart Extract on a PDF attachment."""
     from skills.core.extract_file_content import execute as extract_execute
 
-    att = await db.get(EmailAttachment, attachment_id)
-    if att is None or att.email_id != email_id:
+    att_result = await db.execute(
+        select(EmailAttachment).where(
+            EmailAttachment.id == attachment_id,
+            EmailAttachment.email_id == email_id,
+            EmailAttachment.user_id == user.id,
+        )
+    )
+    att = att_result.scalar_one_or_none()
+    if att is None:
         raise HTTPException(status_code=404, detail="Pièce jointe introuvable.")
     if att.mime_type != "application/pdf":
         raise HTTPException(status_code=400, detail="Seuls les PDF peuvent être extraits.")
 
     # Ensure the file is downloaded first
     if not (att.is_downloaded and att.local_path and Path(att.local_path).exists()):
-        email = await db.get(Email, email_id)
+        email_result = await db.execute(
+            select(Email).where(Email.id == email_id, Email.user_id == user.id)
+        )
+        email = email_result.scalar_one_or_none()
         if email is None:
             raise HTTPException(status_code=404, detail="Email introuvable.")
         conn = await db.get(GmailConnection, email.connection_id)
-        if conn is None:
+        if conn is None or conn.user_id != user.id:
             raise HTTPException(status_code=404, detail="Connexion Gmail introuvable.")
         try:
             service = get_gmail_service(conn)
@@ -534,11 +658,13 @@ async def extract_attachment(
     return {"success": result.success, "data": result.data, "error": result.error}
 
 
+# Multi-tenant: isolated to user.id (Sprint 1).
 @emails_router.post("/{email_id}/send-reply")
 async def send_reply(
     email_id: int,
     body: dict[str, Any],
     db: AsyncSession = Depends(get_db),
+    user: AccessToken = Depends(get_current_user),
 ) -> dict[str, Any]:
     """Send a reply to an email via Gmail API."""
     from services.email_intelligence import build_reply_raw
@@ -547,12 +673,15 @@ async def send_reply(
     if not reply_body.strip():
         raise HTTPException(status_code=400, detail="Le corps de la réponse est requis.")
 
-    email = await db.get(Email, email_id)
+    email_result = await db.execute(
+        select(Email).where(Email.id == email_id, Email.user_id == user.id)
+    )
+    email = email_result.scalar_one_or_none()
     if email is None:
         raise HTTPException(status_code=404, detail=f"Email {email_id} introuvable.")
 
     connection = await db.get(GmailConnection, email.connection_id)
-    if connection is None:
+    if connection is None or connection.user_id != user.id:
         raise HTTPException(status_code=404, detail="Connexion Gmail introuvable.")
 
     # Build subject

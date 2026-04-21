@@ -11,8 +11,9 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from auth.dependencies import get_current_user
 from db.database import get_db
-from db.models import Email, EmailTopic
+from db.models import AccessToken, Email, EmailTopic
 from db.seed_topics import DEFAULT_TOPICS, seed_default_topics
 
 logger = logging.getLogger(__name__)
@@ -20,29 +21,42 @@ logger = logging.getLogger(__name__)
 email_topics_router = APIRouter(prefix="/email-topics")
 
 
+# Multi-tenant: isolated to user.id (Sprint 1).
 @email_topics_router.get("")
-async def list_topics(db: AsyncSession = Depends(get_db)) -> list[dict[str, Any]]:
+async def list_topics(
+    db: AsyncSession = Depends(get_db),
+    user: AccessToken = Depends(get_current_user),
+) -> list[dict[str, Any]]:
     """Return all topics sorted by display_order ASC."""
     result = await db.execute(
-        select(EmailTopic).order_by(EmailTopic.display_order.asc())
+        select(EmailTopic)
+        .where(EmailTopic.user_id == user.id)
+        .order_by(EmailTopic.display_order.asc())
     )
     topics = result.scalars().all()
     return [t.to_dict() for t in topics]
 
 
+# Multi-tenant: isolated to user.id (Sprint 1).
+# Uniqueness is scoped to the tenant — two prospects can each have a "Clients" topic.
 @email_topics_router.post("")
 async def create_topic(
     body: dict[str, Any],
     db: AsyncSession = Depends(get_db),
+    user: AccessToken = Depends(get_current_user),
 ) -> dict[str, Any]:
     """Create a new user-defined topic."""
     name: str = (body.get("name") or "").strip()
     if not name:
         raise HTTPException(status_code=400, detail="Le nom du topic est requis.")
 
-    # Check uniqueness
+    # Check uniqueness (per-tenant)
     existing = (
-        await db.execute(select(EmailTopic).where(EmailTopic.name == name))
+        await db.execute(
+            select(EmailTopic).where(
+                EmailTopic.name == name, EmailTopic.user_id == user.id
+            )
+        )
     ).scalar_one_or_none()
     if existing is not None:
         raise HTTPException(
@@ -55,6 +69,7 @@ async def create_topic(
         color=body.get("color") or "#6b7280",
         display_order=int(body.get("display_order") or 0),
         is_default=False,
+        user_id=user.id,
     )
     db.add(topic)
     await db.commit()
@@ -62,14 +77,21 @@ async def create_topic(
     return topic.to_dict()
 
 
+# Multi-tenant: isolated to user.id (Sprint 1).
 @email_topics_router.put("/{topic_id}")
 async def update_topic(
     topic_id: int,
     body: dict[str, Any],
     db: AsyncSession = Depends(get_db),
+    user: AccessToken = Depends(get_current_user),
 ) -> dict[str, Any]:
     """Partial update of a topic (name, description, color, display_order)."""
-    topic = await db.get(EmailTopic, topic_id)
+    result = await db.execute(
+        select(EmailTopic).where(
+            EmailTopic.id == topic_id, EmailTopic.user_id == user.id
+        )
+    )
+    topic = result.scalar_one_or_none()
     if topic is None:
         raise HTTPException(status_code=404, detail=f"Topic {topic_id} introuvable.")
 
@@ -77,11 +99,13 @@ async def update_topic(
         new_name = (body["name"] or "").strip()
         if not new_name:
             raise HTTPException(status_code=400, detail="Le nom ne peut pas être vide.")
-        # Check uniqueness only if name changes
+        # Check uniqueness only if name changes (per-tenant)
         if new_name != topic.name:
             conflict = (
                 await db.execute(
-                    select(EmailTopic).where(EmailTopic.name == new_name)
+                    select(EmailTopic).where(
+                        EmailTopic.name == new_name, EmailTopic.user_id == user.id
+                    )
                 )
             ).scalar_one_or_none()
             if conflict is not None:
@@ -103,13 +127,22 @@ async def update_topic(
     return topic.to_dict()
 
 
+# Multi-tenant: isolated to user.id (Sprint 1).
+# The topic cascade also scopes the Email nullification to the current tenant
+# so one prospect's rename cannot wipe another prospect's classification state.
 @email_topics_router.delete("/{topic_id}")
 async def delete_topic(
     topic_id: int,
     db: AsyncSession = Depends(get_db),
+    user: AccessToken = Depends(get_current_user),
 ) -> dict[str, Any]:
     """Delete a topic. The 'Autre' fallback topic cannot be deleted."""
-    topic = await db.get(EmailTopic, topic_id)
+    result = await db.execute(
+        select(EmailTopic).where(
+            EmailTopic.id == topic_id, EmailTopic.user_id == user.id
+        )
+    )
+    topic = result.scalar_one_or_none()
     if topic is None:
         raise HTTPException(status_code=404, detail=f"Topic {topic_id} introuvable.")
 
@@ -119,9 +152,12 @@ async def delete_topic(
             detail="Le topic 'Autre' est le topic de repli et ne peut pas être supprimé.",
         )
 
-    # Nullify all emails that had this topic so they become eligible for reclassification
+    # Nullify the current tenant's emails that had this topic so they become
+    # eligible for reclassification (scoped to user.id to preserve isolation).
     await db.execute(
-        update(Email).where(Email.topic == topic.name).values(topic=None, classified_at=None)
+        update(Email)
+        .where(Email.topic == topic.name, Email.user_id == user.id)
+        .values(topic=None, classified_at=None)
     )
 
     await db.delete(topic)
@@ -129,10 +165,13 @@ async def delete_topic(
     return {"deleted": topic_id}
 
 
+# Multi-tenant: isolated to user.id (Sprint 1).
+# Reset is scoped to the calling tenant — other prospects' topics are untouched.
 @email_topics_router.post("/reset-defaults")
 async def reset_defaults(
     confirm: bool = Query(default=False),
     db: AsyncSession = Depends(get_db),
+    user: AccessToken = Depends(get_current_user),
 ) -> dict[str, Any]:
     """Reset to the 8 default topics. Requires ?confirm=true."""
     if not confirm:
@@ -141,19 +180,40 @@ async def reset_defaults(
             detail="Ajoutez ?confirm=true pour confirmer la réinitialisation.",
         )
 
-    # Delete all user-created topics
-    result = await db.execute(select(EmailTopic))
+    # Delete all topics owned by the calling tenant
+    result = await db.execute(
+        select(EmailTopic).where(EmailTopic.user_id == user.id)
+    )
     all_topics = result.scalars().all()
     for t in all_topics:
         await db.delete(t)
 
-    # Nullify topic on all emails
-    await db.execute(update(Email).values(topic=None, classified_at=None))
+    # Nullify topic on the calling tenant's emails only
+    await db.execute(
+        update(Email)
+        .where(Email.user_id == user.id)
+        .values(topic=None, classified_at=None)
+    )
     await db.commit()
 
-    # Re-seed defaults
-    await seed_default_topics(db)
+    # Re-seed defaults for this tenant
+    for topic_data in DEFAULT_TOPICS:
+        db.add(
+            EmailTopic(
+                name=topic_data["name"],
+                description=topic_data["description"],
+                color=topic_data["color"],
+                display_order=topic_data["display_order"],
+                is_default=True,
+                user_id=user.id,
+            )
+        )
+    await db.commit()
 
-    result2 = await db.execute(select(EmailTopic).order_by(EmailTopic.display_order.asc()))
+    result2 = await db.execute(
+        select(EmailTopic)
+        .where(EmailTopic.user_id == user.id)
+        .order_by(EmailTopic.display_order.asc())
+    )
     topics = result2.scalars().all()
     return {"reset": True, "topics": [t.to_dict() for t in topics]}

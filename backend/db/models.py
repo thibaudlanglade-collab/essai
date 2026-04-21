@@ -9,7 +9,20 @@ import uuid
 from datetime import datetime
 from typing import Any, Optional
 
-from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Integer, String, Text, func
+from sqlalchemy import (
+    JSON,
+    Boolean,
+    Date,
+    DateTime,
+    Float,
+    ForeignKey,
+    Integer,
+    Numeric,
+    String,
+    Text,
+    UniqueConstraint,
+    func,
+)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from db.database import Base
@@ -138,6 +151,14 @@ class Employee(Base):
     __tablename__ = "employees"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    # Nullable during Sprint 1 migration: legacy rows predate multi-tenant.
+    # Sprint 2+ endpoints always set this via Depends(get_current_user).
+    user_id: Mapped[Optional[str]] = mapped_column(
+        String(36),
+        ForeignKey("access_tokens.id", ondelete="CASCADE"),
+        nullable=True,
+        index=True,
+    )
     name: Mapped[str] = mapped_column(String, nullable=False)
     hours_per_week: Mapped[float] = mapped_column(Float, nullable=False, default=35.0)
     working_days: Mapped[str] = mapped_column(
@@ -211,6 +232,13 @@ class GmailConnection(Base):
     __tablename__ = "gmail_connections"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    # Nullable during Sprint 1 migration; Sprint 6 (Gmail OAuth) will require it.
+    user_id: Mapped[Optional[str]] = mapped_column(
+        String(36),
+        ForeignKey("access_tokens.id", ondelete="CASCADE"),
+        nullable=True,
+        index=True,
+    )
     email_address: Mapped[str] = mapped_column(String, unique=True, nullable=False)
     access_token: Mapped[str] = mapped_column(Text, nullable=False)
     refresh_token: Mapped[str] = mapped_column(Text, nullable=False)
@@ -238,10 +266,20 @@ class Email(Base):
     __tablename__ = "emails"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    gmail_id: Mapped[str] = mapped_column(String, unique=True, nullable=False)
-    thread_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
-    connection_id: Mapped[int] = mapped_column(
-        Integer, ForeignKey("gmail_connections.id"), nullable=False
+    # Multi-tenant owner. Nullable during Sprint 1 migration; seed emails and
+    # Sprint 6 Gmail-synced emails will both populate this.
+    user_id: Mapped[Optional[str]] = mapped_column(
+        String(36),
+        ForeignKey("access_tokens.id", ondelete="CASCADE"),
+        nullable=True,
+        index=True,
+    )
+    # Gmail-only fields, nullable so the same table holds seed + Gmail rows
+    # (brief §4 unified `emails` table).
+    gmail_id: Mapped[Optional[str]] = mapped_column(String, unique=True, nullable=True)
+    thread_id: Mapped[Optional[str]] = mapped_column(String, nullable=True, index=True)
+    connection_id: Mapped[Optional[int]] = mapped_column(
+        Integer, ForeignKey("gmail_connections.id"), nullable=True
     )
 
     from_email: Mapped[str] = mapped_column(String, nullable=False)
@@ -263,6 +301,23 @@ class Email(Base):
     topic: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     ai_summary: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     classified_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+
+    # Unified schema additions (brief §4). Populated by seed emails (§10.5)
+    # and by Sprint 6 Gmail sync; legacy rows default to gmail-only semantics.
+    category: Mapped[Optional[str]] = mapped_column(
+        String(50), nullable=True
+    )  # 'facture' | 'client' | 'fournisseur' | 'admin' | 'newsletter'
+    is_important: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    summary: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    suggested_reply: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    related_client_id: Mapped[Optional[str]] = mapped_column(
+        String(36),
+        ForeignKey("clients.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
+    )
+    is_seed: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    is_from_gmail: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime, nullable=False, server_default=func.now()
@@ -310,6 +365,14 @@ class EmailAttachment(Base):
     __tablename__ = "email_attachments"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    # Redundant with Email.user_id but simplifies isolation queries that
+    # don't need to join emails. Nullable during migration.
+    user_id: Mapped[Optional[str]] = mapped_column(
+        String(36),
+        ForeignKey("access_tokens.id", ondelete="CASCADE"),
+        nullable=True,
+        index=True,
+    )
     email_id: Mapped[int] = mapped_column(
         Integer, ForeignKey("emails.id", ondelete="CASCADE"), nullable=False, index=True
     )
@@ -345,7 +408,15 @@ class EmailTopic(Base):
     __tablename__ = "email_topics"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    name: Mapped[str] = mapped_column(String, unique=True, nullable=False)
+    user_id: Mapped[Optional[str]] = mapped_column(
+        String(36),
+        ForeignKey("access_tokens.id", ondelete="CASCADE"),
+        nullable=True,
+        index=True,
+    )
+    # Unique per tenant, not globally — each prospect can have their own
+    # topic names. Legacy `unique=True` dropped during Sprint 1 migration.
+    name: Mapped[str] = mapped_column(String, nullable=False)
     description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     color: Mapped[str] = mapped_column(String, nullable=False, default="#6b7280")
     display_order: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
@@ -374,7 +445,14 @@ class Automation(Base):
     __tablename__ = "automations"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    name: Mapped[str] = mapped_column(String, unique=True, nullable=False)
+    user_id: Mapped[Optional[str]] = mapped_column(
+        String(36),
+        ForeignKey("access_tokens.id", ondelete="CASCADE"),
+        nullable=True,
+        index=True,
+    )
+    # Unique per tenant (legacy `unique=True` dropped during multi-tenant migration).
+    name: Mapped[str] = mapped_column(String, nullable=False)
     description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     template_id: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
@@ -409,6 +487,13 @@ class AutomationRun(Base):
     __tablename__ = "automation_runs"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    # Denormalised from Automation.user_id to simplify isolation queries.
+    user_id: Mapped[Optional[str]] = mapped_column(
+        String(36),
+        ForeignKey("access_tokens.id", ondelete="CASCADE"),
+        nullable=True,
+        index=True,
+    )
     automation_id: Mapped[int] = mapped_column(
         Integer, ForeignKey("automations.id"), nullable=False, index=True
     )
@@ -436,7 +521,16 @@ class MorningBriefing(Base):
     __tablename__ = "morning_briefings"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    briefing_date: Mapped[str] = mapped_column(String, unique=True, nullable=False)
+    user_id: Mapped[Optional[str]] = mapped_column(
+        String(36),
+        ForeignKey("access_tokens.id", ondelete="CASCADE"),
+        nullable=True,
+        index=True,
+    )
+    # Unique per (user_id, briefing_date) — not globally — but enforced at
+    # the application layer during Sprint 1 migration (legacy rows have
+    # NULL user_id and their `unique=True` constraint is incompatible).
+    briefing_date: Mapped[str] = mapped_column(String, nullable=False)
     content_markdown: Mapped[str] = mapped_column(Text, nullable=False)
     emails_analyzed_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     urgent_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
@@ -454,4 +548,366 @@ class MorningBriefing(Base):
             "urgent_count": self.urgent_count,
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "is_read": self.is_read,
+        }
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Multi-tenant domain tables (brief §4)
+#
+# All rows carry a non-null `user_id` FK to `access_tokens.id` with
+# `ondelete="CASCADE"`: expiring or revoking an access wipes every linked row
+# by the RGPD design (brief §12).
+#
+# IDs are UUID strings (36 chars) for cross-database portability.
+# JSON payloads use the portable `JSON` type which maps to JSONB on Postgres
+# and to a TEXT-backed JSON on SQLite.
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+_USER_FK = "access_tokens.id"
+
+
+def _new_uuid() -> str:
+    return str(uuid.uuid4())
+
+
+class OAuthConnection(Base):
+    """Encrypted OAuth credentials per (user_id, provider).
+
+    `access_token` and `refresh_token` are stored as Fernet ciphertext —
+    see `services/crypto.py`. Plaintext never hits the database.
+    """
+
+    __tablename__ = "oauth_connections"
+    __table_args__ = (
+        UniqueConstraint("user_id", "provider", name="uq_oauth_user_provider"),
+    )
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_new_uuid)
+    user_id: Mapped[str] = mapped_column(
+        String(36),
+        ForeignKey(_USER_FK, ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    provider: Mapped[str] = mapped_column(String(50), nullable=False)  # 'gmail' | 'google_drive' | 'dropbox'
+    access_token: Mapped[str] = mapped_column(Text, nullable=False)  # Fernet ciphertext
+    refresh_token: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # Fernet ciphertext
+    scopes: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # JSON array as text
+    account_email: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    expires_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+    connected_at: Mapped[datetime] = mapped_column(
+        DateTime, nullable=False, server_default=func.now()
+    )
+
+    def to_dict(self) -> dict[str, Any]:
+        """Serialise without exposing the ciphertexts."""
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "provider": self.provider,
+            "account_email": self.account_email,
+            "scopes": json.loads(self.scopes) if self.scopes else [],
+            "expires_at": self.expires_at.isoformat() if self.expires_at else None,
+            "connected_at": self.connected_at.isoformat() if self.connected_at else None,
+        }
+
+
+class Client(Base):
+    """Prospect's customers. Seed rows have `is_seed=True` (brief §10.2)."""
+
+    __tablename__ = "clients"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_new_uuid)
+    user_id: Mapped[str] = mapped_column(
+        String(36),
+        ForeignKey(_USER_FK, ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    name: Mapped[str] = mapped_column(String(255), nullable=False)
+    type: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)  # 'particulier'|'sci'|'copro'|'mairie'|'promoteur'
+    address: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    email: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    phone: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    notes: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    is_seed: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, nullable=False, server_default=func.now()
+    )
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "name": self.name,
+            "type": self.type,
+            "address": self.address,
+            "email": self.email,
+            "phone": self.phone,
+            "notes": self.notes,
+            "is_seed": self.is_seed,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+        }
+
+
+class Supplier(Base):
+    """Prospect's suppliers. Seed rows have `is_seed=True` (brief §10.1)."""
+
+    __tablename__ = "suppliers"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_new_uuid)
+    user_id: Mapped[str] = mapped_column(
+        String(36),
+        ForeignKey(_USER_FK, ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    name: Mapped[str] = mapped_column(String(255), nullable=False)
+    category: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    siret: Mapped[Optional[str]] = mapped_column(String(14), nullable=True)
+    city: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    notes: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    is_seed: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, nullable=False, server_default=func.now()
+    )
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "name": self.name,
+            "category": self.category,
+            "siret": self.siret,
+            "city": self.city,
+            "notes": self.notes,
+            "is_seed": self.is_seed,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+        }
+
+
+class Invoice(Base):
+    """Supplier invoices received by the prospect (brief §4 + §5.1 Smart Extract output)."""
+
+    __tablename__ = "invoices"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_new_uuid)
+    user_id: Mapped[str] = mapped_column(
+        String(36),
+        ForeignKey(_USER_FK, ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    supplier_id: Mapped[Optional[str]] = mapped_column(
+        String(36),
+        ForeignKey("suppliers.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
+    )
+    invoice_number: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    invoice_date: Mapped[Optional[datetime]] = mapped_column(Date, nullable=True)
+    amount_ht: Mapped[Optional[float]] = mapped_column(Numeric(12, 2), nullable=True)
+    vat_rate: Mapped[Optional[float]] = mapped_column(Numeric(5, 4), nullable=True)
+    amount_vat: Mapped[Optional[float]] = mapped_column(Numeric(12, 2), nullable=True)
+    amount_ttc: Mapped[Optional[float]] = mapped_column(Numeric(12, 2), nullable=True)
+    auto_liquidation: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+
+    # File tracking (Sprint 3 automation)
+    original_filename: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    stored_filename: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    file_path: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
+
+    raw_text: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    # Structured extraction output (lines, notes, OCR metadata). Portable JSON.
+    extracted_data: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
+
+    status: Mapped[str] = mapped_column(String(50), nullable=False, default="processed")
+    is_seed: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    uploaded_at: Mapped[datetime] = mapped_column(
+        DateTime, nullable=False, server_default=func.now()
+    )
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "supplier_id": self.supplier_id,
+            "invoice_number": self.invoice_number,
+            "invoice_date": self.invoice_date.isoformat() if self.invoice_date else None,
+            "amount_ht": float(self.amount_ht) if self.amount_ht is not None else None,
+            "vat_rate": float(self.vat_rate) if self.vat_rate is not None else None,
+            "amount_vat": float(self.amount_vat) if self.amount_vat is not None else None,
+            "amount_ttc": float(self.amount_ttc) if self.amount_ttc is not None else None,
+            "auto_liquidation": self.auto_liquidation,
+            "original_filename": self.original_filename,
+            "stored_filename": self.stored_filename,
+            "file_path": self.file_path,
+            "raw_text": self.raw_text,
+            "extracted_data": self.extracted_data,
+            "status": self.status,
+            "is_seed": self.is_seed,
+            "uploaded_at": self.uploaded_at.isoformat() if self.uploaded_at else None,
+        }
+
+
+class Quote(Base):
+    """Quotes issued by the prospect to their clients (brief §5.4)."""
+
+    __tablename__ = "quotes"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_new_uuid)
+    user_id: Mapped[str] = mapped_column(
+        String(36),
+        ForeignKey(_USER_FK, ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    client_id: Mapped[Optional[str]] = mapped_column(
+        String(36),
+        ForeignKey("clients.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
+    )
+    quote_number: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    title: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+
+    # List of {label, quantity, unit, unit_price_ht, total_ht}. Portable JSON.
+    lines: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
+
+    amount_ht: Mapped[Optional[float]] = mapped_column(Numeric(12, 2), nullable=True)
+    vat_rate: Mapped[Optional[float]] = mapped_column(Numeric(5, 4), nullable=True)
+    amount_ttc: Mapped[Optional[float]] = mapped_column(Numeric(12, 2), nullable=True)
+
+    status: Mapped[str] = mapped_column(String(50), nullable=False, default="draft")  # 'draft'|'sent'|'accepted'|'refused'
+    created_from: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)  # 'manual'|'email'|'description'
+    source_text: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    is_seed: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, nullable=False, server_default=func.now()
+    )
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "client_id": self.client_id,
+            "quote_number": self.quote_number,
+            "title": self.title,
+            "description": self.description,
+            "lines": self.lines or [],
+            "amount_ht": float(self.amount_ht) if self.amount_ht is not None else None,
+            "vat_rate": float(self.vat_rate) if self.vat_rate is not None else None,
+            "amount_ttc": float(self.amount_ttc) if self.amount_ttc is not None else None,
+            "status": self.status,
+            "created_from": self.created_from,
+            "source_text": self.source_text,
+            "is_seed": self.is_seed,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+        }
+
+
+class Extraction(Base):
+    """Smart Extract (§5.1) history: raw document → structured data."""
+
+    __tablename__ = "extractions"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_new_uuid)
+    user_id: Mapped[str] = mapped_column(
+        String(36),
+        ForeignKey(_USER_FK, ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    source_type: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)  # 'photo'|'pdf'|'text'
+    original_filename: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    stored_filename: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    raw_text: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    extracted_data: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
+    document_type: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)  # 'invoice'|'contract'|'note'|'other'
+    target_folder: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, nullable=False, server_default=func.now()
+    )
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "source_type": self.source_type,
+            "original_filename": self.original_filename,
+            "stored_filename": self.stored_filename,
+            "raw_text": self.raw_text,
+            "extracted_data": self.extracted_data,
+            "document_type": self.document_type,
+            "target_folder": self.target_folder,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+        }
+
+
+class WatchedFolder(Base):
+    """Drive/Dropbox folders polled by the automation engine (brief §6.2)."""
+
+    __tablename__ = "watched_folders"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_new_uuid)
+    user_id: Mapped[str] = mapped_column(
+        String(36),
+        ForeignKey(_USER_FK, ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    provider: Mapped[str] = mapped_column(String(50), nullable=False)  # 'google_drive' | 'dropbox'
+    folder_id: Mapped[str] = mapped_column(String(255), nullable=False)
+    folder_name: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    last_checked_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+    files_processed: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, nullable=False, server_default=func.now()
+    )
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "provider": self.provider,
+            "folder_id": self.folder_id,
+            "folder_name": self.folder_name,
+            "last_checked_at": self.last_checked_at.isoformat() if self.last_checked_at else None,
+            "files_processed": self.files_processed,
+            "is_active": self.is_active,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+        }
+
+
+class ActivityLog(Base):
+    """Structured activity log (brief §12 monitoring)."""
+
+    __tablename__ = "activity_logs"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_new_uuid)
+    user_id: Mapped[str] = mapped_column(
+        String(36),
+        ForeignKey(_USER_FK, ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    action: Mapped[str] = mapped_column(String(100), nullable=False)
+    # Free-form metadata (IDs of touched resources, input sizes, error info).
+    activity_metadata: Mapped[Optional[dict]] = mapped_column(
+        "metadata", JSON, nullable=True
+    )
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, nullable=False, server_default=func.now(), index=True
+    )
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "action": self.action,
+            "metadata": self.activity_metadata,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
         }

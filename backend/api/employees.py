@@ -15,8 +15,9 @@ from fastapi.responses import JSONResponse
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from auth.dependencies import get_current_user
 from db.database import get_db
-from db.models import Employee
+from db.models import AccessToken, Employee
 
 employees_router = APIRouter(prefix="/employees")
 
@@ -97,18 +98,26 @@ def _parse_dates(raw: str) -> list[str]:
 
 # ── Endpoints ─────────────────────────────────────────────────────────────────
 
+# Multi-tenant: isolated to user.id (Sprint 1).
 @employees_router.get("")
-async def list_employees(db: AsyncSession = Depends(get_db)):
+async def list_employees(
+    db: AsyncSession = Depends(get_db),
+    user: AccessToken = Depends(get_current_user),
+):
     """Return all employees sorted by name."""
-    result = await db.execute(select(Employee).order_by(Employee.name))
+    result = await db.execute(
+        select(Employee).where(Employee.user_id == user.id).order_by(Employee.name)
+    )
     employees = result.scalars().all()
     return [e.to_dict() for e in employees]
 
 
+# Multi-tenant: isolated to user.id (Sprint 1).
 @employees_router.post("")
 async def create_employee(
     body: dict[str, Any],
     db: AsyncSession = Depends(get_db),
+    user: AccessToken = Depends(get_current_user),
 ):
     """Create a new employee. Validates that name is non-empty."""
     name = (body.get("name") or "").strip()
@@ -117,29 +126,47 @@ async def create_employee(
 
     body["name"] = name
     employee = Employee.from_dict(body)
+    employee.user_id = user.id
     db.add(employee)
     await db.commit()
     await db.refresh(employee)
     return employee.to_dict()
 
 
+# Multi-tenant: isolated to user.id (Sprint 1).
 @employees_router.get("/{employee_id}")
-async def get_employee(employee_id: int, db: AsyncSession = Depends(get_db)):
+async def get_employee(
+    employee_id: int,
+    db: AsyncSession = Depends(get_db),
+    user: AccessToken = Depends(get_current_user),
+):
     """Return a single employee by id."""
-    employee = await db.get(Employee, employee_id)
+    result = await db.execute(
+        select(Employee).where(
+            Employee.id == employee_id, Employee.user_id == user.id
+        )
+    )
+    employee = result.scalar_one_or_none()
     if employee is None:
         raise HTTPException(status_code=404, detail=f"Employé {employee_id} introuvable.")
     return employee.to_dict()
 
 
+# Multi-tenant: isolated to user.id (Sprint 1).
 @employees_router.put("/{employee_id}")
 async def update_employee(
     employee_id: int,
     body: dict[str, Any],
     db: AsyncSession = Depends(get_db),
+    user: AccessToken = Depends(get_current_user),
 ):
     """Partial update of an employee. Returns the updated record."""
-    employee = await db.get(Employee, employee_id)
+    result = await db.execute(
+        select(Employee).where(
+            Employee.id == employee_id, Employee.user_id == user.id
+        )
+    )
+    employee = result.scalar_one_or_none()
     if employee is None:
         raise HTTPException(status_code=404, detail=f"Employé {employee_id} introuvable.")
 
@@ -174,10 +201,20 @@ async def update_employee(
     return employee.to_dict()
 
 
+# Multi-tenant: isolated to user.id (Sprint 1).
 @employees_router.delete("/{employee_id}")
-async def delete_employee(employee_id: int, db: AsyncSession = Depends(get_db)):
+async def delete_employee(
+    employee_id: int,
+    db: AsyncSession = Depends(get_db),
+    user: AccessToken = Depends(get_current_user),
+):
     """Delete a single employee."""
-    employee = await db.get(Employee, employee_id)
+    result = await db.execute(
+        select(Employee).where(
+            Employee.id == employee_id, Employee.user_id == user.id
+        )
+    )
+    employee = result.scalar_one_or_none()
     if employee is None:
         raise HTTPException(status_code=404, detail=f"Employé {employee_id} introuvable.")
     await db.delete(employee)
@@ -185,10 +222,12 @@ async def delete_employee(employee_id: int, db: AsyncSession = Depends(get_db)):
     return {"success": True, "deleted_id": employee_id}
 
 
+# Multi-tenant: isolated to user.id (Sprint 1).
 @employees_router.post("/import-csv")
 async def import_csv(
     file: UploadFile = File(...),
     db: AsyncSession = Depends(get_db),
+    user: AccessToken = Depends(get_current_user),
 ):
     """
     Import employees from a CSV file.
@@ -258,6 +297,7 @@ async def import_csv(
                 position=mapped.get("position") or None,
                 hire_date=mapped.get("hire_date") or None,
                 notes=mapped.get("notes") or None,
+                user_id=user.id,
             )
             db.add(employee)
             imported_count += 1
@@ -275,17 +315,23 @@ async def import_csv(
     }
 
 
+# Multi-tenant: isolated to user.id (Sprint 1).
+# Bulk delete is filtered by both id IN (...) AND user_id so a prospect cannot
+# erase another tenant's rows by slipping unrelated IDs into the request body.
 @employees_router.post("/bulk-delete")
 async def bulk_delete(
     body: dict[str, Any],
     db: AsyncSession = Depends(get_db),
+    user: AccessToken = Depends(get_current_user),
 ):
     """Delete multiple employees by id."""
     ids: list[int] = body.get("ids", [])
     if not ids:
         return {"deleted_count": 0}
 
-    result = await db.execute(select(Employee).where(Employee.id.in_(ids)))
+    result = await db.execute(
+        select(Employee).where(Employee.id.in_(ids), Employee.user_id == user.id)
+    )
     employees = result.scalars().all()
     for e in employees:
         await db.delete(e)

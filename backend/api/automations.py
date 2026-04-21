@@ -13,8 +13,9 @@ from sqlalchemy import desc, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from auth.dependencies import get_current_user
 from db.database import get_db
-from db.models import Automation, AutomationRun
+from db.models import AccessToken, Automation, AutomationRun
 from services.automation_templates import get_template, list_templates
 
 logger = logging.getLogger(__name__)
@@ -31,40 +32,57 @@ def _get_mgr():
 
 # ── Template catalogue ────────────────────────────────────────────────────────
 
+# Static template catalogue — requires auth but touches no DB.
 @automations_router.get("/templates")
-async def get_templates_list() -> list[dict[str, Any]]:
+async def get_templates_list(
+    user: AccessToken = Depends(get_current_user),
+) -> list[dict[str, Any]]:
     return list_templates()
 
 
 # ── CRUD ──────────────────────────────────────────────────────────────────────
 
+# Multi-tenant: isolated to user.id (Sprint 1).
 @automations_router.get("")
 async def list_automations(
     db: AsyncSession = Depends(get_db),
+    user: AccessToken = Depends(get_current_user),
 ) -> list[dict[str, Any]]:
     result = await db.execute(
-        select(Automation).order_by(desc(Automation.created_at))
+        select(Automation)
+        .where(Automation.user_id == user.id)
+        .order_by(desc(Automation.created_at))
     )
     return [a.to_dict() for a in result.scalars().all()]
 
 
+# Multi-tenant: isolated to user.id (Sprint 1).
 @automations_router.get("/{automation_id}")
 async def get_automation(
     automation_id: int,
     db: AsyncSession = Depends(get_db),
+    user: AccessToken = Depends(get_current_user),
 ) -> dict[str, Any]:
-    auto = await db.get(Automation, automation_id)
+    result = await db.execute(
+        select(Automation).where(
+            Automation.id == automation_id, Automation.user_id == user.id
+        )
+    )
+    auto = result.scalar_one_or_none()
     if auto is None:
         raise HTTPException(404, f"Automation {automation_id} introuvable")
     return auto.to_dict()
 
 
+# Multi-tenant: isolated to user.id (Sprint 1).
 @automations_router.post("")
 async def create_automation(
     body: dict[str, Any],
     db: AsyncSession = Depends(get_db),
+    user: AccessToken = Depends(get_current_user),
 ) -> dict[str, Any]:
     auto = Automation(
+        user_id=user.id,
         name=body["name"],
         description=body.get("description"),
         template_id=body.get("template_id"),
@@ -90,10 +108,12 @@ async def create_automation(
     return auto.to_dict()
 
 
+# Multi-tenant: isolated to user.id (Sprint 1).
 @automations_router.post("/from-template")
 async def create_from_template(
     body: dict[str, Any],
     db: AsyncSession = Depends(get_db),
+    user: AccessToken = Depends(get_current_user),
 ) -> dict[str, Any]:
     template_id: str = body.get("template_id", "")
     tmpl = get_template(template_id)
@@ -104,6 +124,7 @@ async def create_from_template(
     trigger_config = {**tmpl["trigger_config"], **overrides.get("trigger_config", {})}
 
     auto = Automation(
+        user_id=user.id,
         name=body.get("custom_name") or tmpl["name"],
         description=tmpl.get("description"),
         template_id=template_id,
@@ -129,9 +150,12 @@ async def create_from_template(
     return auto.to_dict()
 
 
+# Preview-only LLM call (no DB write) — auth required so anonymous users
+# can't burn through the OpenAI quota.
 @automations_router.post("/from-natural-language")
 async def create_from_natural_language(
     body: dict[str, Any],
+    user: AccessToken = Depends(get_current_user),
 ) -> dict[str, Any]:
     """Parse a French description into an automation config (preview only, not saved)."""
     from openai import AsyncOpenAI
@@ -187,13 +211,20 @@ async def create_from_natural_language(
         raise HTTPException(422, f"GPT-4o a retourné du JSON invalide: {exc}") from exc
 
 
+# Multi-tenant: isolated to user.id (Sprint 1).
 @automations_router.put("/{automation_id}")
 async def update_automation(
     automation_id: int,
     body: dict[str, Any],
     db: AsyncSession = Depends(get_db),
+    user: AccessToken = Depends(get_current_user),
 ) -> dict[str, Any]:
-    auto = await db.get(Automation, automation_id)
+    result = await db.execute(
+        select(Automation).where(
+            Automation.id == automation_id, Automation.user_id == user.id
+        )
+    )
+    auto = result.scalar_one_or_none()
     if auto is None:
         raise HTTPException(404, f"Automation {automation_id} introuvable")
 
@@ -224,12 +255,19 @@ async def update_automation(
     return auto.to_dict()
 
 
+# Multi-tenant: isolated to user.id (Sprint 1).
 @automations_router.delete("/{automation_id}")
 async def delete_automation(
     automation_id: int,
     db: AsyncSession = Depends(get_db),
+    user: AccessToken = Depends(get_current_user),
 ) -> dict[str, str]:
-    auto = await db.get(Automation, automation_id)
+    result = await db.execute(
+        select(Automation).where(
+            Automation.id == automation_id, Automation.user_id == user.id
+        )
+    )
+    auto = result.scalar_one_or_none()
     if auto is None:
         raise HTTPException(404, f"Automation {automation_id} introuvable")
 
@@ -244,12 +282,19 @@ async def delete_automation(
 
 # ── Toggle / Run now ──────────────────────────────────────────────────────────
 
+# Multi-tenant: isolated to user.id (Sprint 1).
 @automations_router.post("/{automation_id}/toggle")
 async def toggle_automation(
     automation_id: int,
     db: AsyncSession = Depends(get_db),
+    user: AccessToken = Depends(get_current_user),
 ) -> dict[str, Any]:
-    auto = await db.get(Automation, automation_id)
+    result = await db.execute(
+        select(Automation).where(
+            Automation.id == automation_id, Automation.user_id == user.id
+        )
+    )
+    auto = result.scalar_one_or_none()
     if auto is None:
         raise HTTPException(404, f"Automation {automation_id} introuvable")
 
@@ -271,13 +316,20 @@ async def toggle_automation(
     return auto.to_dict()
 
 
+# Multi-tenant: isolated to user.id (Sprint 1).
 @automations_router.post("/{automation_id}/run-now")
 async def run_now(
     automation_id: int,
     request: Request,
     db: AsyncSession = Depends(get_db),
+    user: AccessToken = Depends(get_current_user),
 ) -> dict[str, Any]:
-    auto = await db.get(Automation, automation_id)
+    result = await db.execute(
+        select(Automation).where(
+            Automation.id == automation_id, Automation.user_id == user.id
+        )
+    )
+    auto = result.scalar_one_or_none()
     if auto is None:
         raise HTTPException(404, f"Automation {automation_id} introuvable")
 
@@ -302,17 +354,24 @@ async def run_now(
 
 # ── Resync template ──────────────────────────────────────────────────────────
 
+# Multi-tenant: isolated to user.id (Sprint 1).
 @automations_router.post("/{automation_id}/resync-template")
 async def resync_template(
     automation_id: int,
     db: AsyncSession = Depends(get_db),
+    user: AccessToken = Depends(get_current_user),
 ) -> dict[str, Any]:
     """Re-apply the latest template definition to an existing automation.
 
     Updates actions, trigger_type, trigger_config, and on_error from the
     template while preserving run history, name, and all other fields.
     """
-    auto = await db.get(Automation, automation_id)
+    result = await db.execute(
+        select(Automation).where(
+            Automation.id == automation_id, Automation.user_id == user.id
+        )
+    )
+    auto = result.scalar_one_or_none()
     if auto is None:
         raise HTTPException(404, f"Automation {automation_id} introuvable")
 
@@ -344,14 +403,29 @@ async def resync_template(
 
 # ── Run history ───────────────────────────────────────────────────────────────
 
+# Multi-tenant: isolated to user.id — both on AutomationRun (denormalised)
+# AND via an existence check on the parent Automation, so a prospect cannot
+# probe another tenant's run history by guessing automation_id.
 @automations_router.get("/{automation_id}/runs")
 async def list_runs(
     automation_id: int,
     db: AsyncSession = Depends(get_db),
+    user: AccessToken = Depends(get_current_user),
 ) -> list[dict[str, Any]]:
+    owns = await db.execute(
+        select(Automation.id).where(
+            Automation.id == automation_id, Automation.user_id == user.id
+        )
+    )
+    if owns.scalar_one_or_none() is None:
+        raise HTTPException(404, f"Automation {automation_id} introuvable")
+
     result = await db.execute(
         select(AutomationRun)
-        .where(AutomationRun.automation_id == automation_id)
+        .where(
+            AutomationRun.automation_id == automation_id,
+            AutomationRun.user_id == user.id,
+        )
         .order_by(desc(AutomationRun.started_at))
         .limit(20)
     )

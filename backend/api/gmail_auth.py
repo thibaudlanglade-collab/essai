@@ -15,8 +15,9 @@ from fastapi.responses import HTMLResponse
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from auth.dependencies import get_current_user
 from db.database import async_session_maker, get_db
-from db.models import Email, GmailConnection
+from db.models import AccessToken, Email, GmailConnection
 from services.gmail_service import (
     GmailServiceError,
     build_oauth_flow,
@@ -33,9 +34,19 @@ _oauth_states: dict[str, dict] = {}
 _STATE_TTL_SECONDS = 600  # 10 minutes
 
 
-def _generate_state() -> str:
+def _generate_state(user_id: str) -> str:
+    """Mint a fresh OAuth state, bound to the calling tenant's user_id.
+
+    Binding the state to `user_id` protects the callback from storing a
+    GmailConnection against the wrong tenant even if something weird happens
+    with the session cookie between `/connect` and `/callback`.
+    """
     token = secrets.token_urlsafe(32)
-    _oauth_states[token] = {"expiry": time.time() + _STATE_TTL_SECONDS, "code_verifier": None}
+    _oauth_states[token] = {
+        "expiry": time.time() + _STATE_TTL_SECONDS,
+        "code_verifier": None,
+        "user_id": user_id,
+    }
     return token
 
 
@@ -49,10 +60,16 @@ def _validate_and_pop_state(state: str) -> Optional[dict]:
     return entry
 
 
+# Multi-tenant: isolated to user.id (Sprint 1).
 @gmail_auth_router.get("/status")
-async def gmail_status(db: AsyncSession = Depends(get_db)) -> dict[str, Any]:
-    """Return current Gmail connection status."""
-    result = await db.execute(select(GmailConnection))
+async def gmail_status(
+    db: AsyncSession = Depends(get_db),
+    user: AccessToken = Depends(get_current_user),
+) -> dict[str, Any]:
+    """Return current Gmail connection status for the calling tenant."""
+    result = await db.execute(
+        select(GmailConnection).where(GmailConnection.user_id == user.id)
+    )
     connection = result.scalar_one_or_none()
 
     if connection is None:
@@ -64,7 +81,10 @@ async def gmail_status(db: AsyncSession = Depends(get_db)) -> dict[str, Any]:
         }
 
     count_result = await db.execute(
-        select(func.count(Email.id)).where(Email.connection_id == connection.id)
+        select(func.count(Email.id)).where(
+            Email.connection_id == connection.id,
+            Email.user_id == user.id,
+        )
     )
     emails_count: int = count_result.scalar_one() or 0
 
@@ -78,10 +98,13 @@ async def gmail_status(db: AsyncSession = Depends(get_db)) -> dict[str, Any]:
     }
 
 
+# Multi-tenant: isolated to user.id (Sprint 1).
 @gmail_auth_router.get("/connect")
-async def gmail_connect() -> dict[str, str]:
+async def gmail_connect(
+    user: AccessToken = Depends(get_current_user),
+) -> dict[str, str]:
     """Generate and return the Google OAuth2 authorization URL."""
-    state = _generate_state()
+    state = _generate_state(user_id=user.id)
     flow = build_oauth_flow(state=state)
     auth_url, _ = flow.authorization_url(
         access_type="offline",
@@ -93,6 +116,11 @@ async def gmail_connect() -> dict[str, str]:
     return {"auth_url": auth_url}
 
 
+# The callback is reached via Google's redirect after user consent. The state
+# token binds this request to the tenant that initiated `/connect`, so we
+# do NOT rely solely on the session cookie here (some browsers may drop it
+# on cross-site redirects even with SameSite=lax). We still recommend it be
+# present — but the state is the authoritative link to the user_id.
 @gmail_auth_router.get("/callback")
 async def gmail_callback(
     code: str = "",
@@ -123,21 +151,28 @@ display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0
     if not code:
         return _html_error("Code d'autorisation manquant.")
 
+    user_id = state_entry.get("user_id")
+    if not user_id:
+        # Legacy or malformed state — refuse rather than risk a mis-attributed
+        # GmailConnection.
+        return _html_error("État OAuth invalide (user non identifié).")
+
     try:
         token_data = exchange_code_for_tokens(code, state_entry["code_verifier"])
     except GmailServiceError as exc:
         return _html_error(str(exc))
 
-    # Upsert GmailConnection
+    # Upsert the tenant's GmailConnection. Lookup is user-scoped, not by
+    # global email_address, so two tenants who happen to connect the same
+    # Gmail are each tied to their own row.
     result = await db.execute(
-        select(GmailConnection).where(
-            GmailConnection.email_address == token_data["email_address"]
-        )
+        select(GmailConnection).where(GmailConnection.user_id == user_id)
     )
     connection = result.scalar_one_or_none()
 
     if connection is None:
         connection = GmailConnection(
+            user_id=user_id,
             email_address=token_data["email_address"],
             access_token=token_data["access_token"],
             refresh_token=token_data["refresh_token"],
@@ -146,6 +181,7 @@ display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0
         )
         db.add(connection)
     else:
+        connection.email_address = token_data["email_address"]
         connection.access_token = token_data["access_token"]
         connection.refresh_token = token_data["refresh_token"]
         connection.token_expiry = token_data["expiry"]
@@ -183,18 +219,27 @@ p{color:#a1a1aa;margin:0;font-size:0.875rem;}
     )
 
 
+# Multi-tenant: isolated to user.id (Sprint 1).
 @gmail_auth_router.post("/disconnect")
-async def gmail_disconnect(db: AsyncSession = Depends(get_db)) -> dict[str, bool]:
-    """Remove the Gmail connection and all associated emails."""
-    result = await db.execute(select(GmailConnection))
+async def gmail_disconnect(
+    db: AsyncSession = Depends(get_db),
+    user: AccessToken = Depends(get_current_user),
+) -> dict[str, bool]:
+    """Remove the Gmail connection and all associated emails for this tenant."""
+    result = await db.execute(
+        select(GmailConnection).where(GmailConnection.user_id == user.id)
+    )
     connection = result.scalar_one_or_none()
 
     if connection is None:
         raise HTTPException(status_code=404, detail="Aucune connexion Gmail trouvée.")
 
-    # Delete associated emails first
+    # Delete associated emails first — scoped to user AND connection.
     emails_result = await db.execute(
-        select(Email).where(Email.connection_id == connection.id)
+        select(Email).where(
+            Email.connection_id == connection.id,
+            Email.user_id == user.id,
+        )
     )
     for email in emails_result.scalars().all():
         await db.delete(email)
@@ -205,10 +250,16 @@ async def gmail_disconnect(db: AsyncSession = Depends(get_db)) -> dict[str, bool
     return {"success": True}
 
 
+# Multi-tenant: isolated to user.id (Sprint 1).
 @gmail_auth_router.post("/sync-now")
-async def gmail_sync_now(db: AsyncSession = Depends(get_db)) -> dict[str, Any]:
-    """Trigger an immediate sync for the current Gmail connection."""
-    result = await db.execute(select(GmailConnection))
+async def gmail_sync_now(
+    db: AsyncSession = Depends(get_db),
+    user: AccessToken = Depends(get_current_user),
+) -> dict[str, Any]:
+    """Trigger an immediate sync for the calling tenant's Gmail connection."""
+    result = await db.execute(
+        select(GmailConnection).where(GmailConnection.user_id == user.id)
+    )
     connection = result.scalar_one_or_none()
 
     if connection is None:

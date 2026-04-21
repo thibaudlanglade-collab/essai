@@ -1,0 +1,1742 @@
+{
+  "suppliers": [
+    {
+      "name": "Point P",
+      "category": "Matériaux gros œuvre",
+      "siret": "40298759100011",
+      "city": "Saint-Martin-de-Crau",
+      "notes": "Agence principale. Livraisons chantier sous 48h. Commercial dédié Julien Vasseur."
+    },
+    {
+      "name": "SAMSE",
+      "category": "Matériaux bois et menuiseries",
+      "siret": "05650295800012",
+      "city": "Avignon",
+      "notes": "Spécialiste charpente et menuiseries extérieures. Compte ouvert depuis 2019."
+    },
+    {
+      "name": "Rexel",
+      "category": "Matériel électrique",
+      "siret": "41016891000025",
+      "city": "Avignon",
+      "notes": "Principal fournisseur courant faible et tableaux divisionnaires."
+    },
+    {
+      "name": "Plomberie Provençale",
+      "category": "Fournitures plomberie et chauffage",
+      "siret": "80234567800014",
+      "city": "Nîmes",
+      "notes": "Grossiste local. Éric Delaunay au commercial. Paiement 30 jours fin de mois."
+    },
+    {
+      "name": "Kiloutou",
+      "category": "Location de matériel de chantier",
+      "siret": "38440011400011",
+      "city": "Nîmes",
+      "notes": "Agence Nîmes Ouest. Tarifs préférentiels sur location longue durée."
+    },
+    {
+      "name": "Weldom",
+      "category": "Outillage et quincaillerie",
+      "siret": "41851792800010",
+      "city": "Villeneuve-lès-Avignon",
+      "notes": "Dépannage quincaillerie et outillage électroportatif. Ouvert le samedi."
+    },
+    {
+      "name": "Bricoman",
+      "category": "Matériaux et outillage professionnels",
+      "siret": "44479604400014",
+      "city": "Nîmes",
+      "notes": "Enseigne pro. Commande comptoir ou en ligne avec retrait 2h."
+    },
+    {
+      "name": "LEGRAND France",
+      "category": "Fabricant appareillage électrique",
+      "siret": "75850100100013",
+      "city": "Limoges",
+      "notes": "Fabricant direct pour grosses commandes tableaux et protections."
+    },
+    {
+      "name": "Gedimat",
+      "category": "Matériaux de construction",
+      "siret": "31234567800014",
+      "city": "Uzès",
+      "notes": "Dépôt Uzès. Pratique pour chantiers autour d'Uzès et de la Mairie de Rochefort."
+    },
+    {
+      "name": "Cedeo",
+      "category": "Sanitaire et chauffage",
+      "siret": "40914914600014",
+      "city": "Avignon",
+      "notes": "Grossiste sanitaire. Fabrice Martel commercial secteur Gard-Vaucluse."
+    }
+  ],
+  "clients": [
+    {
+      "name": "SCI Les Oliviers",
+      "type": "sci",
+      "address": "14 rue des Oliviers, 30000 Nîmes",
+      "email": "s.allard@sci-lesoliviers.fr",
+      "phone": "04 66 21 48 73",
+      "notes": "Gérante Sophie Allard. Patrimoine de 4 maisons locatives secteur Nîmes. Rénovations récurrentes, paie à 30 jours."
+    },
+    {
+      "name": "Copropriété Résidence Les Mimosas",
+      "type": "copro",
+      "address": "28 avenue Saint-Ruf, 84000 Avignon",
+      "email": "m.reynaud@foncia-avignon.fr",
+      "phone": "04 90 85 12 40",
+      "notes": "Syndic Foncia Avignon, gestionnaire Mathieu Reynaud. 24 lots. Conseil syndical présidé par Mme Aubert. Décisions votées en AG, paiement sur appel de fonds."
+    },
+    {
+      "name": "M. et Mme Dupont",
+      "type": "particulier",
+      "address": "7 chemin du Vallat, 30700 Uzès",
+      "email": "claire.dupont@laposte.net",
+      "phone": "06 23 45 78 12",
+      "notes": "Rénovation complète + extension 25m². Interlocutrice principale Claire Dupont. Budget global autour de 90k€, échelonné sur 2026."
+    },
+    {
+      "name": "Mairie de Rochefort-du-Gard",
+      "type": "mairie",
+      "address": "Place de la Mairie, 30650 Rochefort-du-Gard",
+      "email": "dst@rochefort-du-gard.fr",
+      "phone": "04 90 26 60 10",
+      "notes": "Marché public toiture école primaire. DST Laurent Cazaux. Comptable Valérie Fournier. Paiement délai légal 30 jours après service fait."
+    },
+    {
+      "name": "Bouygues Immobilier",
+      "type": "promoteur",
+      "address": "Parc du Millénaire, 1350 avenue Albert Einstein, 34000 Montpellier",
+      "email": "t.leroux@bouygues-immobilier.com",
+      "phone": "04 67 13 88 40",
+      "notes": "Programme résidence Le Domaine d'Oc, 48 logements. Chef de projet Thomas Leroux. Sous-traitance plomberie et sanitaires. Facturation en auto-liquidation TVA."
+    },
+    {
+      "name": "M. Martin",
+      "type": "particulier",
+      "address": "22 rue de la Fontaine, 30400 Villeneuve-lès-Avignon",
+      "email": "p.martin84@gmail.com",
+      "phone": "06 78 12 34 56",
+      "notes": "Petit projet de clôture, devis refusé pour raison budgétaire."
+    },
+    {
+      "name": "Mme Garcia",
+      "type": "particulier",
+      "address": "3 impasse des Lilas, 30000 Nîmes",
+      "email": "m.garcia.nimes@orange.fr",
+      "phone": "06 12 89 45 77",
+      "notes": "Ravalement façade maison individuelle. Demande un paiement étalé."
+    },
+    {
+      "name": "SARL Boulangerie Pons",
+      "type": "particulier",
+      "address": "16 place des Corps Saints, 84000 Avignon",
+      "email": "boulangerie.pons@wanadoo.fr",
+      "phone": "04 90 82 15 22",
+      "notes": "Commerce. Petits travaux d'entretien occasionnels."
+    },
+    {
+      "name": "M. Fabre",
+      "type": "particulier",
+      "address": "5 rue du Portalet, 30700 Uzès",
+      "email": "jfabre30@gmail.com",
+      "phone": "06 45 23 18 90",
+      "notes": "Demande de rendez-vous pour étude remplacement fenêtres."
+    },
+    {
+      "name": "Cabinet d'architecte Blanc",
+      "type": "sci",
+      "address": "9 boulevard Victor Hugo, 30000 Nîmes",
+      "email": "contact@archi-blanc.fr",
+      "phone": "04 66 67 32 18",
+      "notes": "Apporteur d'affaires. Envoie ponctuellement des demandes de chiffrage pour ses clients."
+    },
+    {
+      "name": "SCI du Pont d'Avignon",
+      "type": "sci",
+      "address": "45 rue Carreterie, 84000 Avignon",
+      "email": "sci.pontdavignon@gmail.com",
+      "phone": "04 90 27 54 11",
+      "notes": "Immeuble de rapport centre Avignon. Premier contact, aucun devis en cours."
+    },
+    {
+      "name": "Mme Roux",
+      "type": "particulier",
+      "address": "12 avenue de Verdun, 30133 Les Angles",
+      "email": "c.roux.lesangles@free.fr",
+      "phone": "06 89 34 21 05",
+      "notes": "Travaux peinture intérieure à prévoir courant 2026."
+    }
+  ],
+  "invoices": [
+    {
+      "supplier_name": "Point P",
+      "invoice_number": "FA2026-00412",
+      "invoice_date": "2026-01-15",
+      "amount_ht": 1062.1,
+      "vat_rate": 0.2,
+      "amount_vat": 212.42,
+      "amount_ttc": 1274.52,
+      "lines": [
+        {
+          "label": "Plaque Placo BA13 2.5x1.2m",
+          "quantity": 40,
+          "unit": "u",
+          "unit_price_ht": 7.85,
+          "total_ht": 314.0
+        },
+        {
+          "label": "Montant métallique M48 3m",
+          "quantity": 25,
+          "unit": "u",
+          "unit_price_ht": 4.9,
+          "total_ht": 122.5
+        },
+        {
+          "label": "Isolant laine de verre 200mm rouleau",
+          "quantity": 12,
+          "unit": "u",
+          "unit_price_ht": 48.2,
+          "total_ht": 578.4
+        },
+        {
+          "label": "Vis placo 25mm boîte 500",
+          "quantity": 4,
+          "unit": "u",
+          "unit_price_ht": 11.8,
+          "total_ht": 47.2
+        }
+      ],
+      "auto_liquidation": false,
+      "raw_text": "POINT P - SAINT-MARTIN-DE-CRAU\nSIRET 40298759100011\nFacture FA2026-00412 du 15/01/2026\nClient : Entreprise Test\n----------------------------------------\n40 u  Plaque Placo BA13 2.5x1.2m        7.85  314.00\n25 u  Montant métallique M48 3m         4.90  122.50\n12 u  Isolant laine de verre 200mm rlx 48.20  578.40\n 4 u  Vis placo 25mm boîte 500         11.80   47.20\n----------------------------------------\nTotal HT            1062.10\nTVA 20%              212.42\nTotal TTC           1274.52\nRèglement : virement à 30 jours fin de mois.",
+      "notes": "Cloisonnement bureaux chantier interne."
+    },
+    {
+      "supplier_name": "Point P",
+      "invoice_number": "FA2026-00487",
+      "invoice_date": "2026-01-28",
+      "amount_ht": 1840.7,
+      "vat_rate": 0.2,
+      "amount_vat": 368.14,
+      "amount_ttc": 2208.84,
+      "lines": [
+        {
+          "label": "Carrelage grès cérame 60x60 crème",
+          "quantity": 45,
+          "unit": "m²",
+          "unit_price_ht": 28.9,
+          "total_ht": 1300.5
+        },
+        {
+          "label": "Plinthe assortie 60cm",
+          "quantity": 30,
+          "unit": "ml",
+          "unit_price_ht": 6.4,
+          "total_ht": 192.0
+        },
+        {
+          "label": "Mortier colle C2 25kg",
+          "quantity": 18,
+          "unit": "sac",
+          "unit_price_ht": 16.5,
+          "total_ht": 297.0
+        },
+        {
+          "label": "Joint gris clair 5kg",
+          "quantity": 4,
+          "unit": "sac",
+          "unit_price_ht": 12.8,
+          "total_ht": 51.2
+        }
+      ],
+      "auto_liquidation": false,
+      "raw_text": "POINT P - SAINT-MARTIN-DE-CRAU\nFacture FA2026-00487 du 28/01/2026\n45 m²  Carrelage grès cérame 60x60 crème  28.90  1300.50\n30 ml  Plinthe assortie 60cm               6.40   192.00\n18 sac Mortier colle C2 25kg              16.50   297.00\n 4 sac Joint gris clair 5kg               12.80    51.20\nTotal HT 1840.70   TVA 20% 368.14   TTC 2208.84"
+    },
+    {
+      "supplier_name": "Point P",
+      "invoice_number": "FA2026-00531",
+      "invoice_date": "2026-02-10",
+      "amount_ht": 1005.2,
+      "vat_rate": 0.1,
+      "amount_vat": 100.52,
+      "amount_ttc": 1105.72,
+      "lines": [
+        {
+          "label": "Ciment CEM II 35kg",
+          "quantity": 30,
+          "unit": "sac",
+          "unit_price_ht": 8.4,
+          "total_ht": 252.0
+        },
+        {
+          "label": "Sable semi-lavé 0/4 big bag 1m³",
+          "quantity": 3,
+          "unit": "u",
+          "unit_price_ht": 65.0,
+          "total_ht": 195.0
+        },
+        {
+          "label": "Parpaing creux 20x20x50",
+          "quantity": 180,
+          "unit": "u",
+          "unit_price_ht": 2.15,
+          "total_ht": 387.0
+        },
+        {
+          "label": "Treillis soudé ST25 3.6x2m",
+          "quantity": 8,
+          "unit": "u",
+          "unit_price_ht": 21.4,
+          "total_ht": 171.2
+        }
+      ],
+      "auto_liquidation": false,
+      "raw_text": "POINT P - SAINT-MARTIN-DE-CRAU\nFacture FA2026-00531 du 10/02/2026\nChantier : Dupont - Uzès (rénovation habitation ancienne)\n 30 sac Ciment CEM II 35kg                  8.40   252.00\n  3 u  Sable semi-lavé 0/4 big bag 1m³     65.00   195.00\n180 u  Parpaing creux 20x20x50              2.15   387.00\n  8 u  Treillis soudé ST25 3.6x2m          21.40   171.20\nTotal HT 1005.20   TVA 10% 100.52   TTC 1105.72\nTVA réduite 10% : travaux d'amélioration logement de plus de 2 ans.",
+      "notes": "Chantier Dupont Uzès - TVA 10% rénovation habitation ancienne."
+    },
+    {
+      "supplier_name": "Point P",
+      "invoice_number": "FA2026-00598",
+      "invoice_date": "2026-03-05",
+      "amount_ht": 1309.4,
+      "vat_rate": 0.2,
+      "amount_vat": 261.88,
+      "amount_ttc": 1571.28,
+      "lines": [
+        {
+          "label": "Parpaing creux 20x20x50",
+          "quantity": 220,
+          "unit": "u",
+          "unit_price_ht": 2.15,
+          "total_ht": 473.0
+        },
+        {
+          "label": "Acier HA 10mm barre 6m",
+          "quantity": 25,
+          "unit": "u",
+          "unit_price_ht": 14.8,
+          "total_ht": 370.0
+        },
+        {
+          "label": "Ciment CEM II 35kg",
+          "quantity": 40,
+          "unit": "sac",
+          "unit_price_ht": 8.4,
+          "total_ht": 336.0
+        },
+        {
+          "label": "Linteau béton précontraint 1.80m",
+          "quantity": 4,
+          "unit": "u",
+          "unit_price_ht": 32.6,
+          "total_ht": 130.4
+        }
+      ],
+      "auto_liquidation": false,
+      "raw_text": "POINT P - Facture FA2026-00598 du 05/03/2026\n220 u  Parpaing creux 20x20x50           2.15   473.00\n 25 u  Acier HA 10mm barre 6m           14.80   370.00\n 40 sac Ciment CEM II 35kg               8.40   336.00\n  4 u  Linteau béton précontraint 1.80m 32.60   130.40\nTotal HT 1309.40   TVA 20% 261.88   TTC 1571.28"
+    },
+    {
+      "supplier_name": "Point P",
+      "invoice_number": "FA2026-00672",
+      "invoice_date": "2026-03-18",
+      "amount_ht": 802.6,
+      "vat_rate": 0.1,
+      "amount_vat": 80.26,
+      "amount_ttc": 882.86,
+      "lines": [
+        {
+          "label": "Placo BA13 hydrofuge 2.5x1.2m",
+          "quantity": 18,
+          "unit": "u",
+          "unit_price_ht": 12.4,
+          "total_ht": 223.2
+        },
+        {
+          "label": "Laine de verre GR32 100mm rouleau",
+          "quantity": 10,
+          "unit": "u",
+          "unit_price_ht": 38.5,
+          "total_ht": 385.0
+        },
+        {
+          "label": "Enduit lissage 25kg",
+          "quantity": 8,
+          "unit": "sac",
+          "unit_price_ht": 19.8,
+          "total_ht": 158.4
+        },
+        {
+          "label": "Bande joint placo 150m",
+          "quantity": 5,
+          "unit": "u",
+          "unit_price_ht": 7.2,
+          "total_ht": 36.0
+        }
+      ],
+      "auto_liquidation": false,
+      "raw_text": "POINT P - Facture FA2026-00672 du 18/03/2026\nChantier : SCI Les Oliviers - rénovation SDB 8m² (Nîmes)\n18 u  Placo BA13 hydrofuge 2.5x1.2m   12.40   223.20\n10 u  Laine de verre GR32 100mm        38.50   385.00\n 8 sac Enduit lissage 25kg             19.80   158.40\n 5 u  Bande joint placo 150m            7.20    36.00\nTotal HT 802.60   TVA 10% 80.26   TTC 882.86\nTVA 10% : rénovation logement SCI, bâtiment de plus de 2 ans.",
+      "notes": "Chantier SCI Les Oliviers rénovation SDB - TVA 10%."
+    },
+    {
+      "supplier_name": "SAMSE",
+      "invoice_number": "FA2026-02104",
+      "invoice_date": "2026-01-22",
+      "amount_ht": 1622.0,
+      "vat_rate": 0.2,
+      "amount_vat": 324.4,
+      "amount_ttc": 1946.4,
+      "lines": [
+        {
+          "label": "Chevron sapin 63x75 4m",
+          "quantity": 35,
+          "unit": "u",
+          "unit_price_ht": 18.6,
+          "total_ht": 651.0
+        },
+        {
+          "label": "Madrier douglas 75x225 5m",
+          "quantity": 8,
+          "unit": "u",
+          "unit_price_ht": 94.0,
+          "total_ht": 752.0
+        },
+        {
+          "label": "Vis charpente 8x160 boîte 50",
+          "quantity": 6,
+          "unit": "u",
+          "unit_price_ht": 24.5,
+          "total_ht": 147.0
+        },
+        {
+          "label": "Tire-fond M10 inox",
+          "quantity": 40,
+          "unit": "u",
+          "unit_price_ht": 1.8,
+          "total_ht": 72.0
+        }
+      ],
+      "auto_liquidation": false,
+      "raw_text": "SAMSE AVIGNON - Facture FA2026-02104 du 22/01/2026\nSIRET 05650295800012\n35 u  Chevron sapin 63x75 4m         18.60   651.00\n 8 u  Madrier douglas 75x225 5m      94.00   752.00\n 6 u  Vis charpente 8x160 bte 50     24.50   147.00\n40 u  Tire-fond M10 inox              1.80    72.00\nTotal HT 1622.00   TVA 20% 324.40   TTC 1946.40"
+    },
+    {
+      "supplier_name": "SAMSE",
+      "invoice_number": "FA2026-02218",
+      "invoice_date": "2026-02-12",
+      "amount_ht": 6300.0,
+      "vat_rate": 0.2,
+      "amount_vat": 1260.0,
+      "amount_ttc": 7560.0,
+      "lines": [
+        {
+          "label": "Porte-fenêtre alu 2 vantaux 215x180",
+          "quantity": 2,
+          "unit": "u",
+          "unit_price_ht": 1250.0,
+          "total_ht": 2500.0
+        },
+        {
+          "label": "Fenêtre alu 1 vantail ouvrant 95x115",
+          "quantity": 4,
+          "unit": "u",
+          "unit_price_ht": 485.0,
+          "total_ht": 1940.0
+        },
+        {
+          "label": "Volet roulant alu solaire 120x100",
+          "quantity": 3,
+          "unit": "u",
+          "unit_price_ht": 620.0,
+          "total_ht": 1860.0
+        }
+      ],
+      "auto_liquidation": false,
+      "raw_text": "SAMSE AVIGNON - Facture FA2026-02218 du 12/02/2026\n2 u  Porte-fenêtre alu 2 vtx 215x180   1250.00  2500.00\n4 u  Fenêtre alu 1 vtx 95x115            485.00  1940.00\n3 u  Volet roulant alu solaire 120x100   620.00  1860.00\nTotal HT 6300.00   TVA 20% 1260.00   TTC 7560.00"
+    },
+    {
+      "supplier_name": "SAMSE",
+      "invoice_number": "FA2026-02337",
+      "invoice_date": "2026-02-28",
+      "amount_ht": 3705.0,
+      "vat_rate": 0.2,
+      "amount_vat": 741.0,
+      "amount_ttc": 4446.0,
+      "lines": [
+        {
+          "label": "Tuile canal traditionnelle 25x50 rouge",
+          "quantity": 1200,
+          "unit": "u",
+          "unit_price_ht": 1.85,
+          "total_ht": 2220.0
+        },
+        {
+          "label": "Liteau sapin 27x40 4m",
+          "quantity": 60,
+          "unit": "u",
+          "unit_price_ht": 4.3,
+          "total_ht": 258.0
+        },
+        {
+          "label": "Écran sous toiture HPV rouleau 75m²",
+          "quantity": 3,
+          "unit": "u",
+          "unit_price_ht": 185.0,
+          "total_ht": 555.0
+        },
+        {
+          "label": "Gouttière zinc demi-ronde développé 33",
+          "quantity": 24,
+          "unit": "ml",
+          "unit_price_ht": 28.0,
+          "total_ht": 672.0
+        }
+      ],
+      "auto_liquidation": false,
+      "raw_text": "SAMSE AVIGNON - Facture FA2026-02337 du 28/02/2026\nChantier : Mairie de Rochefort-du-Gard - école primaire\n1200 u   Tuile canal traditionnelle 25x50 rouge   1.85  2220.00\n  60 u   Liteau sapin 27x40 4m                    4.30   258.00\n   3 u   Écran sous toiture HPV rlx 75m²        185.00   555.00\n  24 ml  Gouttière zinc demi-ronde dev 33        28.00   672.00\nTotal HT 3705.00   TVA 20% 741.00   TTC 4446.00\nCommande passée dans le cadre du marché public 2026-TOIT-01.",
+      "notes": "Matériaux toiture Mairie Rochefort (marché public)."
+    },
+    {
+      "supplier_name": "Rexel",
+      "invoice_number": "FA2026-04501",
+      "invoice_date": "2026-02-08",
+      "amount_ht": 960.1,
+      "vat_rate": 0.2,
+      "amount_vat": 192.02,
+      "amount_ttc": 1152.12,
+      "lines": [
+        {
+          "label": "Tableau électrique 3 rangées 39 modules",
+          "quantity": 1,
+          "unit": "u",
+          "unit_price_ht": 185.0,
+          "total_ht": 185.0
+        },
+        {
+          "label": "Disjoncteur différentiel 40A 30mA type AC",
+          "quantity": 3,
+          "unit": "u",
+          "unit_price_ht": 72.5,
+          "total_ht": 217.5
+        },
+        {
+          "label": "Disjoncteur modulaire 16A 1P+N",
+          "quantity": 12,
+          "unit": "u",
+          "unit_price_ht": 14.8,
+          "total_ht": 177.6
+        },
+        {
+          "label": "Câble R2V 3G2.5 couronne 100m",
+          "quantity": 2,
+          "unit": "u",
+          "unit_price_ht": 148.0,
+          "total_ht": 296.0
+        },
+        {
+          "label": "Parafoudre type 2 1P+N",
+          "quantity": 1,
+          "unit": "u",
+          "unit_price_ht": 84.0,
+          "total_ht": 84.0
+        }
+      ],
+      "auto_liquidation": false,
+      "raw_text": "REXEL AVIGNON - Facture FA2026-04501 du 08/02/2026\n 1 u  Tableau électrique 3 rangées 39 mod     185.00   185.00\n 3 u  Disj. diff. 40A 30mA type AC             72.50   217.50\n12 u  Disj. modulaire 16A 1P+N                 14.80   177.60\n 2 u  Câble R2V 3G2.5 cour. 100m              148.00   296.00\n 1 u  Parafoudre type 2 1P+N                   84.00    84.00\nTotal HT 960.10   TVA 20% 192.02   TTC 1152.12"
+    },
+    {
+      "supplier_name": "Rexel",
+      "invoice_number": "FA2026-04612",
+      "invoice_date": "2026-02-20",
+      "amount_ht": 6080.0,
+      "vat_rate": 0.0,
+      "amount_vat": 0.0,
+      "amount_ttc": 6080.0,
+      "lines": [
+        {
+          "label": "Câble U1000R2V 5G6 couronne 50m",
+          "quantity": 10,
+          "unit": "u",
+          "unit_price_ht": 385.0,
+          "total_ht": 3850.0
+        },
+        {
+          "label": "Prise 2P+T étanche IP55",
+          "quantity": 60,
+          "unit": "u",
+          "unit_price_ht": 8.9,
+          "total_ht": 534.0
+        },
+        {
+          "label": "Goulotte PVC 40x40 2m blanche",
+          "quantity": 80,
+          "unit": "u",
+          "unit_price_ht": 9.4,
+          "total_ht": 752.0
+        },
+        {
+          "label": "Interrupteur différentiel 63A 30mA",
+          "quantity": 8,
+          "unit": "u",
+          "unit_price_ht": 118.0,
+          "total_ht": 944.0
+        }
+      ],
+      "auto_liquidation": true,
+      "raw_text": "REXEL AVIGNON - Facture FA2026-04612 du 20/02/2026\nChantier : Bouygues Immobilier - Le Domaine d'Oc (Montpellier)\n10 u  Câble U1000R2V 5G6 couronne 50m      385.00  3850.00\n60 u  Prise 2P+T étanche IP55                8.90   534.00\n80 u  Goulotte PVC 40x40 2m blanche          9.40   752.00\n 8 u  Inter. diff. 63A 30mA                118.00   944.00\nTotal HT 6080.00\nTVA auto-liquidée par le preneur, art. 283-2 nonies CGI.\nTotal TTC 6080.00",
+      "notes": "Chantier Bouygues - auto-liquidation sous-traitance BTP."
+    },
+    {
+      "supplier_name": "Rexel",
+      "invoice_number": "FA2026-04734",
+      "invoice_date": "2026-03-14",
+      "amount_ht": 984.0,
+      "vat_rate": 0.2,
+      "amount_vat": 196.8,
+      "amount_ttc": 1180.8,
+      "lines": [
+        {
+          "label": "Spot LED encastrable 7W blanc chaud",
+          "quantity": 40,
+          "unit": "u",
+          "unit_price_ht": 12.8,
+          "total_ht": 512.0
+        },
+        {
+          "label": "Ruban LED 24V 5m IP65 blanc",
+          "quantity": 8,
+          "unit": "u",
+          "unit_price_ht": 38.0,
+          "total_ht": 304.0
+        },
+        {
+          "label": "Transformateur LED 60W",
+          "quantity": 4,
+          "unit": "u",
+          "unit_price_ht": 42.0,
+          "total_ht": 168.0
+        }
+      ],
+      "auto_liquidation": false,
+      "raw_text": "REXEL AVIGNON - Facture FA2026-04734 du 14/03/2026\n40 u  Spot LED encastrable 7W blanc chaud   12.80   512.00\n 8 u  Ruban LED 24V 5m IP65 blanc           38.00   304.00\n 4 u  Transformateur LED 60W                42.00   168.00\nTotal HT 984.00   TVA 20% 196.80   TTC 1180.80"
+    },
+    {
+      "supplier_name": "Plomberie Provençale",
+      "invoice_number": "FA2026-00089",
+      "invoice_date": "2026-02-05",
+      "amount_ht": 1412.0,
+      "vat_rate": 0.1,
+      "amount_vat": 141.2,
+      "amount_ttc": 1553.2,
+      "lines": [
+        {
+          "label": "Tube PER 16x1.5 couronne 50m",
+          "quantity": 4,
+          "unit": "u",
+          "unit_price_ht": 72.0,
+          "total_ht": 288.0
+        },
+        {
+          "label": "Raccord laiton PER 16 coudé",
+          "quantity": 30,
+          "unit": "u",
+          "unit_price_ht": 4.8,
+          "total_ht": 144.0
+        },
+        {
+          "label": "Collecteur PER 10 départs",
+          "quantity": 1,
+          "unit": "u",
+          "unit_price_ht": 148.0,
+          "total_ht": 148.0
+        },
+        {
+          "label": "Main d'œuvre plombier",
+          "quantity": 16,
+          "unit": "h",
+          "unit_price_ht": 52.0,
+          "total_ht": 832.0
+        }
+      ],
+      "auto_liquidation": false,
+      "raw_text": "PLOMBERIE PROVENÇALE - Nîmes\nFacture FA2026-00089 du 05/02/2026\nChantier : Dupont - rénovation Uzès\n 4 u  Tube PER 16x1.5 couronne 50m        72.00   288.00\n30 u  Raccord laiton PER 16 coudé          4.80   144.00\n 1 u  Collecteur PER 10 départs          148.00   148.00\n16 h  Main d'œuvre plombier               52.00   832.00\nTotal HT 1412.00   TVA 10% 141.20   TTC 1553.20\nTVA 10% : rénovation habitation de plus de 2 ans.",
+      "notes": "Chantier Dupont Uzès - plomberie rénovation."
+    },
+    {
+      "supplier_name": "Plomberie Provençale",
+      "invoice_number": "FA2026-00124",
+      "invoice_date": "2026-03-25",
+      "amount_ht": 5067.0,
+      "vat_rate": 0.0,
+      "amount_vat": 0.0,
+      "amount_ttc": 5067.0,
+      "lines": [
+        {
+          "label": "Chaudière gaz condensation 25kW",
+          "quantity": 1,
+          "unit": "u",
+          "unit_price_ht": 2850.0,
+          "total_ht": 2850.0
+        },
+        {
+          "label": "Pompe circulation haut rendement",
+          "quantity": 2,
+          "unit": "u",
+          "unit_price_ht": 320.0,
+          "total_ht": 640.0
+        },
+        {
+          "label": "Vase expansion 50L",
+          "quantity": 1,
+          "unit": "u",
+          "unit_price_ht": 185.0,
+          "total_ht": 185.0
+        },
+        {
+          "label": "Main d'œuvre installation",
+          "quantity": 24,
+          "unit": "h",
+          "unit_price_ht": 58.0,
+          "total_ht": 1392.0
+        }
+      ],
+      "auto_liquidation": true,
+      "raw_text": "PLOMBERIE PROVENÇALE - Nîmes\nFacture FA2026-00124 du 25/03/2026\nChantier : Bouygues Immobilier - chaufferie Domaine d'Oc\n 1 u  Chaudière gaz condensation 25kW    2850.00  2850.00\n 2 u  Pompe circulation haut rendement    320.00   640.00\n 1 u  Vase expansion 50L                  185.00   185.00\n24 h  Main d'œuvre installation            58.00  1392.00\nTotal HT 5067.00\nTVA auto-liquidée par le preneur, art. 283-2 nonies CGI.\nTotal TTC 5067.00",
+      "notes": "Chantier Bouygues - auto-liquidation."
+    },
+    {
+      "supplier_name": "Kiloutou",
+      "invoice_number": "FA2026-13045",
+      "invoice_date": "2026-01-16",
+      "amount_ht": 1175.0,
+      "vat_rate": 0.2,
+      "amount_vat": 235.0,
+      "amount_ttc": 1410.0,
+      "lines": [
+        {
+          "label": "Location échafaudage 30m² à la semaine",
+          "quantity": 3,
+          "unit": "u",
+          "unit_price_ht": 285.0,
+          "total_ht": 855.0
+        },
+        {
+          "label": "Livraison et montage forfait",
+          "quantity": 1,
+          "unit": "u",
+          "unit_price_ht": 320.0,
+          "total_ht": 320.0
+        }
+      ],
+      "auto_liquidation": false,
+      "raw_text": "KILOUTOU NÎMES - Facture FA2026-13045 du 16/01/2026\n3 u  Location échafaudage 30m² sem.   285.00   855.00\n1 u  Livraison + montage forfait      320.00   320.00\nTotal HT 1175.00   TVA 20% 235.00   TTC 1410.00"
+    },
+    {
+      "supplier_name": "Kiloutou",
+      "invoice_number": "FA2026-13287",
+      "invoice_date": "2026-03-10",
+      "amount_ht": 913.0,
+      "vat_rate": 0.2,
+      "amount_vat": 182.6,
+      "amount_ttc": 1095.6,
+      "lines": [
+        {
+          "label": "Location mini-pelle 1.8t journée",
+          "quantity": 3,
+          "unit": "u",
+          "unit_price_ht": 185.0,
+          "total_ht": 555.0
+        },
+        {
+          "label": "Location camion 3.5t benne journée",
+          "quantity": 2,
+          "unit": "u",
+          "unit_price_ht": 145.0,
+          "total_ht": 290.0
+        },
+        {
+          "label": "Carburant forfait",
+          "quantity": 1,
+          "unit": "u",
+          "unit_price_ht": 68.0,
+          "total_ht": 68.0
+        }
+      ],
+      "auto_liquidation": false,
+      "raw_text": "KILOUTOU NÎMES - Facture FA2026-13287 du 10/03/2026\n3 u  Location mini-pelle 1.8t journée   185.00   555.00\n2 u  Location camion 3.5t benne jour    145.00   290.00\n1 u  Carburant forfait                   68.00    68.00\nTotal HT 913.00   TVA 20% 182.60   TTC 1095.60"
+    },
+    {
+      "supplier_name": "Weldom",
+      "invoice_number": "FA2026-00745",
+      "invoice_date": "2026-03-02",
+      "amount_ht": 459.5,
+      "vat_rate": 0.2,
+      "amount_vat": 91.9,
+      "amount_ttc": 551.4,
+      "lines": [
+        {
+          "label": "Perforateur SDS+ 800W",
+          "quantity": 1,
+          "unit": "u",
+          "unit_price_ht": 218.0,
+          "total_ht": 218.0
+        },
+        {
+          "label": "Jeu de forets béton SDS+ 5/6/8/10mm",
+          "quantity": 1,
+          "unit": "u",
+          "unit_price_ht": 28.5,
+          "total_ht": 28.5
+        },
+        {
+          "label": "Scie circulaire 1400W",
+          "quantity": 1,
+          "unit": "u",
+          "unit_price_ht": 149.0,
+          "total_ht": 149.0
+        },
+        {
+          "label": "Disques diamant 230mm boîte 3",
+          "quantity": 2,
+          "unit": "u",
+          "unit_price_ht": 32.0,
+          "total_ht": 64.0
+        }
+      ],
+      "auto_liquidation": false,
+      "raw_text": "WELDOM VILLENEUVE-LÈS-AVIGNON\nFacture FA2026-00745 du 02/03/2026\n1 u  Perforateur SDS+ 800W                 218.00   218.00\n1 u  Jeu forets béton SDS+ 5/6/8/10mm       28.50    28.50\n1 u  Scie circulaire 1400W                 149.00   149.00\n2 u  Disques diamant 230mm bte 3            32.00    64.00\nTotal HT 459.50   TVA 20% 91.90   TTC 551.40"
+    },
+    {
+      "supplier_name": "Bricoman",
+      "invoice_number": "FA2026-00921",
+      "invoice_date": "2026-04-07",
+      "amount_ht": 248.6,
+      "vat_rate": 0.2,
+      "amount_vat": 49.72,
+      "amount_ttc": 298.32,
+      "lines": [
+        {
+          "label": "Vis bois 5x80 boîte 200",
+          "quantity": 8,
+          "unit": "u",
+          "unit_price_ht": 12.4,
+          "total_ht": 99.2
+        },
+        {
+          "label": "Cheville nylon 8x40 boîte 100",
+          "quantity": 6,
+          "unit": "u",
+          "unit_price_ht": 8.9,
+          "total_ht": 53.4
+        },
+        {
+          "label": "Bande adhésive toilée 50m",
+          "quantity": 4,
+          "unit": "u",
+          "unit_price_ht": 7.8,
+          "total_ht": 31.2
+        },
+        {
+          "label": "Silicone sanitaire blanc 310ml",
+          "quantity": 12,
+          "unit": "u",
+          "unit_price_ht": 5.4,
+          "total_ht": 64.8
+        }
+      ],
+      "auto_liquidation": false,
+      "raw_text": "BRICOMAN NÎMES - Facture FA2026-00921 du 07/04/2026\n 8 u  Vis bois 5x80 bte 200             12.40    99.20\n 6 u  Cheville nylon 8x40 bte 100        8.90    53.40\n 4 u  Bande adhésive toilée 50m          7.80    31.20\n12 u  Silicone sanitaire blanc 310ml     5.40    64.80\nTotal HT 248.60   TVA 20% 49.72   TTC 298.32"
+    },
+    {
+      "supplier_name": "Cedeo",
+      "invoice_number": "FA2026-00332",
+      "invoice_date": "2026-04-02",
+      "amount_ht": 6508.0,
+      "vat_rate": 0.0,
+      "amount_vat": 0.0,
+      "amount_ttc": 6508.0,
+      "lines": [
+        {
+          "label": "WC suspendu Grohe Rapid SL",
+          "quantity": 6,
+          "unit": "u",
+          "unit_price_ht": 385.0,
+          "total_ht": 2310.0
+        },
+        {
+          "label": "Lavabo céramique 60cm sur meuble",
+          "quantity": 6,
+          "unit": "u",
+          "unit_price_ht": 295.0,
+          "total_ht": 1770.0
+        },
+        {
+          "label": "Mitigeur lavabo chromé",
+          "quantity": 6,
+          "unit": "u",
+          "unit_price_ht": 118.0,
+          "total_ht": 708.0
+        },
+        {
+          "label": "Receveur douche 90x90 extra-plat",
+          "quantity": 4,
+          "unit": "u",
+          "unit_price_ht": 245.0,
+          "total_ht": 980.0
+        },
+        {
+          "label": "Robinetterie douche thermostatique",
+          "quantity": 4,
+          "unit": "u",
+          "unit_price_ht": 185.0,
+          "total_ht": 740.0
+        }
+      ],
+      "auto_liquidation": true,
+      "raw_text": "CEDEO AVIGNON - Facture FA2026-00332 du 02/04/2026\nChantier : Bouygues Immobilier - sanitaires Domaine d'Oc\n6 u  WC suspendu Grohe Rapid SL           385.00  2310.00\n6 u  Lavabo céramique 60cm meuble         295.00  1770.00\n6 u  Mitigeur lavabo chromé               118.00   708.00\n4 u  Receveur douche 90x90 extra-plat     245.00   980.00\n4 u  Robinetterie douche thermostatique   185.00   740.00\nTotal HT 6508.00\nTVA auto-liquidée par le preneur, art. 283-2 nonies CGI.\nTotal TTC 6508.00",
+      "notes": "Chantier Bouygues - auto-liquidation."
+    }
+  ],
+  "quotes": [
+    {
+      "client_name": "SCI Les Oliviers",
+      "quote_number": "DV-2026-001",
+      "title": "Rénovation salle de bains 8m² maison locative",
+      "description": "Rénovation complète d'une salle de bains de 8m² dans la maison locative de la SCI rue des Micocouliers à Nîmes. Dépose existant, plomberie, carrelage, placo et peinture.",
+      "lines": [
+        {
+          "label": "Dépose ancien carrelage sol et mur, évacuation",
+          "quantity": 8,
+          "unit": "m²",
+          "unit_price_ht": 35.0,
+          "total_ht": 280.0
+        },
+        {
+          "label": "Plomberie sanitaire (WC, lavabo, douche italienne)",
+          "quantity": 3,
+          "unit": "u",
+          "unit_price_ht": 500.0,
+          "total_ht": 1500.0
+        },
+        {
+          "label": "Fourniture et pose carrelage grès cérame sol et mur",
+          "quantity": 20,
+          "unit": "m²",
+          "unit_price_ht": 48.0,
+          "total_ht": 960.0
+        },
+        {
+          "label": "Cloison placo hydrofuge + isolation",
+          "quantity": 15,
+          "unit": "m²",
+          "unit_price_ht": 55.0,
+          "total_ht": 825.0
+        },
+        {
+          "label": "Peinture plafond et zones hautes",
+          "quantity": 15,
+          "unit": "m²",
+          "unit_price_ht": 30.0,
+          "total_ht": 450.0
+        }
+      ],
+      "amount_ht": 4015.0,
+      "vat_rate": 0.1,
+      "amount_ttc": 4416.5,
+      "status": "accepted",
+      "created_at": "2026-02-20"
+    },
+    {
+      "client_name": "M. et Mme Dupont",
+      "quote_number": "DV-2026-002",
+      "title": "Extension maison 25m² Uzès",
+      "description": "Extension de 25m² accolée à l'habitation existante avec terrassement, gros œuvre, charpente, menuiseries, isolation, second œuvre et finitions. Raccordements réseaux existants.",
+      "lines": [
+        {
+          "label": "Terrassement et fondations",
+          "quantity": 25,
+          "unit": "m²",
+          "unit_price_ht": 120.0,
+          "total_ht": 3000.0
+        },
+        {
+          "label": "Élévation parpaings et chaînage",
+          "quantity": 50,
+          "unit": "m²",
+          "unit_price_ht": 90.0,
+          "total_ht": 4500.0
+        },
+        {
+          "label": "Charpente bois et couverture tuiles",
+          "quantity": 25,
+          "unit": "m²",
+          "unit_price_ht": 135.0,
+          "total_ht": 3375.0
+        },
+        {
+          "label": "Menuiseries alu (porte-fenêtre + 2 fenêtres)",
+          "quantity": 3,
+          "unit": "u",
+          "unit_price_ht": 900.0,
+          "total_ht": 2700.0
+        },
+        {
+          "label": "Isolation extérieure et enduit façade",
+          "quantity": 50,
+          "unit": "m²",
+          "unit_price_ht": 120.0,
+          "total_ht": 6000.0
+        },
+        {
+          "label": "Doublage placo et plafond",
+          "quantity": 80,
+          "unit": "m²",
+          "unit_price_ht": 55.0,
+          "total_ht": 4400.0
+        },
+        {
+          "label": "Installation électrique (15 points lumineux et prises)",
+          "quantity": 15,
+          "unit": "u",
+          "unit_price_ht": 80.0,
+          "total_ht": 1200.0
+        },
+        {
+          "label": "Plomberie desserte sanitaire (forfait)",
+          "quantity": 1,
+          "unit": "u",
+          "unit_price_ht": 1500.0,
+          "total_ht": 1500.0
+        },
+        {
+          "label": "Carrelage sol intérieur",
+          "quantity": 25,
+          "unit": "m²",
+          "unit_price_ht": 50.0,
+          "total_ht": 1250.0
+        },
+        {
+          "label": "Peinture intérieure",
+          "quantity": 80,
+          "unit": "m²",
+          "unit_price_ht": 30.0,
+          "total_ht": 2400.0
+        }
+      ],
+      "amount_ht": 30325.0,
+      "vat_rate": 0.1,
+      "amount_ttc": 33357.5,
+      "status": "accepted",
+      "created_at": "2026-02-28"
+    },
+    {
+      "client_name": "Mairie de Rochefort-du-Gard",
+      "quote_number": "DV-2026-003",
+      "title": "Réfection toiture école primaire (200m²)",
+      "description": "Réfection complète de la toiture de l'école primaire communale dans le cadre du marché public 2026-TOIT-01. Dépose, reprise charpente, volige, couverture tuile canal, zinguerie, évacuation.",
+      "lines": [
+        {
+          "label": "Dépose ancienne couverture et tri déchets",
+          "quantity": 200,
+          "unit": "m²",
+          "unit_price_ht": 25.0,
+          "total_ht": 5000.0
+        },
+        {
+          "label": "Réfection charpente (pièces bois) forfait",
+          "quantity": 1,
+          "unit": "u",
+          "unit_price_ht": 4800.0,
+          "total_ht": 4800.0
+        },
+        {
+          "label": "Volige et écran sous toiture HPV",
+          "quantity": 200,
+          "unit": "m²",
+          "unit_price_ht": 28.0,
+          "total_ht": 5600.0
+        },
+        {
+          "label": "Couverture tuile canal traditionnelle rouge",
+          "quantity": 200,
+          "unit": "m²",
+          "unit_price_ht": 95.0,
+          "total_ht": 19000.0
+        },
+        {
+          "label": "Zinguerie chéneaux et descentes",
+          "quantity": 30,
+          "unit": "ml",
+          "unit_price_ht": 85.0,
+          "total_ht": 2550.0
+        },
+        {
+          "label": "Évacuation gravats et nettoyage final",
+          "quantity": 1,
+          "unit": "u",
+          "unit_price_ht": 1200.0,
+          "total_ht": 1200.0
+        }
+      ],
+      "amount_ht": 38150.0,
+      "vat_rate": 0.2,
+      "amount_ttc": 45780.0,
+      "status": "accepted",
+      "created_at": "2026-03-05"
+    },
+    {
+      "client_name": "Copropriété Résidence Les Mimosas",
+      "quote_number": "DV-2026-004",
+      "title": "Mise aux normes électriques parties communes",
+      "description": "Mise aux normes NFC 15-100 des parties communes de la copropriété (24 lots) : tableau général, colonne montante, appareillage couloirs et caves, éclairage de sécurité, Consuel.",
+      "lines": [
+        {
+          "label": "Dépose ancien tableau général forfait",
+          "quantity": 1,
+          "unit": "u",
+          "unit_price_ht": 800.0,
+          "total_ht": 800.0
+        },
+        {
+          "label": "Fourniture tableau TGBT normes NFC 15-100",
+          "quantity": 1,
+          "unit": "u",
+          "unit_price_ht": 3500.0,
+          "total_ht": 3500.0
+        },
+        {
+          "label": "Câblage colonne montante",
+          "quantity": 80,
+          "unit": "ml",
+          "unit_price_ht": 45.0,
+          "total_ht": 3600.0
+        },
+        {
+          "label": "Appareillage parties communes (circuits éclairage et prises)",
+          "quantity": 48,
+          "unit": "u",
+          "unit_price_ht": 85.0,
+          "total_ht": 4080.0
+        },
+        {
+          "label": "Éclairage de sécurité BAES",
+          "quantity": 12,
+          "unit": "u",
+          "unit_price_ht": 180.0,
+          "total_ht": 2160.0
+        },
+        {
+          "label": "Contrôle Consuel et mise en service",
+          "quantity": 1,
+          "unit": "u",
+          "unit_price_ht": 950.0,
+          "total_ht": 950.0
+        }
+      ],
+      "amount_ht": 15090.0,
+      "vat_rate": 0.1,
+      "amount_ttc": 16599.0,
+      "status": "sent",
+      "created_at": "2026-03-20"
+    },
+    {
+      "client_name": "M. Martin",
+      "quote_number": "DV-2026-005",
+      "title": "Mur de clôture + portail 18ml",
+      "description": "Construction d'un mur de clôture en parpaing de 18ml avec fondation, enduit deux faces et pose d'un portail coulissant motorisé 3m.",
+      "lines": [
+        {
+          "label": "Terrassement et fondation béton armé",
+          "quantity": 18,
+          "unit": "ml",
+          "unit_price_ht": 65.0,
+          "total_ht": 1170.0
+        },
+        {
+          "label": "Montage parpaing 20x20x50 et chaînage haut",
+          "quantity": 18,
+          "unit": "ml",
+          "unit_price_ht": 90.0,
+          "total_ht": 1620.0
+        },
+        {
+          "label": "Enduit gratté deux faces",
+          "quantity": 36,
+          "unit": "m²",
+          "unit_price_ht": 38.0,
+          "total_ht": 1368.0
+        },
+        {
+          "label": "Fourniture et pose portail coulissant 3m motorisé",
+          "quantity": 1,
+          "unit": "u",
+          "unit_price_ht": 1800.0,
+          "total_ht": 1800.0
+        }
+      ],
+      "amount_ht": 5958.0,
+      "vat_rate": 0.2,
+      "amount_ttc": 7149.6,
+      "status": "refused",
+      "created_at": "2026-03-08"
+    },
+    {
+      "client_name": "Mme Garcia",
+      "quote_number": "DV-2026-006",
+      "title": "Ravalement façade maison individuelle (120m²)",
+      "description": "Ravalement complet de la façade d'une maison individuelle de 120m² à Nîmes : échafaudage, nettoyage, reprise fissures, peinture façade deux couches.",
+      "lines": [
+        {
+          "label": "Location échafaudage 3 semaines",
+          "quantity": 1,
+          "unit": "u",
+          "unit_price_ht": 1800.0,
+          "total_ht": 1800.0
+        },
+        {
+          "label": "Nettoyage haute pression et décapage",
+          "quantity": 120,
+          "unit": "m²",
+          "unit_price_ht": 15.0,
+          "total_ht": 1800.0
+        },
+        {
+          "label": "Reprise fissures et enduit de rebouchage",
+          "quantity": 120,
+          "unit": "m²",
+          "unit_price_ht": 18.0,
+          "total_ht": 2160.0
+        },
+        {
+          "label": "Peinture façade pliolite deux couches",
+          "quantity": 120,
+          "unit": "m²",
+          "unit_price_ht": 28.0,
+          "total_ht": 3360.0
+        },
+        {
+          "label": "Protection menuiseries et évacuation déchets",
+          "quantity": 1,
+          "unit": "u",
+          "unit_price_ht": 450.0,
+          "total_ht": 450.0
+        }
+      ],
+      "amount_ht": 9570.0,
+      "vat_rate": 0.1,
+      "amount_ttc": 10527.0,
+      "status": "sent",
+      "created_at": "2026-03-28"
+    },
+    {
+      "client_name": "SCI Les Oliviers",
+      "quote_number": "DV-2026-007",
+      "title": "Isolation combles perdus 80m²",
+      "description": "Isolation des combles perdus de 80m² dans la maison locative de la SCI : dépose de la laine existante affaissée, pose laine de bois 200mm, pare-vapeur et plafond placo suspendu.",
+      "lines": [
+        {
+          "label": "Dépose laine existante et évacuation",
+          "quantity": 80,
+          "unit": "m²",
+          "unit_price_ht": 12.0,
+          "total_ht": 960.0
+        },
+        {
+          "label": "Fourniture laine de bois 200mm",
+          "quantity": 80,
+          "unit": "m²",
+          "unit_price_ht": 35.0,
+          "total_ht": 2800.0
+        },
+        {
+          "label": "Pose isolant et pare-vapeur",
+          "quantity": 80,
+          "unit": "m²",
+          "unit_price_ht": 28.0,
+          "total_ht": 2240.0
+        },
+        {
+          "label": "Plafond placo suspendu sur ossature métal",
+          "quantity": 80,
+          "unit": "m²",
+          "unit_price_ht": 42.0,
+          "total_ht": 3360.0
+        }
+      ],
+      "amount_ht": 9360.0,
+      "vat_rate": 0.1,
+      "amount_ttc": 10296.0,
+      "status": "sent",
+      "created_at": "2026-04-02"
+    },
+    {
+      "client_name": "M. et Mme Dupont",
+      "quote_number": "DV-2026-008",
+      "title": "Création terrasse carrelée 35m²",
+      "description": "Création d'une terrasse carrelée de 35m² attenante à l'extension en cours : terrassement, dalle béton armé, carrelage extérieur antidérapant, bordures et finitions.",
+      "lines": [
+        {
+          "label": "Terrassement et décaissement",
+          "quantity": 35,
+          "unit": "m²",
+          "unit_price_ht": 40.0,
+          "total_ht": 1400.0
+        },
+        {
+          "label": "Dalle béton armé 15cm",
+          "quantity": 35,
+          "unit": "m²",
+          "unit_price_ht": 75.0,
+          "total_ht": 2625.0
+        },
+        {
+          "label": "Fourniture et pose carrelage grès cérame extérieur",
+          "quantity": 35,
+          "unit": "m²",
+          "unit_price_ht": 58.0,
+          "total_ht": 2030.0
+        },
+        {
+          "label": "Bordures et finitions",
+          "quantity": 1,
+          "unit": "u",
+          "unit_price_ht": 680.0,
+          "total_ht": 680.0
+        },
+        {
+          "label": "Évacuation gravats",
+          "quantity": 1,
+          "unit": "u",
+          "unit_price_ht": 350.0,
+          "total_ht": 350.0
+        }
+      ],
+      "amount_ht": 7085.0,
+      "vat_rate": 0.1,
+      "amount_ttc": 7793.5,
+      "status": "accepted",
+      "created_at": "2026-03-25"
+    }
+  ],
+  "emails": [
+    {
+      "from_name": "Sophie Allard",
+      "from_email": "s.allard@sci-lesoliviers.fr",
+      "to_email": "contact@entreprise-test.fr",
+      "subject": "Accord pour le devis isolation combles DV-2026-007",
+      "body": "Bonjour,\n\nJe reviens vers vous concernant le devis DV-2026-007 pour l'isolation des combles de la maison de la rue des Micocouliers. Après discussion avec mon associé, nous donnons notre accord sur le montant de 9 360 euros HT. Pouvez-vous me confirmer une date de démarrage possible courant mai ?\n\nJe vous retourne le devis signé en pièce jointe dès demain.\n\nSophie Allard\nGérante SCI Les Oliviers",
+      "received_at": "2026-04-08T09:14:22",
+      "category": "client",
+      "is_important": true,
+      "related_client_name": "SCI Les Oliviers",
+      "related_supplier_name": null,
+      "related_quote_number": "DV-2026-007",
+      "related_invoice_number": null
+    },
+    {
+      "from_name": "Sophie Allard",
+      "from_email": "s.allard@sci-lesoliviers.fr",
+      "to_email": "contact@entreprise-test.fr",
+      "subject": "Facture Point P FA2026-00672 rénovation SDB",
+      "body": "Bonjour,\n\nJ'ai bien reçu la copie de la facture Point P FA2026-00672 pour les matériaux de la rénovation de salle de bains. Le montant de 882,86 euros TTC correspond bien à ce qui était prévu dans le devis DV-2026-001.\n\nLe virement partira ce vendredi depuis le compte de la SCI. Merci de me transmettre la facture finale des travaux une fois le chantier terminé.\n\nSophie Allard",
+      "received_at": "2026-04-15T11:42:08",
+      "category": "client",
+      "is_important": false,
+      "related_client_name": "SCI Les Oliviers",
+      "related_supplier_name": "Point P",
+      "related_quote_number": "DV-2026-001",
+      "related_invoice_number": "FA2026-00672"
+    },
+    {
+      "from_name": "Mathieu Reynaud",
+      "from_email": "m.reynaud@foncia-avignon.fr",
+      "to_email": "contact@entreprise-test.fr",
+      "subject": "Devis DV-2026-004 mise aux normes électriques Les Mimosas",
+      "body": "Bonjour,\n\nLe conseil syndical se réunit le 24 avril pour statuer sur votre devis DV-2026-004 concernant la mise aux normes électriques des parties communes. Le montant de 15 090 euros HT sera présenté.\n\nDeux questions de la part des copropriétaires : est-il possible de scinder les travaux en deux phases (TGBT puis appareillage couloirs) pour étaler la dépense sur 2026 et 2027 ? Et quelle durée d'intervention prévoyez-vous ?\n\nMerci de votre retour avant le 22 avril si possible.\n\nMathieu Reynaud\nFoncia Avignon, gestionnaire",
+      "received_at": "2026-04-10T14:28:35",
+      "category": "client",
+      "is_important": true,
+      "related_client_name": "Copropriété Résidence Les Mimosas",
+      "related_supplier_name": null,
+      "related_quote_number": "DV-2026-004",
+      "related_invoice_number": null
+    },
+    {
+      "from_name": "Hélène Aubert",
+      "from_email": "helene.aubert.mimosas@gmail.com",
+      "to_email": "contact@entreprise-test.fr",
+      "subject": "Précisions tableau général DV-2026-004",
+      "body": "Bonjour,\n\nPrésidente du conseil syndical des Mimosas. Concernant votre devis, un copropriétaire ingénieur souhaite savoir si le tableau TGBT prévu intègre bien un parafoudre type 2 et un dispositif de coupure accessible depuis le hall d'entrée. Ces points sont importants pour le vote en assemblée.\n\nPouvez-vous préciser la marque et la référence retenue pour le tableau ?\n\nMerci,\nHélène Aubert",
+      "received_at": "2026-04-17T10:05:12",
+      "category": "client",
+      "is_important": false,
+      "related_client_name": "Copropriété Résidence Les Mimosas",
+      "related_supplier_name": null,
+      "related_quote_number": "DV-2026-004",
+      "related_invoice_number": null
+    },
+    {
+      "from_name": "Claire Dupont",
+      "from_email": "claire.dupont@laposte.net",
+      "to_email": "contact@entreprise-test.fr",
+      "subject": "Validation calendrier terrasse DV-2026-008",
+      "body": "Bonjour,\n\nNous validons le devis DV-2026-008 pour la création de la terrasse (7 085 euros HT). Nous aimerions enchaîner avec les travaux d'extension, donc commencer la terrasse fin juin si possible.\n\nPouvez-vous nous confirmer que le carrelage proposé est bien antidérapant classe R11 ? C'est un point important pour les enfants.\n\nClaire Dupont",
+      "received_at": "2026-04-06T18:22:40",
+      "category": "client",
+      "is_important": true,
+      "related_client_name": "M. et Mme Dupont",
+      "related_supplier_name": null,
+      "related_quote_number": "DV-2026-008",
+      "related_invoice_number": null
+    },
+    {
+      "from_name": "Jean-Pierre Dupont",
+      "from_email": "jp.dupont30@laposte.net",
+      "to_email": "contact@entreprise-test.fr",
+      "subject": "Facture Plomberie Provençale FA2026-00089",
+      "body": "Bonjour,\n\nJ'ai reçu la facture FA2026-00089 de la Plomberie Provençale pour un montant de 1 553,20 euros TTC. Je voulais vérifier avec vous : cela correspond bien aux travaux de passage des tubes PER effectués en février sur notre chantier de rénovation ? Je veux m'assurer que c'est bien facturé au titre de notre devis global avant de régler.\n\nMerci de votre confirmation.\n\nJean-Pierre Dupont",
+      "received_at": "2026-04-12T08:51:19",
+      "category": "client",
+      "is_important": false,
+      "related_client_name": "M. et Mme Dupont",
+      "related_supplier_name": "Plomberie Provençale",
+      "related_quote_number": null,
+      "related_invoice_number": "FA2026-00089"
+    },
+    {
+      "from_name": "Claire Dupont",
+      "from_email": "claire.dupont@laposte.net",
+      "to_email": "contact@entreprise-test.fr",
+      "subject": "Modification extension DV-2026-002 : ajout prise extérieure",
+      "body": "Bonjour,\n\nDans le cadre des travaux d'extension prévus au devis DV-2026-002, serait-il possible d'ajouter une prise étanche en façade sud pour brancher un éclairage de terrasse ? Je suppose que cela représente un petit supplément, si vous pouvez chiffrer ça avant le démarrage ce serait parfait.\n\nClaire",
+      "received_at": "2026-04-19T16:38:54",
+      "category": "client",
+      "is_important": false,
+      "related_client_name": "M. et Mme Dupont",
+      "related_supplier_name": null,
+      "related_quote_number": "DV-2026-002",
+      "related_invoice_number": null
+    },
+    {
+      "from_name": "Laurent Cazaux",
+      "from_email": "dst@rochefort-du-gard.fr",
+      "to_email": "contact@entreprise-test.fr",
+      "subject": "Notification signature marché 2026-TOIT-01 DV-2026-003",
+      "body": "Bonjour,\n\nJe vous confirme la signature du marché public 2026-TOIT-01 portant sur la réfection de la toiture de l'école primaire, correspondant à votre devis DV-2026-003 d'un montant de 38 150 euros HT (45 780 euros TTC).\n\nLe bon de commande officiel vous parviendra par voie postale dans les prochains jours. Notre service technique prendra contact pour caler la réunion de démarrage. Merci de prévoir un planning prévisionnel.\n\nLaurent Cazaux\nDirecteur des Services Techniques, Mairie de Rochefort-du-Gard",
+      "received_at": "2026-04-07T09:47:01",
+      "category": "client",
+      "is_important": true,
+      "related_client_name": "Mairie de Rochefort-du-Gard",
+      "related_supplier_name": null,
+      "related_quote_number": "DV-2026-003",
+      "related_invoice_number": null
+    },
+    {
+      "from_name": "Valérie Fournier",
+      "from_email": "comptabilite@rochefort-du-gard.fr",
+      "to_email": "contact@entreprise-test.fr",
+      "subject": "Pièces nécessaires au paiement marché toiture",
+      "body": "Bonjour,\n\nDans le cadre du marché 2026-TOIT-01, merci de nous adresser les pièces suivantes pour constituer le dossier de paiement : RIB au nom de l'entreprise, attestation fiscale de régularité 2026, attestation URSSAF à jour, extrait Kbis de moins de 3 mois.\n\nVous pouvez répondre à ce mail avec les pièces scannées. Le paiement se fait dans un délai de 30 jours après service fait.\n\nValérie Fournier\nService comptabilité, Mairie de Rochefort-du-Gard",
+      "received_at": "2026-04-14T14:12:29",
+      "category": "client",
+      "is_important": false,
+      "related_client_name": "Mairie de Rochefort-du-Gard",
+      "related_supplier_name": null,
+      "related_quote_number": null,
+      "related_invoice_number": null
+    },
+    {
+      "from_name": "Thomas Leroux",
+      "from_email": "t.leroux@bouygues-immobilier.com",
+      "to_email": "contact@entreprise-test.fr",
+      "subject": "Validation intervention chaufferie Domaine d'Oc",
+      "body": "Bonjour,\n\nJe valide votre intervention sur la chaufferie du programme Le Domaine d'Oc, correspondant à la facture FA2026-00124 de la Plomberie Provençale (5 067 euros HT, auto-liquidation TVA). L'intervention du 25 mars s'est bien déroulée selon le compte rendu de notre conducteur de travaux.\n\nLe règlement partira à J+30 comme prévu au contrat de sous-traitance.\n\nThomas Leroux\nChef de projet, Bouygues Immobilier Montpellier",
+      "received_at": "2026-04-09T11:02:47",
+      "category": "client",
+      "is_important": false,
+      "related_client_name": "Bouygues Immobilier",
+      "related_supplier_name": "Plomberie Provençale",
+      "related_quote_number": null,
+      "related_invoice_number": "FA2026-00124"
+    },
+    {
+      "from_name": "Thomas Leroux",
+      "from_email": "t.leroux@bouygues-immobilier.com",
+      "to_email": "contact@entreprise-test.fr",
+      "subject": "Planning semaine 17 pose sanitaires",
+      "body": "Bonjour,\n\nLa livraison Cedeo du 2 avril (facture FA2026-00332) est bien arrivée sur site. On peut enchaîner sur la pose des sanitaires en semaine 17. Merci de me confirmer l'équipe affectée et l'ordre de passage des bâtiments A, B, C.\n\nJe vous rappelle que l'accès au bâtiment C n'est possible qu'à partir du mardi 21 avril, après coulage de la chape.\n\nThomas Leroux\nBouygues Immobilier",
+      "received_at": "2026-04-16T09:31:05",
+      "category": "client",
+      "is_important": true,
+      "related_client_name": "Bouygues Immobilier",
+      "related_supplier_name": "Cedeo",
+      "related_quote_number": null,
+      "related_invoice_number": "FA2026-00332"
+    },
+    {
+      "from_name": "Sylvie Baron",
+      "from_email": "compta-sous-traitance@bouygues-immobilier.com",
+      "to_email": "contact@entreprise-test.fr",
+      "subject": "Réception facture Rexel FA2026-04612 auto-liquidation",
+      "body": "Bonjour,\n\nBonne réception de la facture Rexel FA2026-04612 d'un montant de 6 080 euros HT en auto-liquidation TVA, imputée au chantier Domaine d'Oc. Le règlement est programmé à 30 jours fin de mois, soit au 31/05/2026.\n\nSi vous avez d'autres factures en attente sur ce chantier, n'hésitez pas à les transmettre groupées.\n\nSylvie Baron\nComptabilité sous-traitance, Bouygues Immobilier",
+      "received_at": "2026-04-18T15:44:18",
+      "category": "client",
+      "is_important": false,
+      "related_client_name": "Bouygues Immobilier",
+      "related_supplier_name": "Rexel",
+      "related_quote_number": null,
+      "related_invoice_number": "FA2026-04612"
+    },
+    {
+      "from_name": "Julien Vasseur",
+      "from_email": "j.vasseur@pointp.fr",
+      "to_email": "contact@entreprise-test.fr",
+      "subject": "Livraison chantier mardi 21 avril",
+      "body": "Bonjour,\n\nVotre commande du 14 avril est prête. Livraison confirmée mardi 21 avril sur le créneau 8h-10h. Merci de prévoir une personne sur place pour la réception et le déchargement au camion grue.\n\nBonne journée,\nJulien Vasseur\nCommercial Point P Saint-Martin-de-Crau",
+      "received_at": "2026-04-08T16:17:33",
+      "category": "fournisseur",
+      "is_important": false,
+      "related_client_name": null,
+      "related_supplier_name": "Point P",
+      "related_quote_number": null,
+      "related_invoice_number": null
+    },
+    {
+      "from_name": "Agnès Moreau",
+      "from_email": "comptabilite@samse.fr",
+      "to_email": "contact@entreprise-test.fr",
+      "subject": "Rappel amiable facture FA2026-02337",
+      "body": "Bonjour,\n\nSauf erreur de notre part, la facture FA2026-02337 du 28/02/2026 d'un montant de 4 446 euros TTC est arrivée à échéance le 31 mars et reste à ce jour impayée.\n\nNous vous remercions de procéder au règlement sous 8 jours. Si un paiement est en cours ou si un point bloque, n'hésitez pas à nous le signaler.\n\nCordialement,\nAgnès Moreau, service comptabilité SAMSE",
+      "received_at": "2026-04-11T10:22:56",
+      "category": "fournisseur",
+      "is_important": true,
+      "related_client_name": null,
+      "related_supplier_name": "SAMSE",
+      "related_quote_number": null,
+      "related_invoice_number": "FA2026-02337"
+    },
+    {
+      "from_name": "Rexel Pro",
+      "from_email": "newsletter@rexel.fr",
+      "to_email": "contact@entreprise-test.fr",
+      "subject": "Offre avril : luminaires LED jusqu'à -20% pour les pros",
+      "body": "Offres valables jusqu'au 30 avril 2026.\n\nSpots encastrables, rubans et panneaux LED de grandes marques à prix pro. Remise supplémentaire sur votre compte dès 500 euros d'achats cumulés sur le mois.\n\nVoir le catalogue sur rexel.fr (espace pro).",
+      "received_at": "2026-04-13T07:00:00",
+      "category": "newsletter",
+      "is_important": false,
+      "related_client_name": null,
+      "related_supplier_name": "Rexel",
+      "related_quote_number": null,
+      "related_invoice_number": null
+    },
+    {
+      "from_name": "Kiloutou Réservations",
+      "from_email": "reservations@kiloutou.fr",
+      "to_email": "contact@entreprise-test.fr",
+      "subject": "Confirmation réservation mini-pelle semaine 16",
+      "body": "Bonjour,\n\nVotre réservation est confirmée : mini-pelle 1.8t + godet 30cm, retrait le lundi 13 avril 8h à l'agence Kiloutou Nîmes Ouest, restitution le vendredi 17 avril avant 18h. Caution de 1 500 euros par empreinte CB au retrait.\n\nPensez à apporter votre permis et une pièce d'identité.\n\nKiloutou Nîmes",
+      "received_at": "2026-04-06T14:08:11",
+      "category": "fournisseur",
+      "is_important": false,
+      "related_client_name": null,
+      "related_supplier_name": "Kiloutou",
+      "related_quote_number": null,
+      "related_invoice_number": null
+    },
+    {
+      "from_name": "Fabrice Martel",
+      "from_email": "f.martel@cedeo.fr",
+      "to_email": "contact@entreprise-test.fr",
+      "subject": "Devis accessoires sanitaires chantier Bouygues",
+      "body": "Bonjour,\n\nSuite à notre échange téléphonique, je vous joins le devis pour les accessoires sanitaires complémentaires du chantier Bouygues (porte-serviettes, miroirs, bondes siphoïdes). Total 1 840 euros HT. Si validé cette semaine, livraison possible sous 10 jours.\n\nFabrice Martel\nCommercial Cedeo Avignon",
+      "received_at": "2026-04-10T17:52:44",
+      "category": "fournisseur",
+      "is_important": false,
+      "related_client_name": null,
+      "related_supplier_name": "Cedeo",
+      "related_quote_number": null,
+      "related_invoice_number": null
+    },
+    {
+      "from_name": "Weldom Pro",
+      "from_email": "pro@weldom.fr",
+      "to_email": "contact@entreprise-test.fr",
+      "subject": "-15% sur l'outillage électroportatif ce mois-ci",
+      "body": "Remise de 15% sur présentation de votre carte Weldom Pro, toute la gamme perforateurs, meuleuses et scies circulaires Makita et Bosch. Valable en magasin et sur commande comptoir jusqu'au 30 avril.",
+      "received_at": "2026-04-12T07:30:00",
+      "category": "newsletter",
+      "is_important": false,
+      "related_client_name": null,
+      "related_supplier_name": "Weldom",
+      "related_quote_number": null,
+      "related_invoice_number": null
+    },
+    {
+      "from_name": "Gedimat Catalogue",
+      "from_email": "catalogue@gedimat.fr",
+      "to_email": "contact@entreprise-test.fr",
+      "subject": "Parution du catalogue Gedimat Pro 2026",
+      "body": "Le nouveau catalogue Gedimat Pro 2026 est disponible en dépôt et en version numérique. Nouveaux produits isolants biosourcés, gamme béton bas carbone et matériaux certifiés A+. Demandez votre exemplaire papier à votre dépôt Gedimat habituel.",
+      "received_at": "2026-04-15T08:00:00",
+      "category": "newsletter",
+      "is_important": false,
+      "related_client_name": null,
+      "related_supplier_name": "Gedimat",
+      "related_quote_number": null,
+      "related_invoice_number": null
+    },
+    {
+      "from_name": "Bricoman Pro",
+      "from_email": "commandes@bricoman.fr",
+      "to_email": "contact@entreprise-test.fr",
+      "subject": "Commande FA2026-00921 prête au retrait",
+      "body": "Bonjour,\n\nVotre commande visserie et quincaillerie est prête au comptoir de retrait de Bricoman Nîmes. Référence commande liée à la facture FA2026-00921. Retrait possible dès aujourd'hui sur présentation de ce mail, horaires 7h-19h.\n\nBricoman Nîmes",
+      "received_at": "2026-04-07T11:14:28",
+      "category": "fournisseur",
+      "is_important": false,
+      "related_client_name": null,
+      "related_supplier_name": "Bricoman",
+      "related_quote_number": null,
+      "related_invoice_number": "FA2026-00921"
+    },
+    {
+      "from_name": "Éric Delaunay",
+      "from_email": "e.delaunay@plomberie-provencale.fr",
+      "to_email": "contact@entreprise-test.fr",
+      "subject": "Proposition contrat annuel fournitures plomberie",
+      "body": "Bonjour,\n\nAu vu du volume réalisé sur les trois premiers mois de 2026, je vous propose un contrat annuel cadre sur les fournitures plomberie standards (tubes PER, raccords laiton, collecteurs). Conditions tarifaires spécifiques, livraison J+1 sur stock, facturation mensualisée.\n\nSi ça vous intéresse, je passe la semaine prochaine pour en discuter.\n\nÉric Delaunay\nPlomberie Provençale Nîmes",
+      "received_at": "2026-04-18T09:05:40",
+      "category": "fournisseur",
+      "is_important": false,
+      "related_client_name": null,
+      "related_supplier_name": "Plomberie Provençale",
+      "related_quote_number": null,
+      "related_invoice_number": null
+    },
+    {
+      "from_name": "URSSAF PACA",
+      "from_email": "noreply@urssaf.fr",
+      "to_email": "contact@entreprise-test.fr",
+      "subject": "Déclaration trimestrielle 1T2026 à souscrire avant le 30 avril",
+      "body": "Bonjour,\n\nVotre déclaration de cotisations du premier trimestre 2026 est à souscrire sur votre espace en ligne avant le 30 avril 2026. Le montant prélevé sera calculé sur la base déclarée.\n\nEn cas de difficulté de trésorerie, un délai de paiement peut être demandé via le formulaire en ligne.\n\nURSSAF PACA",
+      "received_at": "2026-04-11T09:00:00",
+      "category": "admin",
+      "is_important": true,
+      "related_client_name": null,
+      "related_supplier_name": null,
+      "related_quote_number": null,
+      "related_invoice_number": null
+    },
+    {
+      "from_name": "Crédit Agricole Pro",
+      "from_email": "noreply@credit-agricole.fr",
+      "to_email": "contact@entreprise-test.fr",
+      "subject": "Relevé de compte professionnel mars 2026 disponible",
+      "body": "Votre relevé de compte professionnel du mois de mars est disponible dans votre espace en ligne. Pensez à le consulter pour rapprocher vos opérations avec votre comptabilité.\n\nCrédit Agricole du Gard, agence professionnels",
+      "received_at": "2026-04-09T06:30:00",
+      "category": "admin",
+      "is_important": false,
+      "related_client_name": null,
+      "related_supplier_name": null,
+      "related_quote_number": null,
+      "related_invoice_number": null
+    },
+    {
+      "from_name": "Stéphanie Langlois",
+      "from_email": "s.langlois@axa.fr",
+      "to_email": "contact@entreprise-test.fr",
+      "subject": "Échéance RC Décennale au 15 mai 2026",
+      "body": "Bonjour,\n\nVotre contrat RC Décennale arrive à échéance le 15 mai 2026. L'appel de cotisation annuel pour la période 15/05/2026 - 14/05/2027 s'élève à 3 820 euros, sans majoration.\n\nMerci de confirmer le maintien des garanties et de procéder au règlement avant la date d'échéance pour éviter toute interruption de couverture.\n\nStéphanie Langlois, AXA Entreprises",
+      "received_at": "2026-04-14T10:48:15",
+      "category": "admin",
+      "is_important": true,
+      "related_client_name": null,
+      "related_supplier_name": null,
+      "related_quote_number": null,
+      "related_invoice_number": null
+    },
+    {
+      "from_name": "Lucie Vidal",
+      "from_email": "l.vidal@cabinet-vidal-expertise.fr",
+      "to_email": "contact@entreprise-test.fr",
+      "subject": "Pièces comptables du mois de mars",
+      "body": "Bonjour,\n\nPour boucler la comptabilité du mois de mars, il me manque les pièces suivantes : relevé bancaire mars complet, justificatifs des frais carburant au-dessus de 50 euros, copie du contrat de sous-traitance Bouygues signé.\n\nMerci de me les transmettre par mail ou sur l'espace partagé avant le 25 avril.\n\nLucie Vidal, Cabinet Vidal Expertise Comptable",
+      "received_at": "2026-04-10T15:27:08",
+      "category": "admin",
+      "is_important": false,
+      "related_client_name": null,
+      "related_supplier_name": null,
+      "related_quote_number": null,
+      "related_invoice_number": null
+    },
+    {
+      "from_name": "CIBTP Sud-Est",
+      "from_email": "noreply@cibtp.fr",
+      "to_email": "contact@entreprise-test.fr",
+      "subject": "Cotisation congés payés avril à déposer",
+      "body": "Votre déclaration mensuelle de cotisations Congés Payés et Intempéries pour avril 2026 doit être déposée avant le 15 mai sur votre espace adhérent. La dernière déclaration de mars a bien été enregistrée.\n\nCIBTP Caisse Sud-Est",
+      "received_at": "2026-04-16T08:15:00",
+      "category": "admin",
+      "is_important": false,
+      "related_client_name": null,
+      "related_supplier_name": null,
+      "related_quote_number": null,
+      "related_invoice_number": null
+    },
+    {
+      "from_name": "Batirama",
+      "from_email": "newsletter@batirama.fr",
+      "to_email": "contact@entreprise-test.fr",
+      "subject": "Actualités BTP : nouvelle RE 2025 et aides à la rénovation énergétique",
+      "body": "Au sommaire cette semaine : mise à jour de la RE 2025 sur l'étanchéité à l'air, évolution des plafonds MaPrimeRénov' pour la rénovation globale, zoom sur les équipements bas carbone. Lire sur batirama.com.",
+      "received_at": "2026-04-13T06:00:00",
+      "category": "newsletter",
+      "is_important": false,
+      "related_client_name": null,
+      "related_supplier_name": null,
+      "related_quote_number": null,
+      "related_invoice_number": null
+    },
+    {
+      "from_name": "Le Moniteur Marchés",
+      "from_email": "appels-offres@lemoniteur.fr",
+      "to_email": "contact@entreprise-test.fr",
+      "subject": "Appels d'offres publics région Sud",
+      "body": "Sélection d'appels d'offres publics dans votre secteur BTP en région Sud : réhabilitation école primaire Salon-de-Provence, création crèche Bagnols-sur-Cèze, réfection voirie Vedène. Consultation détaillée sur votre espace Le Moniteur Marchés.",
+      "received_at": "2026-04-19T07:45:00",
+      "category": "newsletter",
+      "is_important": false,
+      "related_client_name": null,
+      "related_supplier_name": null,
+      "related_quote_number": null,
+      "related_invoice_number": null
+    },
+    {
+      "from_name": "Paul Martin",
+      "from_email": "p.martin84@gmail.com",
+      "to_email": "contact@entreprise-test.fr",
+      "subject": "Refus devis clôture DV-2026-005",
+      "body": "Bonjour,\n\nAprès réflexion, je ne vais pas donner suite au devis DV-2026-005 pour le mur de clôture. Le montant de 7 149 euros TTC dépasse mon budget et j'ai trouvé une solution plus économique en panneaux rigides que je vais poser moi-même.\n\nMerci pour votre proposition et votre disponibilité.\n\nP. Martin",
+      "received_at": "2026-04-06T19:10:22",
+      "category": "client",
+      "is_important": false,
+      "related_client_name": "M. Martin",
+      "related_supplier_name": null,
+      "related_quote_number": "DV-2026-005",
+      "related_invoice_number": null
+    },
+    {
+      "from_name": "Marie Garcia",
+      "from_email": "m.garcia.nimes@orange.fr",
+      "to_email": "contact@entreprise-test.fr",
+      "subject": "Devis ravalement DV-2026-006 et paiement étalé",
+      "body": "Bonjour,\n\nJ'ai bien reçu votre devis DV-2026-006 pour le ravalement de façade (10 527 euros TTC). La proposition me convient sur le principe mais pouvez-vous me dire si un paiement en trois fois est envisageable (acompte 30%, mi-chantier 40%, solde 30%) ? Cela me permettrait de valider plus facilement.\n\nEn vous remerciant,\nMarie Garcia",
+      "received_at": "2026-04-15T17:33:49",
+      "category": "client",
+      "is_important": false,
+      "related_client_name": "Mme Garcia",
+      "related_supplier_name": null,
+      "related_quote_number": "DV-2026-006",
+      "related_invoice_number": null
+    }
+  ]
+}
