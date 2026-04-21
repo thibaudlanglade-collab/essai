@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Sparkles, MessageSquare, Info } from "lucide-react";
+import { Sparkles, MessageSquare, Info, X } from "lucide-react";
 import { Sidebar } from "./components/Sidebar/Sidebar";
 import { Topbar } from "./components/Topbar/Topbar";
 import WorkflowLauncher from "./components/WorkflowLauncher/WorkflowLauncher";
@@ -74,11 +74,8 @@ export default function App() {
 
   useEffect(() => {
     if (!showCustomizationHint) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape" || e.key === "Enter") setShowCustomizationHint(false);
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    const timer = setTimeout(() => setShowCustomizationHint(false), 5000);
+    return () => clearTimeout(timer);
   }, [showCustomizationHint]);
 
   // Scroll container ref — reset scroll on page change
@@ -270,40 +267,32 @@ export default function App() {
         <span className="sm:hidden">Contact</span>
       </button>
 
-      {/* First-visit customization hint */}
+      {/* First-visit customization hint — discrete toast top-right */}
       {showCustomizationHint && (
         <div
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="customization-hint-title"
-          className="fixed inset-0 z-[70] flex items-center justify-center px-4"
+          role="status"
+          aria-live="polite"
+          className="fixed top-[52px] sm:top-[60px] right-3 sm:right-4 z-[60] w-[calc(100%-1.5rem)] sm:w-auto sm:max-w-xs animate-toast-in"
         >
-          <div
-            className="absolute inset-0 bg-gray-900/50 backdrop-blur-sm"
-            onClick={() => setShowCustomizationHint(false)}
-          />
-          <div className="relative w-full max-w-md rounded-2xl border border-violet-100 bg-white p-6 sm:p-7 shadow-2xl animate-step-enter">
-            <div className="flex flex-col items-center text-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-100 to-blue-100">
-                <Info className="h-7 w-7 text-violet-600" />
-              </div>
-              <h2
-                id="customization-hint-title"
-                className="mt-4 text-lg sm:text-xl font-semibold text-gray-900"
-              >
-                Les données affichées sont des exemples
-              </h2>
-              <p className="mt-2 text-sm leading-relaxed text-gray-600">
-                Tout est entièrement personnalisable selon vos besoins, vos données et vos workflows.
-              </p>
-              <button
-                onClick={() => setShowCustomizationHint(false)}
-                autoFocus
-                className="mt-6 w-full sm:w-auto px-8 py-2.5 rounded-full bg-gradient-to-r from-violet-500 to-blue-500 text-white text-sm font-medium hover:from-violet-600 hover:to-blue-600 transition-all shadow-md hover:shadow-lg"
-              >
-                OK, j'ai compris
-              </button>
+          <div className="flex items-start gap-3 rounded-xl border-l-4 border-l-violet-500 border-y border-r border-violet-100 bg-white px-3.5 py-3 shadow-lg">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-violet-100 to-blue-100">
+              <Info className="h-4 w-4 text-violet-600" />
             </div>
+            <div className="flex-1 pt-0.5 min-w-0">
+              <p className="text-sm font-semibold text-gray-900">
+                Données d'exemple
+              </p>
+              <p className="mt-0.5 text-xs leading-relaxed text-gray-600">
+                Tout est personnalisable selon vos besoins et vos workflows.
+              </p>
+            </div>
+            <button
+              onClick={() => setShowCustomizationHint(false)}
+              aria-label="Fermer"
+              className="shrink-0 rounded-md p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
           </div>
         </div>
       )}
