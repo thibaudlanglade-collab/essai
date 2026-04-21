@@ -280,10 +280,10 @@ export default function App() {
             </div>
             <div className="flex-1 pt-0.5 min-w-0">
               <p className="text-sm font-semibold text-gray-900">
-                Fonctionnalités d'exemple
+                Vous êtes en démo
               </p>
               <p className="mt-0.5 text-xs leading-relaxed text-gray-700">
-                Tout est personnalisable selon vos besoins et vos workflows.
+                Les fonctionnalités présentées illustrent ce que fait Synthèse. Dans votre version, elles sont adaptées à vos métiers, vos documents et vos process.
               </p>
             </div>
             <button
