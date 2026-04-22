@@ -94,11 +94,12 @@ async def activate_token(
         return RedirectResponse(url="/expired", status_code=status.HTTP_302_FOUND)
 
     session_token = await open_session(db, user)
-    # Land the visitor directly inside a feature (the AI Assistant) rather
-    # than the marketing homepage — that way the "I'm in the trial" state
-    # is visually unambiguous. The hash picks a specific sidebar item so
-    # the SPA sets activeMode="chat-assistant" on load.
-    target = "/#chat-assistant"
+    # Land on the dedicated WelcomeView (activeMode="welcome"). It reads
+    # the trial cookie, shows the RGPD reassurance + "what you're about
+    # to test" copy, and has a CTA that moves the visitor into the
+    # Assistant. The page is distinct from the marketing homepage so
+    # the trial state is visually unambiguous.
+    target = "/#welcome"
 
     redirect = RedirectResponse(url=target, status_code=status.HTTP_302_FOUND)
     redirect.set_cookie(
