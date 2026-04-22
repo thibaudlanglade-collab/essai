@@ -1,62 +1,49 @@
-# Synthèse — Landing site (`te`)
+# Synthèse (`te`)
 
-Marketing / landing site for Synthèse, served at **https://synthèse.fr**.
+Single-deployment Synthèse app: marketing / landing site **and** the actual
+trial product live behind the same domain, **https://synthèse.fr**.
 
-This repo is **not** the actual product. The product (and its backend) lives
-in a separate repo, **TE-main**, deployed at **https://app.synthese.fr**. The
-landing site only ships:
+## What's in this repo
 
-- A static React/Vite frontend with the marketing pages (Comprendre, Tarification, RGPD, Contact, etc.)
-- A thin FastAPI backend that handles the contact form and a few demo features
-- A 14-day trial entry flow that hands visitors over to the TE-main app
+- `frontend/` — React + Vite SPA. Marketing pages (Home, Comprendre, Tarification, RGPD, Qui sommes-nous, Contact) **plus** the product UI (Emails, Planificateur, Assistant, Smart Extract, Mes agents IA, etc.).
+- `backend/` — FastAPI server. Feature routers (planner, emails, automations, agents…) **plus** the `auth/` module that mints anonymous 14-day trial tokens.
+- `Dockerfile` — multi-stage build: compiles the frontend, copies `frontend/dist` into the Python image, serves everything from uvicorn on `$PORT`.
+- `railway.json` — tells Railway to use the Dockerfile.
+
+Everything listens on one port. FastAPI serves `/api/*` and `/app/{token}` directly, and falls back to `index.html` for every other path so the React router can take over.
 
 ## How the trial flow works
 
 1. Visitor clicks any "démo" CTA on the landing site.
-2. If they already have a trial cookie (`synthese_trial`) with a `resumeUrl`,
-   the browser jumps straight to that URL (the TE-main app).
-3. Otherwise they land on `/demo`. Clicking **Commencer ma démo gratuite**
-   POSTs to `${VITE_TRIAL_API_BASE}/api/auth/start-anonymous-trial` (TE-main),
-   stores the returned `access_url` in the cookie, and redirects there.
-
-If the call fails, the user sees **"Load failed · Réessayez dans un instant."**
-That almost always means `VITE_TRIAL_API_BASE` was missing at build time and
-the frontend tried `http://localhost:8000`.
+2. If they already have a `synthese_trial` cookie with a `resumeUrl`, the browser jumps straight to it.
+3. Otherwise they land on `/demo`. Clicking **Commencer ma démo gratuite** POSTs to `/api/auth/start-anonymous-trial` (same origin — no CORS, no second domain).
+4. The backend mints an `AccessToken`, returns `{ token, access_url: "/app/<token>" }`.
+5. Frontend navigates to `/app/<token>`, which the backend matches on, sets an httpOnly `session_token` cookie, and 302-redirects to `/welcome`.
+6. `/welcome` is served by the SPA catch-all → React picks up from there.
 
 ## Deployment configuration (Railway)
 
-### Project `te` (this repo)
+One project, one service, one domain. The only env vars that matter for the trial flow:
 
-| Variable | Value | Why |
-| --- | --- | --- |
-| `VITE_TRIAL_API_BASE` | `https://app.synthese.fr` | Build-time. Tells the frontend where to POST trial creations. |
+| Variable | Set on | Value | Notes |
+| --- | --- | --- | --- |
+| `VITE_TRIAL_API_BASE` | `te` build | *leave unset* | Default is same-origin. Only set if the app ever gets split onto a separate domain. |
+| `SYNTHESE_APP_URL` | `te` runtime | *leave unset* | Default is same-origin (relative `/app/{token}`). Only set if split onto a separate domain. |
+| `SYNTHESE_DEV` | `te` runtime | *leave unset in prod* | Set to `1` only in local dev so the session cookie isn't marked `Secure` on http. |
+| `ALLOWED_ORIGINS` | `te` runtime | *leave unset in prod* | Same-origin requests don't need CORS. Only needed if a separate frontend origin exists. |
 
-After updating, **trigger a fresh deploy** — Vite bakes env vars into the
-JS bundle at build time, so changing the variable without rebuilding does
-nothing.
-
-### Project `TE-main` (the app backend)
-
-| Variable | Value | Why |
-| --- | --- | --- |
-| `ALLOWED_ORIGINS` | `https://synthèse.fr,https://synthese.fr` | CORS allow-list. Both spellings — the IDN form (`synthèse.fr`) and the punycode-equivalent ASCII form (`synthese.fr`) — must be present so the trial POST from the landing site isn't blocked. |
+Secrets you'll also want set: `OPENAI_API_KEY`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI` (all required by the feature routers, not by the trial flow itself).
 
 ## Local development
 
 ```bash
-# In one terminal — the landing-site backend
-cd backend && uvicorn main:app --reload --port 8001
+# Backend
+cd backend && uvicorn main:app --reload --port 8000
 
-# In another — the landing-site frontend
+# Frontend (in another terminal)
 cd frontend && npm install && npm run dev
-
-# In a third — the TE-main backend so the trial flow actually works
-cd ../TE-main/backend && uvicorn main:app --reload --port 8000
 ```
 
-For the trial flow in dev, no env var is needed: the fallback in
-[`frontend/src/lib/trialApi.ts`](frontend/src/lib/trialApi.ts) is
-`http://localhost:8000`, which matches the TE-main dev port.
+The Vite dev server on `:5173` proxies `/api/*` and `/app/*` to the backend on `:8000`. In dev, set `SYNTHESE_DEV=1` so the session cookie is accepted over plain http.
 
-See [`frontend/.env.example`](frontend/.env.example) for the full list of
-build-time env vars consumed by the frontend.
+See [`frontend/.env.example`](frontend/.env.example) for the full list of optional build-time env vars.

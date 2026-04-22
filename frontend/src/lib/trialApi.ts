@@ -1,11 +1,11 @@
-// Thin client for the TE-main backend's anonymous trial endpoint.
-// `VITE_TRIAL_API_BASE` points at the app's backend (FastAPI). In dev the
-// backend listens on localhost:8000; in prod, set it to https://app.synthese.fr
-// (the app subdomain) so CORS and cookies line up with the activation flow.
+// Thin client for the anonymous-trial endpoint. The backend lives at the same
+// origin as the landing site (single Railway deployment serves both), so the
+// default is an empty base → relative URL → same-origin request. Override
+// with `VITE_TRIAL_API_BASE` only if the app ever moves to a separate domain.
 
 const API_BASE =
   (import.meta.env.VITE_TRIAL_API_BASE as string | undefined)?.replace(/\/$/, "") ??
-  "http://localhost:8000";
+  "";
 
 export interface StartAnonymousTrialResponse {
   token: string;

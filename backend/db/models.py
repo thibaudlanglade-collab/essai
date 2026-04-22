@@ -4,6 +4,8 @@ SQLAlchemy models for the Synthèse persistent store.
 from __future__ import annotations
 
 import json
+import secrets
+import uuid
 from datetime import datetime
 from typing import Any, Optional
 
@@ -13,6 +15,93 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from db.database import Base
 
 _DEFAULT_WORKING_DAYS = '["monday","tuesday","wednesday","thursday","friday"]'
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Multi-tenant access control
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+class AccessToken(Base):
+    """Prospect access token for the multi-tenant test app.
+
+    Each prospect receives a unique URL `synthese.fr/app/{token}` via cold email
+    or via the anonymous-trial CTA on the landing page. Clicking activates a
+    session: a `session_token` is generated and stored in an httpOnly cookie
+    (valid 30 days). The access as a whole expires at `expires_at` (typically
+    14 days after creation).
+    """
+
+    __tablename__ = "access_tokens"
+
+    id: Mapped[str] = mapped_column(
+        String(36), primary_key=True, default=lambda: str(uuid.uuid4())
+    )
+
+    token: Mapped[str] = mapped_column(
+        String(64), unique=True, nullable=False, index=True
+    )
+    session_token: Mapped[Optional[str]] = mapped_column(
+        String(64), unique=True, nullable=True, index=True
+    )
+
+    prospect_name: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    prospect_email: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    company_name: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    company_sector: Mapped[str] = mapped_column(
+        String(100), nullable=False, default="BTP"
+    )
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, nullable=False, server_default=func.now()
+    )
+    expires_at: Mapped[datetime] = mapped_column(DateTime, nullable=False)
+    first_seen_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+    last_seen_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+
+    is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    welcome_shown: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    session_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+
+    @staticmethod
+    def generate_token() -> str:
+        return secrets.token_urlsafe(32)
+
+    @staticmethod
+    def generate_session_token() -> str:
+        return secrets.token_urlsafe(32)
+
+    def is_usable(self, now: Optional[datetime] = None) -> bool:
+        now = now or datetime.utcnow()
+        return bool(self.is_active) and self.expires_at > now
+
+    def days_left(self, now: Optional[datetime] = None) -> int:
+        now = now or datetime.utcnow()
+        if not self.expires_at or self.expires_at <= now:
+            return 0
+        delta = self.expires_at - now
+        return delta.days + (1 if (delta.seconds or delta.microseconds) else 0)
+
+    def to_dict(self, public: bool = False) -> dict[str, Any]:
+        data: dict[str, Any] = {
+            "id": self.id,
+            "prospect_name": self.prospect_name,
+            "prospect_email": self.prospect_email,
+            "company_name": self.company_name,
+            "company_sector": self.company_sector,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "expires_at": self.expires_at.isoformat() if self.expires_at else None,
+            "first_seen_at": self.first_seen_at.isoformat() if self.first_seen_at else None,
+            "last_seen_at": self.last_seen_at.isoformat() if self.last_seen_at else None,
+            "is_active": self.is_active,
+            "welcome_shown": self.welcome_shown,
+            "session_count": self.session_count,
+            "days_left": self.days_left(),
+        }
+        if not public:
+            data["token"] = self.token
+            data["session_token"] = self.session_token
+        return data
 
 
 class Employee(Base):
