@@ -3,12 +3,17 @@ uvicorn[standard]==0.32.1
 python-multipart==0.0.20
 python-dotenv==1.0.1
 openai==1.59.3
+anthropic>=0.40.0
 pypdf==5.1.0
 openpyxl==3.1.5
 python-docx>=1.1.0
 pymupdf>=1.24.0
 sqlalchemy>=2.0.0
 aiosqlite>=0.19.0
+# Async Postgres driver — picked up automatically when DATABASE_URL points
+# at Railway's managed Postgres (see db/database.py:_resolve_database_url).
+asyncpg>=0.29.0
+greenlet>=3.0.0
 google-auth>=2.0.0
 google-auth-oauthlib>=1.0.0
 google-api-python-client>=2.100.0

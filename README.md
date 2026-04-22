@@ -27,6 +27,7 @@ One project, one service, one domain. The only env vars that matter for the tria
 
 | Variable | Set on | Value | Notes |
 | --- | --- | --- | --- |
+| `DATABASE_URL` | `te` runtime | *injected by Railway Postgres plugin* | **Required** in prod. Without it, the app falls back to SQLite, which Railway wipes on every redeploy — all trial tokens get orphaned. Attach a Postgres plugin from the canvas ("+ New" → "Database" → "Postgres") and Railway wires this var automatically. |
 | `VITE_TRIAL_API_BASE` | `te` build | *leave unset* | Default is same-origin. Only set if the app ever gets split onto a separate domain. |
 | `SYNTHESE_APP_URL` | `te` runtime | *leave unset* | Default is same-origin (relative `/app/{token}`). Only set if split onto a separate domain. |
 | `SYNTHESE_DEV` | `te` runtime | *leave unset in prod* | Set to `1` only in local dev so the session cookie isn't marked `Secure` on http. |
