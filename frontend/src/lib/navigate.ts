@@ -9,10 +9,9 @@ export type AppPath =
   | "/rgpd"
   | "/features"
   | "/qui-sommes-nous"
+  | "/pourquoi-synthese"
   | "/tarification"
   | "/demo"
-  | "/mentions-legales"
-  | "/politique-confidentialite"
   | "/home";
 
 export const NAVIGATE_EVENT = "app-navigate";

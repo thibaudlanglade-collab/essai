@@ -130,7 +130,8 @@ export default function PourquoiSyntheseView() {
               On vous démarche tous les jours avec un nouvel agent IA. Vous ne savez plus quoi
               choisir, vous avez peur d'acheter le mauvais outil, peur que votre voisin prenne
               une longueur d'avance.{" "}
-              <strong className="text-gray-900">Respirez. Ce n'est plus votre problème.</strong>
+              <strong className="text-gray-900">Le temps, vous ne l'avez pas. Former toute une équipe à un nouvel outil, encore moins.</strong>{" "}
+              Respirez. Ce n'est plus votre problème.
             </p>
           </AnimatedContainer>
         </div>
@@ -157,9 +158,15 @@ export default function PourquoiSyntheseView() {
 
                 <p className="text-gray-700 text-sm sm:text-base md:text-lg leading-relaxed max-w-2xl mx-auto mb-5">
                   <strong className="text-gray-900">Ce qui se fait de mieux en IA</strong>, directement sur votre application,
-                  adapté à votre manière de travailler — et{" "}
-                  <strong className="text-gray-900">expliqué pour que vous compreniez vraiment ce que vous faites.</strong>{" "}
-                  Vous avez la technologie de pointe, on l'adapte à tout votre métier.
+                  adapté à votre métier, <strong className="text-gray-900">votre vocabulaire</strong>, votre manière de travailler — et{" "}
+                  <strong className="text-gray-900">expliqué pour que vous compreniez vraiment ce que vous faites.</strong>
+                </p>
+
+                <p className="font-display text-base sm:text-lg md:text-xl text-gray-900 leading-snug max-w-2xl mx-auto mb-5">
+                  Vous continuez à faire tourner votre entreprise.{" "}
+                  <span className="bg-gradient-to-r from-violet-600 via-fuchsia-500 to-amber-500 bg-clip-text text-transparent">
+                    On s'occupe du reste.
+                  </span>
                 </p>
 
                 <p className="text-[13px] sm:text-sm text-gray-600 leading-relaxed max-w-xl mx-auto">
@@ -188,8 +195,8 @@ export default function PourquoiSyntheseView() {
               </span>
             </h2>
             <p className="text-sm sm:text-base text-gray-600 max-w-2xl mx-auto leading-relaxed">
-              Pas de magie, juste une méthode claire en 4 étapes — que vous soyez artisan,
-              dirigeant de TPE ou responsable d'équipe.
+              Le temps de faire la veille IA, vous ne l'avez pas. On le prend à votre place,
+              avec une méthode claire en 4 étapes.
             </p>
           </AnimatedContainer>
 
@@ -248,8 +255,8 @@ export default function PourquoiSyntheseView() {
             {[
               {
                 icon: BookOpen,
-                title: "Pas besoin de réapprendre",
-                description: "Aucun nouvel outil à maîtriser. Vous utilisez ce que vous connaissez déjà, en mieux.",
+                title: "Pas de formation à planifier",
+                description: "Aucun nouvel outil à maîtriser pour vous ou vos équipes. Tout le monde utilise ce qu'il connait déjà, en mieux.",
               },
               {
                 icon: Rocket,

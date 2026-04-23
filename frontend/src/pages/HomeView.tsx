@@ -8,6 +8,8 @@ import {
   TrendingUp, RefreshCw, Leaf,
   Building2, Sparkles, Rocket,
   Play,
+  Scale, Check, ArrowRight,
+  Zap, Handshake, Search, BookOpen, Target,
 } from "lucide-react";
 import DemoCallout from "@/components/DemoCallout";
 import { GlobeInteractive } from "@/components/ui/cobe-globe-interactive";
@@ -700,6 +702,217 @@ export default function HomeView({ onComprendreClick, onRgpdClick }: { onCompren
           </div>
         </div>
       </div>
+
+      {/* SECTION — POURQUOI SYNTHÈSE (tableau comparatif compact + CTA vers page dédiée) */}
+      <section className="py-14 sm:py-20">
+        <div className="mx-auto w-full max-w-5xl px-4 sm:px-6">
+          <AnimatedContainer className="text-center mb-8 sm:mb-10">
+            <span className="inline-flex items-center gap-2 text-[11px] sm:text-xs font-bold uppercase tracking-widest text-violet-600 mb-3">
+              <Scale className="h-3.5 w-3.5" />
+              Pourquoi Synthèse ?
+            </span>
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold text-gray-900 leading-tight mb-3">
+              Pourquoi pas un agent IA{" "}
+              <span className="bg-gradient-to-r from-violet-600 via-fuchsia-500 to-amber-500 bg-clip-text text-transparent">
+                comme les autres ?
+              </span>
+            </h2>
+            <p className="text-sm sm:text-base text-gray-600 max-w-2xl mx-auto leading-relaxed">
+              Tous les jours, une nouvelle boîte vous démarche avec "son" agent IA.
+              On comprend la lassitude. Voici ce qui change avec Synthèse.
+            </p>
+          </AnimatedContainer>
+
+          <AnimatedContainer delay={0.15}>
+            <div className="overflow-hidden rounded-2xl border-2 border-violet-100 bg-white shadow-sm">
+              {/* Header */}
+              <div className="grid grid-cols-12 bg-gradient-to-r from-violet-50 to-fuchsia-50 border-b border-violet-100">
+                <div className="col-span-4 sm:col-span-3 px-4 sm:px-6 py-4 text-[11px] sm:text-xs font-bold uppercase tracking-widest text-gray-500">
+                  Critère
+                </div>
+                <div className="col-span-4 sm:col-span-4 px-3 sm:px-6 py-4 flex items-center gap-2 border-l border-violet-100/70">
+                  <X className="h-4 w-4 text-rose-500 shrink-0" />
+                  <span className="text-[11px] sm:text-xs font-bold uppercase tracking-widest text-rose-600">
+                    Les agents IA du marché
+                  </span>
+                </div>
+                <div className="col-span-4 sm:col-span-5 px-3 sm:px-6 py-4 flex items-center gap-2 border-l border-violet-100/70 bg-gradient-to-r from-violet-100/60 to-fuchsia-100/60">
+                  <Check className="h-4 w-4 text-emerald-600 shrink-0" />
+                  <span className="text-[11px] sm:text-xs font-bold uppercase tracking-widest text-violet-700">
+                    Synthèse
+                  </span>
+                </div>
+              </div>
+
+              {/* Lignes */}
+              {[
+                { label: "Personnalisation", others: "Un agent standardisé, peu modifiable", synthese: "Des agents créés sur-mesure, à la demande" },
+                { label: "Coût des agents", others: "Vous payez par agent (souvent cher)", synthese: "Création d'agents gratuite, autant que vous voulez" },
+                { label: "Modèle de paiement", others: "Gros paiement unique — vous pariez à l'aveugle", synthese: "Mensualité sans engagement — suivi, support et mises à jour IA inclus" },
+                { label: "Interface", others: "Aucune, ou très limitée", synthese: "Une vraie interface pensée pour l'usage quotidien" },
+                { label: "Intégration", others: "Un outil de plus dans votre stack", synthese: "S'appuie sur ce que vous avez déjà (mail, agenda…) et le booste" },
+                { label: "Philosophie", others: "Surfe sur la mode de l'IA", synthese: "Un assistant long terme, pas un gadget" },
+                { label: "Évolution", others: "Figé le jour où vous signez", synthese: "Mises à jour continues avec les dernières avancées IA" },
+                { label: "Risque d'obsolescence", others: "Élevé — l'IA bouge vite", synthese: "Zéro — vous êtes toujours à la pointe, sans effort" },
+              ].map((row, idx, arr) => (
+                <div
+                  key={row.label}
+                  className={`grid grid-cols-12 ${idx % 2 === 0 ? "bg-white" : "bg-stone-50/60"} ${idx < arr.length - 1 ? "border-b border-gray-100" : ""}`}
+                >
+                  <div className="col-span-4 sm:col-span-3 px-4 sm:px-6 py-4 text-[12px] sm:text-sm font-semibold text-gray-900 flex items-center">
+                    {row.label}
+                  </div>
+                  <div className="col-span-4 sm:col-span-4 px-3 sm:px-6 py-4 text-[12px] sm:text-sm text-gray-500 leading-relaxed border-l border-gray-100 flex items-center">
+                    {row.others}
+                  </div>
+                  <div className="col-span-4 sm:col-span-5 px-3 sm:px-6 py-4 text-[12px] sm:text-sm text-gray-800 leading-relaxed border-l border-gray-100 bg-gradient-to-r from-violet-50/40 to-transparent flex items-center">
+                    {row.synthese}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </AnimatedContainer>
+
+          {/* CTA vers la page dédiée */}
+          <AnimatedContainer delay={0.25} className="mt-8 sm:mt-10 text-center">
+            <button
+              onClick={() => navigate("/pourquoi-synthese")}
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-500 text-white text-sm font-semibold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all"
+            >
+              Voir chaque argument en détail
+              <ArrowRight className="h-4 w-4" />
+            </button>
+            <p className="text-xs text-gray-500 mt-3">
+              Une page dédiée pour tout comprendre, point par point.
+            </p>
+          </AnimatedContainer>
+        </div>
+      </section>
+
+      {/* SECTION — COMMENT ÇA MARCHE + AVANTAGES */}
+      <section className="pb-14 sm:pb-20">
+        <div className="mx-auto w-full max-w-5xl px-4 sm:px-6">
+          <AnimatedContainer className="text-center mb-10 sm:mb-14">
+            <span className="inline-block text-[11px] sm:text-xs font-bold uppercase tracking-widest text-violet-600 mb-3">
+              Comment ça marche
+            </span>
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold text-gray-900 leading-tight mb-3">
+              On prend le meilleur de l'IA,{" "}
+              <span className="bg-gradient-to-r from-violet-600 via-fuchsia-500 to-amber-500 bg-clip-text text-transparent">
+                on l'adapte à vous.
+              </span>
+            </h2>
+            <p className="text-sm sm:text-base text-gray-600 max-w-2xl mx-auto leading-relaxed">
+              Le temps de faire la veille IA, vous ne l'avez pas. On le prend à votre place,
+              avec une méthode claire en 4 étapes.
+            </p>
+          </AnimatedContainer>
+
+          {/* 4 ÉTAPES DU PROCESS */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-14 sm:mb-20">
+            {[
+              {
+                num: "1",
+                title: "On capte le top de l'IA",
+                description: "On suit chaque avancée utile, en temps réel, pour ne garder que ce qui a un vrai intérêt pour votre métier.",
+              },
+              {
+                num: "2",
+                title: "Vous nous expliquez votre métier",
+                description: "Comment vous travaillez, ce qui vous prend du temps, où sont les frictions. On écoute vraiment.",
+              },
+              {
+                num: "3",
+                title: "On réfléchit à l'intégration",
+                description: "Quels agents créer, quelles automatisations ajouter, comment brancher ça à vos outils existants.",
+              },
+              {
+                num: "4",
+                title: "Vous avez votre propre app",
+                description: "Pas une démo partagée, pas un outil standard : votre cockpit à vous, à votre nom, pensé pour votre métier.",
+              },
+            ].map((step, idx) => (
+              <AnimatedContainer key={step.num} delay={0.15 + idx * 0.08}>
+                <div className="relative h-full bg-white rounded-2xl border border-gray-200 p-5 sm:p-6 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-blue-500 text-white font-bold text-base mb-4 shadow-md">
+                    {step.num}
+                  </div>
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2 tracking-tight leading-snug">
+                    {step.title}
+                  </h3>
+                  <p className="text-[13px] text-gray-600 leading-relaxed">
+                    {step.description}
+                  </p>
+                </div>
+              </AnimatedContainer>
+            ))}
+          </div>
+
+          {/* AVANTAGES */}
+          <AnimatedContainer delay={0.35} className="text-center mb-8">
+            <span className="inline-block text-[11px] sm:text-xs font-bold uppercase tracking-widest text-violet-600 mb-3">
+              Ce que ça change pour vous
+            </span>
+            <h3 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-900 leading-tight">
+              Les vrais avantages, sans baratin.
+            </h3>
+          </AnimatedContainer>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+            {[
+              {
+                icon: BookOpen,
+                title: "Pas de formation à planifier",
+                description: "Aucun nouvel outil à maîtriser pour vous ou vos équipes. Tout le monde utilise ce qu'il connait déjà, en mieux.",
+              },
+              {
+                icon: Rocket,
+                title: "Toujours à la pointe",
+                description: "Dès qu'une techno IA utile sort, elle est intégrée. Vous restez en tête, sans effort.",
+              },
+              {
+                icon: Handshake,
+                title: "Votre métier reste votre métier",
+                description: "On ne change pas votre façon de travailler — on la booste là où c'est pertinent.",
+              },
+              {
+                icon: Search,
+                title: "On fait la veille à votre place",
+                description: "Plus besoin de scruter les sorties IA. On trie, on teste, on sélectionne pour vous.",
+              },
+              {
+                icon: Zap,
+                title: "Zéro friction",
+                description: "Une interface unique, connectée à vos outils. Pas 10 apps à jongler, pas 10 mots de passe.",
+              },
+              {
+                icon: Target,
+                title: "Adapté à votre réalité",
+                description: "Pas une solution générique. Chaque fonctionnalité est pensée pour votre métier spécifique.",
+              },
+            ].map((adv, idx) => {
+              const Icon = adv.icon;
+              return (
+                <AnimatedContainer key={adv.title} delay={0.4 + idx * 0.05}>
+                  <div className="flex items-start gap-3 h-full bg-gradient-to-br from-violet-50/60 via-fuchsia-50/40 to-amber-50/40 rounded-xl border border-violet-100 p-4 sm:p-5">
+                    <div className="shrink-0 inline-flex items-center justify-center w-9 h-9 rounded-lg bg-white border border-violet-100 shadow-sm">
+                      <Icon className="h-[18px] w-[18px] text-violet-600" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-[14px] sm:text-[15px] font-semibold text-gray-900 mb-1 leading-tight">
+                        {adv.title}
+                      </h4>
+                      <p className="text-[12.5px] text-gray-600 leading-relaxed">
+                        {adv.description}
+                      </p>
+                    </div>
+                  </div>
+                </AnimatedContainer>
+              );
+            })}
+          </div>
+        </div>
+      </section>
 
       {/* SECTION — COMPRENDRE SYNTHÈSE (page complète intégrée) */}
       <ComprendreView />
