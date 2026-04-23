@@ -1,4 +1,4 @@
-import { MessageSquare, Zap, Mic, Calendar, Mail, Settings2, Bot, Camera, ShieldCheck, LayoutGrid, BarChart3, Lightbulb, Building2, Sparkles, Rocket, Users } from "lucide-react";
+import { MessageSquare, Zap, Mic, Calendar, Mail, Settings2, Bot, Camera, ShieldCheck, LayoutGrid, BarChart3, Lightbulb, Building2, Sparkles, Rocket, Users, Scale } from "lucide-react";
 import logoSynthese from "@/assets/logo-synthese.png";
 import { cn } from "@/lib/utils";
 
@@ -33,6 +33,8 @@ interface Props {
   quiSommesNousModeActive?: boolean;
   onTarificationClick?: () => void;
   tarificationModeActive?: boolean;
+  onPourquoiClick?: () => void;
+  pourquoiModeActive?: boolean;
   onHomeClick?: () => void;
   onComprendreClick?: () => void;
   comprenderModeActive?: boolean;
@@ -124,6 +126,8 @@ export function Sidebar({
   quiSommesNousModeActive,
   onTarificationClick,
   tarificationModeActive,
+  onPourquoiClick,
+  pourquoiModeActive,
   onHomeClick,
   onComprendreClick,
   comprenderModeActive,
@@ -179,6 +183,13 @@ export function Sidebar({
             <span className="flex-1 truncate">Comprendre Synthèse</span>
           </button>
         </div>
+
+        <NavItem
+          icon={Scale}
+          label="Notre différence"
+          isActive={pourquoiModeActive ?? false}
+          onClick={onPourquoiClick}
+        />
 
         {/* ── Obtenir une démo — primary CTA ──────────────── */}
         <div className="pb-1">

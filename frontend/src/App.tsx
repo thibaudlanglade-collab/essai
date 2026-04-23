@@ -21,6 +21,7 @@ import ComprendreView from "./pages/ComprendreView";
 import ContactView from "./pages/ContactView";
 import QuiSommesNousView from "./pages/QuiSommesNousView";
 import TarificationView from "./pages/TarificationView";
+import PourquoiSyntheseView from "./pages/PourquoiSyntheseView";
 import DemoView from "./pages/DemoView";
 import WelcomeView from "./pages/WelcomeView";
 import DashboardHomeView from "./pages/DashboardHomeView";
@@ -92,6 +93,7 @@ const PAGE_TITLES: Record<string, string> = {
   comprendre: "Comprendre Synthèse",
   contact: "Contact",
   "qui-sommes-nous": "Qui sommes-nous",
+  "pourquoi-synthese": "Notre différence",
   tarification: "Tarification",
   demo: "Obtenez votre aperçu",
   welcome: "Bienvenue",
@@ -105,7 +107,7 @@ export default function App() {
   const { loading, error: featuresError } = useFeatures();
   const [selected, setSelected] = useState<Feature | null>(null);
   const { run, start, reset } = useWorkflowRun();
-  const [activeMode, setActiveMode] = useState<"home" | "classic" | "chat-assistant" | "smart" | "photo-to-document" | "meeting-transcriber" | "planner" | "emails" | "automations" | "agents-ia" | "agent-rapport" | "rgpd" | "features" | "comprendre" | "contact" | "qui-sommes-nous" | "tarification" | "demo" | "welcome" | "dashboard" | "briefing" | "mon-equipe" | "tarifs" | "clients" | "devis" | "mentions-legales" | "politique-confidentialite">("home");
+  const [activeMode, setActiveMode] = useState<"home" | "classic" | "chat-assistant" | "smart" | "photo-to-document" | "meeting-transcriber" | "planner" | "emails" | "automations" | "agents-ia" | "agent-rapport" | "rgpd" | "features" | "comprendre" | "contact" | "qui-sommes-nous" | "pourquoi-synthese" | "tarification" | "demo" | "welcome" | "dashboard" | "briefing" | "mon-equipe" | "tarifs" | "clients" | "devis" | "mentions-legales" | "politique-confidentialite">("home");
   const navigate = useNavigate();
 
   // Mobile sidebar
@@ -333,6 +335,12 @@ export default function App() {
     setActiveMode("tarification");
   }
 
+  function handlePourquoiClick() {
+    reset();
+    setSelected(null);
+    setActiveMode("pourquoi-synthese");
+  }
+
   function handleDemoClick() {
     reset();
     setSelected(null);
@@ -510,6 +518,8 @@ export default function App() {
         quiSommesNousModeActive={activeMode === "qui-sommes-nous"}
         onTarificationClick={() => { handleTarificationClick(); setSidebarOpen(false); }}
         tarificationModeActive={activeMode === "tarification"}
+        onPourquoiClick={() => { handlePourquoiClick(); setSidebarOpen(false); }}
+        pourquoiModeActive={activeMode === "pourquoi-synthese"}
         onHomeClick={() => { handleHomeClick(); setSidebarOpen(false); }}
         onComprendreClick={() => { handleHomeClick(); setSidebarOpen(false); }}
         comprenderModeActive={activeMode === "home"}
@@ -545,6 +555,8 @@ export default function App() {
           {activeMode === "qui-sommes-nous" && <QuiSommesNousView />}
 
           {activeMode === "tarification" && <TarificationView />}
+
+          {activeMode === "pourquoi-synthese" && <PourquoiSyntheseView />}
 
           {activeMode === "briefing" && <BriefingView />}
 
