@@ -10,8 +10,11 @@ import {
   Hotel,
   ChevronDown,
   Sparkles,
+  Rocket,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useNavigate } from "../lib/navigate";
+import DemoCallout from "@/components/DemoCallout";
 
 const SECTORS = [
   {
@@ -176,6 +179,7 @@ function SectorCard({ sector }: { sector: typeof SECTORS[0] }) {
 }
 
 export default function FeaturesView() {
+  const navigate = useNavigate();
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6 sm:py-10 pb-24 space-y-6 sm:space-y-8">
       {/* Header */}
@@ -195,19 +199,22 @@ export default function FeaturesView() {
         ))}
       </div>
 
-      {/* CTA */}
+      {/* CTA — secteur non listé */}
       <div className="rounded-2xl bg-gradient-to-r from-violet-500 to-blue-500 p-5 sm:p-6 text-white text-center space-y-3">
         <p className="font-semibold text-base">Votre secteur n'est pas listé ?</p>
         <p className="text-sm text-white/80 leading-relaxed">
           Synthèse est entièrement personnalisable. On construit avec vous les automatisations adaptées à vos processus métier.
         </p>
-        <a
-          href="#"
-          className="inline-block mt-1 px-6 py-3 bg-white text-violet-600 font-semibold text-sm rounded-full hover:bg-violet-50 active:scale-95 transition-all touch-manipulation"
+        <button
+          onClick={() => navigate("/demo")}
+          className="inline-flex items-center gap-2 mt-1 px-6 py-3 bg-white text-violet-600 font-semibold text-sm rounded-full hover:bg-violet-50 active:scale-95 transition-all touch-manipulation"
         >
-          Parlons de votre activité
-        </a>
+          <Rocket className="h-4 w-4" />
+          Essayer une démo gratuite
+        </button>
       </div>
+
+      <DemoCallout />
     </div>
   );
 }

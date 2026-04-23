@@ -11,6 +11,8 @@ export type AppPath =
   | "/qui-sommes-nous"
   | "/tarification"
   | "/demo"
+  | "/mentions-legales"
+  | "/politique-confidentialite"
   | "/home";
 
 export const NAVIGATE_EVENT = "app-navigate";

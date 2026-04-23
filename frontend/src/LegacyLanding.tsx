@@ -20,6 +20,8 @@ import { useEffect, useRef, useState } from "react";
 import { Sparkles, MessageSquare, Rocket, ArrowRight } from "lucide-react";
 import { getTrial } from "./lib/trial";
 import DemoView from "./pages/DemoView";
+import MentionsLegalesView from "./pages/MentionsLegalesView";
+import PolitiqueConfidentialiteView from "./pages/PolitiqueConfidentialiteView";
 import CookieConsent from "./components/CookieConsent";
 import { Sidebar } from "./components/Sidebar/Sidebar";
 import { Topbar } from "./components/Topbar/Topbar";
@@ -120,7 +122,7 @@ export default function LegacyLanding() {
   const { loading, error: featuresError } = useFeatures();
   const [selected, setSelected] = useState<Feature | null>(null);
   const { run, start, reset } = useWorkflowRun();
-  const [activeMode, setActiveMode] = useState<"home" | "classic" | "chat-assistant" | "smart" | "photo-to-document" | "meeting-transcriber" | "planner" | "emails" | "automations" | "agents-ia" | "agent-rapport" | "rgpd" | "features" | "comprendre" | "contact" | "qui-sommes-nous" | "tarification" | "demo">("home");
+  const [activeMode, setActiveMode] = useState<"home" | "classic" | "chat-assistant" | "smart" | "photo-to-document" | "meeting-transcriber" | "planner" | "emails" | "automations" | "agents-ia" | "agent-rapport" | "rgpd" | "features" | "comprendre" | "contact" | "qui-sommes-nous" | "tarification" | "demo" | "mentions-legales" | "politique-confidentialite">("home");
   const navigate = useNavigate();
 
   // Mobile sidebar
@@ -320,6 +322,9 @@ export default function LegacyLanding() {
         onHomeClick={() => { handleHomeClick(); setSidebarOpen(false); }}
         onComprendreClick={() => { handleHomeClick(); setSidebarOpen(false); }}
         comprenderModeActive={activeMode === "home"}
+        onDemoClick={() => { setSelected(null); setActiveMode("demo"); setSidebarOpen(false); }}
+        demoModeActive={activeMode === "demo"}
+        demoLabel={getTrial()?.resumeUrl ? "Reprendre ma démo" : "Obtenir un aperçu"}
         mobileOpen={sidebarOpen}
         onMobileClose={() => setSidebarOpen(false)}
       />
@@ -334,6 +339,8 @@ export default function LegacyLanding() {
           {activeMode === "home" && <HomeView onComprendreClick={handleComprendreClick} onRgpdClick={handleRgpdClick} />}
 
           {activeMode === "demo" && <DemoView />}
+          {activeMode === "mentions-legales" && <MentionsLegalesView />}
+          {activeMode === "politique-confidentialite" && <PolitiqueConfidentialiteView />}
           {activeMode === "comprendre" && <ComprendreView />}
 
           {activeMode === "rgpd" && <RgpdView />}

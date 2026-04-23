@@ -117,7 +117,7 @@ export default function RgpdView() {
         <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-100 to-teal-100 border border-emerald-200/60 flex items-center justify-center mx-auto mb-5 shadow-sm shadow-emerald-500/10">
           <Shield className="h-7 w-7 text-emerald-600" />
         </div>
-        <h1 className="text-4xl md:text-5xl font-display text-gray-900 mb-4 tracking-tight leading-tight">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-display text-gray-900 mb-4 tracking-tight leading-tight">
           Sécurité, RGPD et confiance
         </h1>
         <p className="text-base text-gray-600 max-w-2xl mx-auto leading-relaxed">
@@ -141,7 +141,7 @@ export default function RgpdView() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
           {[
             { title: "Droit d'accès", desc: "Vous pouvez demander à tout moment la liste complète des données que nous détenons sur vous.", tint: "from-violet-50 to-fuchsia-50 border-violet-200/60" },
             { title: "Droit de rectification", desc: "Vous pouvez corriger ou mettre à jour vos données à tout moment, directement depuis la plateforme.", tint: "from-pink-50 to-rose-50 border-pink-200/60" },
@@ -170,7 +170,7 @@ export default function RgpdView() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
           {STACK_CERTIFICATIONS.map((tool) => {
             const IconComp = STACK_ICON_MAP[tool.name];
             return (
@@ -214,7 +214,7 @@ export default function RgpdView() {
           La sécurité ne repose pas sur un seul mécanisme, mais sur plusieurs couches complémentaires. Voici ce que nous avons mis en place pour protéger vos données en permanence.
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-8">
           {HACKING_CARDS.map((card, i) => {
             const Icon = card.icon;
             const tints = [
@@ -262,7 +262,7 @@ export default function RgpdView() {
         </div>
 
         {/* Process en 3 étapes */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 mb-8 sm:mb-10">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-8 sm:mb-10">
           {[
             {
               num: "1",

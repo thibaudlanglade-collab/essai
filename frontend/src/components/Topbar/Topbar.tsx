@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Menu, Plus } from "lucide-react";
 
 interface Props {
@@ -8,9 +9,22 @@ interface Props {
     onClick: () => void;
   };
   onMenuClick?: () => void;
+  onLogout?: () => void | Promise<void>;
 }
 
-export function Topbar({ pageTitle, subtitle, primaryAction, onMenuClick }: Props) {
+export function Topbar({ pageTitle, subtitle, primaryAction, onMenuClick, onLogout }: Props) {
+  const [loggingOut, setLoggingOut] = useState(false);
+
+  async function handleLogout() {
+    if (!onLogout) return;
+    setLoggingOut(true);
+    try {
+      await onLogout();
+    } finally {
+      setLoggingOut(false);
+    }
+  }
+
   return (
     <header className="h-16 bg-white/70 dark:bg-gray-900/70 backdrop-blur-sm border-b border-violet-100/60 dark:border-gray-800 flex items-center justify-between px-4 sm:px-8 shrink-0">
       {/* Left: Menu button (mobile) + Page title */}
@@ -36,6 +50,16 @@ export function Topbar({ pageTitle, subtitle, primaryAction, onMenuClick }: Prop
           >
             <Plus className="h-4 w-4" />
             {primaryAction.label}
+          </button>
+        )}
+        {onLogout && (
+          <button
+            type="button"
+            onClick={handleLogout}
+            disabled={loggingOut}
+            className="text-sm text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white underline underline-offset-2 disabled:opacity-60"
+          >
+            {loggingOut ? "Déconnexion…" : "Se déconnecter"}
           </button>
         )}
       </div>

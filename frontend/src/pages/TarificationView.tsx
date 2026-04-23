@@ -4,22 +4,23 @@ import {
 } from "lucide-react"
 import { useState } from "react"
 import { useNavigate } from "../lib/navigate"
+import DemoCallout from "@/components/DemoCallout"
 
 export default function TarificationView() {
   const navigate = useNavigate()
 
   return (
-    <div className="max-w-4xl mx-auto py-10 px-6">
+    <div className="max-w-4xl mx-auto py-8 sm:py-10 px-4 sm:px-6">
 
       {/* HERO */}
-      <div className="text-center mb-16 max-w-3xl mx-auto">
-        <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-violet-50 mb-5">
-          <Sparkles className="h-7 w-7 text-violet-500" />
+      <div className="text-center mb-12 sm:mb-16 max-w-3xl mx-auto">
+        <div className="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-violet-50 mb-4 sm:mb-5">
+          <Sparkles className="h-6 w-6 sm:h-7 sm:w-7 text-violet-500" />
         </div>
-        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-5 tracking-tight">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-4 sm:mb-5 tracking-tight leading-tight">
           Un budget adapté à votre réalité
         </h1>
-        <p className="text-lg text-gray-600 leading-relaxed">
+        <p className="text-base sm:text-lg text-gray-600 leading-relaxed">
           Chaque entreprise est différente : pas la même taille, pas les
           mêmes outils, pas les mêmes besoins. Votre tarif l'est aussi.
         </p>
@@ -27,7 +28,7 @@ export default function TarificationView() {
 
 
       {/* 3 PROFILS */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-16">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-5 mb-12 sm:mb-16">
         <div className="bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-md hover:border-green-200 transition-all">
           <div className="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center mb-4">
             <Sprout className="h-5 w-5 text-green-500" />
@@ -131,11 +132,11 @@ export default function TarificationView() {
 
 
       {/* CE QUE VOUS NE PAYEZ PAS */}
-      <div className="mb-16">
-        <h2 className="text-2xl font-semibold text-gray-900 mb-6">
+      <div className="mb-12 sm:mb-16">
+        <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-5 sm:mb-6">
           Ce que vous ne payez pas
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
           <div className="flex items-start gap-3 bg-green-50/50 border border-green-100 rounded-xl p-4">
             <X className="h-5 w-5 text-green-600 mt-0.5 shrink-0" />
             <div>
@@ -169,11 +170,11 @@ export default function TarificationView() {
 
 
       {/* CALCULATEUR D'ÉCONOMIES */}
-      <div className="mb-16">
-        <h2 className="text-2xl font-semibold text-gray-900 mb-3 text-center">
+      <div className="mb-12 sm:mb-16">
+        <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-3 text-center">
           Combien Synthèse vous ferait économiser ?
         </h2>
-        <p className="text-base text-gray-600 mb-8 text-center max-w-2xl mx-auto">
+        <p className="text-sm sm:text-base text-gray-600 mb-6 sm:mb-8 text-center max-w-2xl mx-auto">
           Déplacez les curseurs pour estimer le temps que vous perdez
           chaque mois sur des tâches automatisables.
         </p>
@@ -183,13 +184,13 @@ export default function TarificationView() {
 
 
       {/* L'ARGUMENT CLÉ */}
-      <div className="mb-16">
-        <div className="bg-gradient-to-br from-violet-50 via-blue-50 to-violet-50 rounded-3xl border border-violet-100 px-8 md:px-10 py-8 text-center">
-          <p className="text-base text-gray-700 leading-relaxed mb-3">
+      <div className="mb-12 sm:mb-16">
+        <div className="bg-gradient-to-br from-violet-50 via-blue-50 to-violet-50 rounded-2xl sm:rounded-3xl border border-violet-100 px-5 sm:px-8 md:px-10 py-6 sm:py-8 text-center">
+          <p className="text-sm sm:text-base text-gray-700 leading-relaxed mb-3">
             On construit ensemble la configuration qui vous correspond,
             et vous payez uniquement pour ce que vous utilisez vraiment.
           </p>
-          <p className="text-lg text-gray-900 font-semibold">
+          <p className="text-base sm:text-lg text-gray-900 font-semibold">
             Dans tous les cas, Synthèse revient moins cher que la somme
             des abonnements qu'il remplace.
           </p>
@@ -198,8 +199,8 @@ export default function TarificationView() {
 
 
       {/* FAQ TARIFICATION */}
-      <div className="mb-16">
-        <h2 className="text-2xl font-semibold text-gray-900 mb-6">
+      <div className="mb-12 sm:mb-16">
+        <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-5 sm:mb-6">
           Questions sur les tarifs
         </h2>
         <div className="space-y-3">
@@ -227,21 +228,26 @@ export default function TarificationView() {
       </div>
 
 
-      {/* CTA */}
-      <div className="text-center py-8 bg-gradient-to-br from-violet-50 via-blue-50 to-violet-50 rounded-3xl border border-violet-100 px-8">
-        <h2 className="text-2xl font-semibold text-gray-900 mb-3">
-          Demandez votre devis personnalisé
+      {/* CALLOUT — démo 14 jours gratuits */}
+      <div className="mb-8">
+        <DemoCallout />
+      </div>
+
+      {/* CTA — devis personnalisé */}
+      <div className="text-center py-6 sm:py-8 bg-gradient-to-br from-violet-50 via-blue-50 to-violet-50 rounded-2xl sm:rounded-3xl border border-violet-100 px-5 sm:px-8">
+        <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-3">
+          Vous préférez parler de votre tarification ?
         </h2>
-        <p className="text-base text-gray-600 mb-6 max-w-xl mx-auto">
+        <p className="text-sm sm:text-base text-gray-600 mb-5 sm:mb-6 max-w-xl mx-auto">
           15 minutes au téléphone suffisent pour comprendre vos besoins
           et vous proposer un tarif adapté.
         </p>
         <button
           onClick={() => navigate("/contact")}
-          className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-violet-500 to-blue-500 text-white text-sm font-semibold rounded-xl hover:from-violet-600 hover:to-blue-600 transition-all shadow-sm"
+          className="inline-flex items-center gap-2 px-6 py-3 bg-white text-violet-600 text-sm font-semibold rounded-xl border border-violet-300 hover:bg-violet-50 hover:border-violet-400 transition-all"
         >
           <Sparkles className="h-4 w-4" />
-          Demander un devis
+          Demander un devis personnalisé
         </button>
       </div>
     </div>
@@ -283,7 +289,7 @@ function SavingsCalculator() {
   const totalEurosMonth = totalHoursMonth * HOURLY_RATE
 
   return (
-    <div className="max-w-2xl mx-auto bg-white border border-gray-200 rounded-2xl p-6 md:p-8 shadow-sm">
+    <div className="max-w-2xl mx-auto bg-white border border-gray-200 rounded-2xl p-5 sm:p-6 md:p-8 shadow-sm">
       <div className="space-y-6">
 
         <div>
@@ -389,11 +395,11 @@ function SavingsCalculator() {
 
           <div className="mt-4">
             <button
-              onClick={() => navigate("/contact")}
+              onClick={() => navigate("/demo")}
               className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-violet-500 to-blue-500 text-white text-sm font-semibold rounded-xl hover:from-violet-600 hover:to-blue-600 transition-all shadow-sm"
             >
               <Sparkles className="h-4 w-4" />
-              Demander un devis personnalisé
+              Tester gratuitement 14 jours
             </button>
           </div>
         </div>
