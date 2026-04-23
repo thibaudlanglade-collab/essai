@@ -195,8 +195,8 @@ export default function PourquoiSyntheseView() {
               </span>
             </h2>
             <p className="text-sm sm:text-base text-gray-600 max-w-2xl mx-auto leading-relaxed">
-              Le temps de faire la veille IA, vous ne l'avez pas. On le prend à votre place,
-              avec une méthode claire en 4 étapes.
+              Suivre toutes les nouveautés de l'IA demande du temps — un temps que vous n'avez pas.
+              On s'en charge à votre place, avec une méthode claire en 4 étapes.
             </p>
           </AnimatedContainer>
 
