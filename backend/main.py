@@ -29,6 +29,7 @@ from api.my_data import my_data_router
 from api.agent_rapport import router as agent_rapport_router
 from api.assistant import assistant_router
 from api.dashboard import dashboard_router
+from api.contact import router as contact_router
 from auth.routes import router as auth_router
 from services.gmail_sync import start_scheduler, stop_scheduler
 from services.cleanup_scheduler import start_cleanup_scheduler, stop_cleanup_scheduler
@@ -149,6 +150,7 @@ app.include_router(transcribe_router, prefix="/api")
 app.include_router(agent_rapport_router, prefix="/api")
 app.include_router(assistant_router, prefix="/api")
 app.include_router(dashboard_router, prefix="/api")
+app.include_router(contact_router, prefix="/api")
 
 
 @app.get("/api/health")

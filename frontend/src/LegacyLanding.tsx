@@ -18,8 +18,9 @@
  */
 import { useEffect, useRef, useState } from "react";
 import { Sparkles, MessageSquare, Rocket, ArrowRight } from "lucide-react";
-import { getTrial, setTrialResumeUrl } from "./lib/trial";
-import { startAnonymousTrial } from "./lib/trialApi";
+import { getTrial } from "./lib/trial";
+import DemoView from "./pages/DemoView";
+import CookieConsent from "./components/CookieConsent";
 import { Sidebar } from "./components/Sidebar/Sidebar";
 import { Topbar } from "./components/Topbar/Topbar";
 import WorkflowLauncher from "./components/WorkflowLauncher/WorkflowLauncher";
@@ -72,67 +73,43 @@ const PAGE_TITLES: Record<string, string> = {
 /**
  * Sticky top banner on the marketing landing.
  *
- * Shows "Commencer ma démo gratuite" by default and flips to
- * "Reprendre ma démo" once the visitor has a valid trial cookie with a
- * backend-minted `access_url`.
+ * Routes the visitor to /demo (the detailed landing page for the trial),
+ * with a "Reprendre ma démo" shortcut once a trial is already running.
  */
-function TopDemoBanner() {
-  const [resumeUrl, setResumeUrl] = useState<string | undefined>(undefined);
-  const [starting, setStarting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+function TopDemoBanner({ onOpenDemo }: { onOpenDemo: () => void }) {
+  const [hasTrial, setHasTrial] = useState(false);
 
   useEffect(() => {
-    const trial = getTrial();
-    if (trial?.resumeUrl) setResumeUrl(trial.resumeUrl);
+    setHasTrial(Boolean(getTrial()?.resumeUrl));
   }, []);
-
-  async function onClick() {
-    if (resumeUrl) {
-      window.location.href = resumeUrl;
-      return;
-    }
-    setStarting(true);
-    setError(null);
-    try {
-      const { access_url } = await startAnonymousTrial();
-      setTrialResumeUrl(access_url);
-      window.location.href = access_url;
-    } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
-      setStarting(false);
-    }
-  }
-
-  const label = resumeUrl
-    ? "Reprendre ma démo"
-    : starting
-    ? "Création de votre espace…"
-    : "Commencer ma démo gratuite";
 
   return (
     <div className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-violet-500 to-blue-500 px-3 sm:px-6 py-2 sm:py-2.5 shadow-sm">
       <div className="max-w-6xl mx-auto flex items-center justify-center gap-2 sm:gap-4 flex-wrap text-center">
         <span className="text-[10px] sm:text-xs text-white">
           <Sparkles className="inline h-3 w-3 mr-1 sm:mr-1.5" />
-          <span className="hidden sm:inline">
-            Bienvenue sur Synthèse — essai gratuit 14 jours, sans carte bancaire.
-          </span>
-          <span className="sm:hidden">Essai gratuit 14j</span>
+          {hasTrial ? (
+            <>
+              <span className="hidden sm:inline">Vous avez une démo en cours.</span>
+              <span className="sm:hidden">Démo en cours</span>
+            </>
+          ) : (
+            <>
+              <span className="hidden sm:inline">
+                Bienvenue sur Synthèse — essai gratuit 14 jours, sans carte bancaire.
+              </span>
+              <span className="sm:hidden">Essai gratuit 14j</span>
+            </>
+          )}
         </span>
         <button
-          onClick={onClick}
-          disabled={starting}
-          className="inline-flex items-center gap-1.5 bg-white/95 hover:bg-white disabled:opacity-60 text-violet-700 text-[11px] sm:text-xs font-semibold px-3 py-1 rounded-full transition-colors shadow-sm"
+          onClick={onOpenDemo}
+          className="inline-flex items-center gap-1.5 bg-white/95 hover:bg-white text-violet-700 text-[11px] sm:text-xs font-semibold px-3 py-1 rounded-full transition-colors shadow-sm"
         >
           <Rocket className="h-3 w-3" />
-          {label}
+          {hasTrial ? "Reprendre ma démo" : "Commencer ma démo gratuite"}
           <ArrowRight className="h-3 w-3" />
         </button>
-        {error && (
-          <span className="text-[10px] sm:text-xs text-red-100">
-            {error}
-          </span>
-        )}
       </div>
     </div>
   );
@@ -143,7 +120,7 @@ export default function LegacyLanding() {
   const { loading, error: featuresError } = useFeatures();
   const [selected, setSelected] = useState<Feature | null>(null);
   const { run, start, reset } = useWorkflowRun();
-  const [activeMode, setActiveMode] = useState<"home" | "classic" | "chat-assistant" | "smart" | "photo-to-document" | "meeting-transcriber" | "planner" | "emails" | "automations" | "agents-ia" | "agent-rapport" | "rgpd" | "features" | "comprendre" | "contact" | "qui-sommes-nous" | "tarification">("home");
+  const [activeMode, setActiveMode] = useState<"home" | "classic" | "chat-assistant" | "smart" | "photo-to-document" | "meeting-transcriber" | "planner" | "emails" | "automations" | "agents-ia" | "agent-rapport" | "rgpd" | "features" | "comprendre" | "contact" | "qui-sommes-nous" | "tarification" | "demo">("home");
   const navigate = useNavigate();
 
   // Mobile sidebar
@@ -295,8 +272,11 @@ export default function LegacyLanding() {
 
   return (
     <div className="min-h-screen bg-stone-100 dark:bg-gradient-to-br dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
-      {/* Welcome banner — CTA démo + contact */}
-      <TopDemoBanner />
+      {/* Welcome banner — hidden on /demo which is itself the demo CTA */}
+      {activeMode !== "demo" && (
+        <TopDemoBanner onOpenDemo={() => navigate("/demo")} />
+      )}
+      <CookieConsent />
 
       {/* Floating CTA */}
       <button
@@ -353,6 +333,7 @@ export default function LegacyLanding() {
         <main ref={mainRef} className="flex-1 overflow-y-auto">
           {activeMode === "home" && <HomeView onComprendreClick={handleComprendreClick} onRgpdClick={handleRgpdClick} />}
 
+          {activeMode === "demo" && <DemoView />}
           {activeMode === "comprendre" && <ComprendreView />}
 
           {activeMode === "rgpd" && <RgpdView />}

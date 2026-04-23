@@ -10,6 +10,7 @@ export type AppPath =
   | "/features"
   | "/qui-sommes-nous"
   | "/tarification"
+  | "/demo"
   | "/home";
 
 export const NAVIGATE_EVENT = "app-navigate";

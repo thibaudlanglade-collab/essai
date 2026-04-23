@@ -1,15 +1,15 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "../lib/navigate";
 import {
-  Search,
   Wallet, Wrench, HandHeart,
   X, CheckCircle2, CalendarCheck,
   Shield,
   Smartphone, CloudSun, FileSpreadsheet, Camera,
   TrendingUp, RefreshCw, Leaf,
-  Building2, Sparkles,
+  Building2, Sparkles, Rocket,
+  Play,
 } from "lucide-react";
-import { StarButton } from "@/components/ui/star-button";
+import DemoCallout from "@/components/DemoCallout";
 import { GlobeInteractive } from "@/components/ui/cobe-globe-interactive";
 import { HeroSection } from "@/components/ui/hero-section";
 import { FeatureCard, AnimatedContainer } from "@/components/ui/grid-feature-cards";
@@ -19,10 +19,10 @@ import {
 } from "@/components/IntegrationLogos";
 import IntegrationHero from "@/components/ui/integration-hero";
 import ComprendreView from "@/pages/ComprendreView";
+import BoostedFeaturesSection from "@/components/BoostedFeaturesSection";
 import { GradientCard } from "@/components/ui/gradient-card";
 import { BentoGridShowcase } from "@/components/ui/bento-product-features";
 import { Switch } from "@/components/ui/switch";
-import BoostedFeaturesSection from "@/components/BoostedFeaturesSection";
 
 const INTEGRATION_GRADIENT_MAP: Record<string, "orange" | "blue" | "purple" | "gray" | "green" | "teal"> = {
   "Gmail":            "orange",
@@ -464,11 +464,11 @@ function IntegrationModal({
             Fermer
           </button>
           <button
-            onClick={() => { onClose(); navigate("/contact"); }}
+            onClick={() => { onClose(); navigate("/demo"); }}
             className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-violet-500 to-blue-500 rounded-xl hover:from-violet-600 hover:to-blue-600 transition-all shadow-md hover:shadow-lg"
           >
-            <CalendarCheck className="w-4 h-4" />
-            Parler à un expert
+            <Rocket className="w-4 h-4" />
+            Obtenir mon aperçu gratuit
           </button>
         </div>
       </div>
@@ -487,6 +487,62 @@ export default function HomeView({ onComprendreClick, onRgpdClick }: { onCompren
   return (
     <div>
       <HeroSection onComprendreClick={onComprendreClick} />
+
+      {/* ENCART VIDÉO — résumé de Synthèse en vidéo */}
+      <section className="pt-10 sm:pt-14 pb-4 sm:pb-6">
+        <div className="mx-auto w-full max-w-4xl px-4">
+          <AnimatedContainer className="text-center mb-6 sm:mb-8">
+            <span className="inline-block text-[11px] sm:text-xs font-bold uppercase tracking-widest text-violet-600 mb-3">
+              Synthèse en 60 secondes
+            </span>
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold text-gray-900 leading-tight">
+              Regardez ce que Synthèse peut faire pour vous.
+            </h2>
+          </AnimatedContainer>
+
+          <AnimatedContainer delay={0.15}>
+            {/*
+              POUR AJOUTER LA VIDÉO :
+              — Hébergée (YouTube / Vimeo) : remplacer le bloc "placeholder" ci-dessous par
+                <iframe
+                  src="https://www.youtube.com/embed/TON_ID?rel=0"
+                  className="absolute inset-0 h-full w-full"
+                  title="Synthèse en 60 secondes"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              — Fichier local : déposer la vidéo dans frontend/public/ (ex: synthese-intro.mp4)
+                puis remplacer par
+                <video
+                  src="/synthese-intro.mp4"
+                  poster="/synthese-intro-poster.jpg"
+                  controls
+                  playsInline
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
+            */}
+            <div className="relative aspect-video w-full overflow-hidden rounded-2xl sm:rounded-3xl border border-violet-200/60 bg-gradient-to-br from-violet-100 via-fuchsia-50 to-pink-100 shadow-xl shadow-violet-500/10">
+              {/* Placeholder — à remplacer par la vidéo une fois prête */}
+              <div
+                className="absolute inset-0 opacity-[0.08]"
+                style={{ backgroundImage: "radial-gradient(#7c3aed 1px, transparent 1px)", backgroundSize: "20px 20px" }}
+                aria-hidden
+              />
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 px-6 text-center">
+                <div className="flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-full bg-white/80 backdrop-blur-sm border border-violet-200 shadow-lg shadow-violet-500/20">
+                  <Play className="h-7 w-7 sm:h-9 sm:w-9 text-violet-600 translate-x-0.5" fill="currentColor" />
+                </div>
+                <p className="text-sm sm:text-base font-medium text-gray-700">
+                  Vidéo bientôt disponible
+                </p>
+                <p className="text-xs sm:text-sm text-gray-500 max-w-md">
+                  Un aperçu rapide de Synthèse en action — on vous montre tout ce que vous venez de lire, en mouvement.
+                </p>
+              </div>
+            </div>
+          </AnimatedContainer>
+        </div>
+      </section>
 
       {/* CARTES PERSONNALISATION */}
       <section className="py-16 md:py-24">
@@ -569,9 +625,9 @@ export default function HomeView({ onComprendreClick, onRgpdClick }: { onCompren
                   return [...items, ...items].map((label, i) => (
                     <div
                       key={i}
-                      className="w-64 sm:w-72 shrink-0 rounded-xl border border-dashed border-violet-200 bg-violet-50/50 dark:border-violet-800/50 dark:bg-violet-950/20 px-4 py-3"
+                      className="w-56 sm:w-72 shrink-0 rounded-xl border border-dashed border-violet-200 bg-violet-50/50 dark:border-violet-800/50 dark:bg-violet-950/20 px-3 py-2.5 sm:px-4 sm:py-3"
                     >
-                      <p className="text-[13px] sm:text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+                      <p className="text-[12px] sm:text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
                         {label}
                       </p>
                     </div>
@@ -622,9 +678,25 @@ export default function HomeView({ onComprendreClick, onRgpdClick }: { onCompren
 
             {/* RIGHT — Globe interactif */}
             <div className="flex items-center justify-center p-6 sm:p-8 md:p-10 border-b md:border-b-0 border-violet-200/60 order-1 md:order-2">
-              <GlobeInteractive className="w-full max-w-[240px] sm:max-w-xs" />
+              <GlobeInteractive className="w-full max-w-[200px] sm:max-w-xs" />
             </div>
 
+          </div>
+        </div>
+
+        {/* MINI CTA — après la section Jarvis */}
+        <div className="mt-8 sm:mt-10 mx-auto max-w-3xl">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-5 px-5 py-4 sm:px-7 sm:py-5 rounded-2xl bg-gradient-to-r from-violet-100/80 via-fuchsia-50 to-violet-100/80 border border-violet-200/80 shadow-sm">
+            <p className="text-base sm:text-[15px] font-medium text-gray-800 text-center sm:text-left">
+              Curieux de voir cette petite voix à l'œuvre ?
+            </p>
+            <button
+              onClick={() => navigate("/demo")}
+              className="shrink-0 inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-violet-500 to-blue-500 hover:from-violet-600 hover:to-blue-600 rounded-xl transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5"
+            >
+              <Rocket className="h-4 w-4" />
+              Tester la démo gratuitement
+            </button>
           </div>
         </div>
       </div>
@@ -632,7 +704,7 @@ export default function HomeView({ onComprendreClick, onRgpdClick }: { onCompren
       {/* SECTION — COMPRENDRE SYNTHÈSE (page complète intégrée) */}
       <ComprendreView />
 
-      {/* SECTION — FONCTIONNALITÉS BOOSTÉES (outils de base × IA) */}
+      {/* SECTION — OUTILS DE BASE DOPÉS À L'IA */}
       <BoostedFeaturesSection />
 
       {/* SECTION — POURQUOI ÇA N'EXISTAIT PAS AVANT */}
@@ -885,6 +957,11 @@ export default function HomeView({ onComprendreClick, onRgpdClick }: { onCompren
         </div>
       </div>
 
+      {/* CALLOUT — démo gratuite 14 jours */}
+      <div className="mb-16 sm:mb-20">
+        <DemoCallout variant="compact" />
+      </div>
+
       {/* SYNTHÈSE C'EST QUI + TARIFICATION — DUO */}
       <div className="mb-20">
         <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
@@ -965,41 +1042,13 @@ export default function HomeView({ onComprendreClick, onRgpdClick }: { onCompren
 
       </div>
 
-      {/* CTA FINAL */}
-      <div className="bg-gradient-to-br from-violet-100 via-pink-50 to-fuchsia-100 dark:from-violet-900/20 dark:via-pink-900/20 dark:to-fuchsia-900/20 rounded-2xl sm:rounded-3xl p-6 sm:p-10 text-center border border-violet-200/50 shadow-lg shadow-violet-500/5">
-        <h2 className="text-2xl sm:text-3xl md:text-4xl font-display text-gray-900 dark:text-white mb-3 leading-tight tracking-tight">
-          Prêt à découvrir Synthèse en action ?
-        </h2>
-        <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 mb-6 sm:mb-8 max-w-xl mx-auto leading-relaxed">
-          Explorez librement la plateforme, ou prenons un moment ensemble pour
-          parler de votre activité.
-        </p>
+      {/* CTA FINAL — 14 jours gratuits */}
+      <DemoCallout />
 
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 max-w-sm sm:max-w-none mx-auto">
-          <StarButton
-            lightColor="#7C3AED"
-            className="rounded-xl h-12 px-6 touch-manipulation"
-            onClick={() => navigate("/contact")}
-          >
-            ✨ Réserver une démo
-          </StarButton>
-
-          <button
-            onClick={() =>
-              alert("Naviguez librement dans la sidebar pour explorer")
-            }
-            className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 text-sm sm:text-base font-semibold rounded-xl border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600 transition-all touch-manipulation"
-          >
-            <Search className="h-5 w-5" />
-            Explorer la plateforme
-          </button>
-        </div>
-
-        <p className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-400 mt-5 sm:mt-6 leading-relaxed">
-          Compte de démonstration — toutes les fonctionnalités sont accessibles
-          dans la sidebar
-        </p>
-      </div>
+      <p className="text-center text-[11px] sm:text-xs text-gray-500 dark:text-gray-400 mt-5 sm:mt-6 leading-relaxed">
+        Vous pouvez aussi explorer librement les fonctionnalités via la
+        barre de gauche.
+      </p>
 
       {/* MODAL */}
       {selectedApp && (
