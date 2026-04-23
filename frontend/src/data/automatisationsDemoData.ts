@@ -137,6 +137,124 @@ export const AUTOMATIONS: Automation[] = [
   }
 ]
 
+// ── Templates prêts à activer ────────────────────────────────────────────────
+
+export interface AutomationTemplate {
+  id: string
+  iconName: string
+  iconColor: string
+  iconBg: string
+  category: string
+  title: string
+  description: string
+  trigger: string
+  action: string
+  estimatedSetupMinutes: number
+  popular?: boolean
+}
+
+export const AUTOMATION_TEMPLATES: AutomationTemplate[] = [
+  {
+    id: "tpl-factures-email",
+    iconName: "Mail",
+    iconColor: "text-blue-500",
+    iconBg: "bg-blue-50",
+    category: "Comptabilité",
+    title: "Ranger les factures reçues par email",
+    description: "Dès qu'un email avec une facture PDF arrive, Synthèse l'extrait, la renomme et la classe par mois.",
+    trigger: "Nouvel email avec pièce jointe PDF",
+    action: "Renommer + ranger dans /Factures/<année>-<mois>/",
+    estimatedSetupMinutes: 2,
+    popular: true,
+  },
+  {
+    id: "tpl-relance-devis",
+    iconName: "RotateCw",
+    iconColor: "text-amber-500",
+    iconBg: "bg-amber-50",
+    category: "Commercial",
+    title: "Relancer automatiquement les devis sans réponse",
+    description: "Un devis envoyé sans réponse depuis 7 jours ? Synthèse prépare une relance polie et vous la propose.",
+    trigger: "Devis envoyé il y a > 7 jours sans réponse",
+    action: "Préparer un brouillon de relance dans Gmail",
+    estimatedSetupMinutes: 3,
+    popular: true,
+  },
+  {
+    id: "tpl-classement-photos",
+    iconName: "FolderInput",
+    iconColor: "text-violet-500",
+    iconBg: "bg-violet-50",
+    category: "Chantier",
+    title: "Classer les photos déposées dans un dossier",
+    description: "Toute photo déposée dans le dossier Inbox est analysée, renommée par chantier, et rangée au bon endroit.",
+    trigger: "Nouveau fichier image dans /Inbox/",
+    action: "OCR + détecter chantier + ranger dans /Chantiers/<nom>/photos/",
+    estimatedSetupMinutes: 2,
+  },
+  {
+    id: "tpl-extraction-tickets",
+    iconName: "FolderInput",
+    iconColor: "text-emerald-500",
+    iconBg: "bg-emerald-50",
+    category: "Comptabilité",
+    title: "Extraire les tickets de caisse en Excel",
+    description: "Photos de tickets déposées dans un dossier ? Synthèse en extrait les montants et alimente une feuille Excel mensuelle.",
+    trigger: "Nouveau fichier image avec ticket détecté",
+    action: "Extraire montants + ajouter ligne dans /Notes-frais-<mois>.xlsx",
+    estimatedSetupMinutes: 4,
+  },
+  {
+    id: "tpl-briefing-matin",
+    iconName: "Bell",
+    iconColor: "text-orange-500",
+    iconBg: "bg-orange-50",
+    category: "Productivité",
+    title: "Recevoir un briefing chaque matin à 8h",
+    description: "Tous les matins, un résumé clair de votre journée : urgents, échéances, paiements, brouillons prêts.",
+    trigger: "Tous les jours à 08:00",
+    action: "Générer un briefing IA + notifier sur le bureau",
+    estimatedSetupMinutes: 1,
+    popular: true,
+  },
+  {
+    id: "tpl-teams-docs",
+    iconName: "MessagesSquare",
+    iconColor: "text-purple-500",
+    iconBg: "bg-purple-50",
+    category: "Collaboration",
+    title: "Capturer les documents partagés sur Teams",
+    description: "Tout document partagé dans un canal Teams est récupéré, renommé et archivé dans le bon dossier projet.",
+    trigger: "Nouveau document dans un canal Teams surveillé",
+    action: "Télécharger + renommer + ranger dans /Projets/<canal>/",
+    estimatedSetupMinutes: 5,
+  },
+  {
+    id: "tpl-rappel-echeance",
+    iconName: "Bell",
+    iconColor: "text-rose-500",
+    iconBg: "bg-rose-50",
+    category: "Productivité",
+    title: "Détecter les échéances dans les emails",
+    description: "Synthèse repère les dates limites mentionnées (URSSAF, factures, contrats) et vous notifie avant qu'il ne soit trop tard.",
+    trigger: "Date limite détectée dans un email",
+    action: "Créer un rappel J-7, J-3, J-1",
+    estimatedSetupMinutes: 2,
+  },
+  {
+    id: "tpl-archivage-newsletters",
+    iconName: "FolderInput",
+    iconColor: "text-gray-500",
+    iconBg: "bg-gray-100",
+    category: "Productivité",
+    title: "Archiver les newsletters automatiquement",
+    description: "Les newsletters et emails promotionnels sont archivés sans bruit, votre boîte reste claire.",
+    trigger: "Email détecté comme newsletter",
+    action: "Archiver + ne pas notifier",
+    estimatedSetupMinutes: 1,
+  },
+]
+
 export const AUTOMATION_FEATURES = [
   {
     iconName: "Eye",

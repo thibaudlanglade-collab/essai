@@ -17,4 +17,7 @@ ALLOWED_ORIGINS: list[str] = [
     "http://localhost:5173",
     "http://localhost:3000",
     "http://127.0.0.1:5173",
+    # Landing page (`te` project) dev origin — calls POST /api/auth/start-anonymous-trial.
+    "http://localhost:5175",
+    "http://127.0.0.1:5175",
 ] + [o.strip() for o in _extra_origins.split(",") if o.strip()]

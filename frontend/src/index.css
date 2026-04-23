@@ -251,3 +251,24 @@ body {
 .animate-star-btn {
   animation: star-btn calc(var(--duration) * 1s) linear infinite;
 }
+
+/* ── Email HTML body constraint ──────────────────────────────────────────
+ * Keep widely-designed marketing emails inside the panel. Without this,
+ * hardcoded table widths or pixel-sized images blow out the layout.
+ */
+.email-html-body, .email-html-body * {
+  max-width: 100% !important;
+  box-sizing: border-box;
+}
+.email-html-body img,
+.email-html-body video {
+  height: auto !important;
+}
+.email-html-body table {
+  width: 100% !important;
+  table-layout: auto !important;
+}
+.email-html-body a {
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}

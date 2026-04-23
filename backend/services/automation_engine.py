@@ -34,7 +34,7 @@ class AutomationEngine:
             # Create the run record
             run = AutomationRun(
                 automation_id=automation_id,
-                started_at=datetime.now(timezone.utc),
+                started_at=datetime.utcnow(),
                 status="running",
                 trigger_context=json.dumps(trigger_context, default=str),
                 steps_log="[]",
@@ -108,7 +108,7 @@ class AutomationEngine:
                 steps_log.append(step_entry)
 
             # Finalize run
-            now = datetime.now(timezone.utc)
+            now = datetime.utcnow()
             ok_count = sum(1 for s in steps_log if s["status"] == "success")
             run.finished_at = now
             run.status = final_status

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Mail,
   Shield,
@@ -14,8 +15,11 @@ import {
   Calendar,
   Users,
   Paperclip,
+  Link as LinkIcon,
+  Loader2,
   type LucideIcon,
 } from "lucide-react";
+import { getConnectUrl } from "../../api/emailsClient";
 
 interface Feature {
   icon: LucideIcon;
@@ -129,10 +133,27 @@ function FeatureCard({ feature }: { feature: Feature }) {
 }
 
 export default function EmailsPresentation({ onVisualize }: { onVisualize: () => void }) {
+  const [connecting, setConnecting] = useState(false);
+  const [connectError, setConnectError] = useState<string | null>(null);
+
+  async function handleConnect() {
+    setConnecting(true);
+    setConnectError(null);
+    try {
+      const { auth_url } = await getConnectUrl();
+      window.location.href = auth_url;
+    } catch (err) {
+      setConnectError(
+        err instanceof Error ? err.message : "Impossible d'ouvrir la connexion Gmail."
+      );
+      setConnecting(false);
+    }
+  }
+
   return (
     <div className="max-w-5xl mx-auto py-10 px-6 overflow-y-auto h-full">
       {/* HERO */}
-      <div className="text-center mb-16 max-w-3xl mx-auto">
+      <div className="text-center mb-10 max-w-3xl mx-auto">
         <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-blue-50 mb-5">
           <Mail className="h-7 w-7 text-blue-500" />
         </div>
@@ -147,6 +168,31 @@ export default function EmailsPresentation({ onVisualize }: { onVisualize: () =>
         <p className="text-sm text-gray-500">
           Vos données restent les vôtres. Rien n'est stocké ni partagé.
         </p>
+      </div>
+
+      {/* CTA primaire — connecter Gmail pour de vrai */}
+      <div className="max-w-2xl mx-auto mb-16 rounded-2xl border border-blue-200 bg-gradient-to-br from-blue-50 to-violet-50 px-6 py-6 text-center">
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">
+          Connectez votre vraie boîte Gmail
+        </h3>
+        <p className="text-sm text-gray-600 mb-5">
+          OAuth2 Google sécurisé, en lecture. Vous pouvez vous déconnecter à tout moment.
+        </p>
+        <button
+          onClick={handleConnect}
+          disabled={connecting}
+          className="inline-flex items-center gap-2 px-7 py-3 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed shadow-sm hover:shadow-md transition-all"
+        >
+          {connecting ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <LinkIcon className="h-4 w-4" />
+          )}
+          {connecting ? "Ouverture de Google…" : "Se connecter à Gmail"}
+        </button>
+        {connectError && (
+          <p className="text-xs text-red-600 mt-3">{connectError}</p>
+        )}
       </div>
 
       {/* SECTION 1 — FONCTIONNALITÉS ACTUELLES */}

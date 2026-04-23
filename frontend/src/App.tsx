@@ -22,6 +22,15 @@ import Welcome from "./pages/Welcome";
 import DashboardHome from "./pages/DashboardHome";
 import ExtractView from "./pages/ExtractView";
 import AutomationsView from "./pages/AutomationsView";
+import ClientsView from "./pages/ClientsView";
+import PhotoToDocumentPage from "./pages/PhotoToDocumentPage";
+import EmailsPage from "./pages/EmailsPage";
+import TarifsView from "./pages/TarifsView";
+import DevisView from "./pages/DevisView";
+import BriefingView from "./pages/BriefingView";
+import MonEquipeView from "./pages/MonEquipeView";
+import AgentRapportPage from "./pages/AgentRapportPage";
+import { ChatAssistantView } from "./components/ChatAssistant";
 
 /**
  * Renders nothing and forces a full-page navigation to /expired so the
@@ -48,6 +57,15 @@ export default function App() {
             <Route path="/dashboard" element={<DashboardHome />} />
             <Route path="/dashboard/extract" element={<ExtractView />} />
             <Route path="/dashboard/automations" element={<AutomationsView />} />
+            <Route path="/dashboard/clients" element={<ClientsView />} />
+            <Route path="/dashboard/photo-to-document" element={<PhotoToDocumentPage />} />
+            <Route path="/dashboard/emails" element={<EmailsPage />} />
+            <Route path="/dashboard/briefing" element={<BriefingView />} />
+            <Route path="/dashboard/mon-equipe" element={<MonEquipeView />} />
+            <Route path="/dashboard/agent-rapport" element={<AgentRapportPage />} />
+            <Route path="/dashboard/settings/tarifs" element={<TarifsView />} />
+            <Route path="/dashboard/devis" element={<DevisView />} />
+            <Route path="/dashboard/chat-assistant" element={<ChatAssistantView />} />
             <Route path="/dashboard/*" element={<DashboardHome />} />
           </Route>
         </Route>

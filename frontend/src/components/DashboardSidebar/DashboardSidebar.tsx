@@ -16,20 +16,16 @@ import { NavLink } from "react-router-dom";
 import type { ComponentType } from "react";
 import {
   BarChart3,
-  Bot,
-  Building2,
-  Calendar,
   Camera,
+  Euro,
   FileText,
-  LayoutGrid,
   Lightbulb,
-  Link2,
   Mail,
   MessageSquare,
-  Mic,
   Settings2,
-  ShieldCheck,
   Sparkles,
+  Sunrise,
+  Users,
   Zap,
 } from "lucide-react";
 import logoSynthese from "@/assets/logo-synthese.png";
@@ -198,8 +194,8 @@ export default function DashboardSidebar({
           <Item
             icon={MessageSquare}
             label="Assistant Synthèse"
-            status="soon"
-            soonLabel="Arrive en Sprint 4"
+            to="/dashboard/chat-assistant"
+            status="active"
           />
           <Item
             icon={Zap}
@@ -209,87 +205,63 @@ export default function DashboardSidebar({
           />
           <Item
             icon={FileText}
-            label="Email → Devis"
-            status="soon"
-            soonLabel="Arrive en Sprint 5"
+            label="Devis"
+            to="/dashboard/devis"
+            status="active"
           />
           <Item
             icon={Camera}
             label="Photo → PDF/Excel"
-            status="soon"
-            soonLabel="Disponible dans votre version définitive"
-          />
-          <Item
-            icon={Mic}
-            label="Transcripteur"
-            status="soon"
-            soonLabel="Disponible dans votre version définitive"
-          />
-          <Item
-            icon={Calendar}
-            label="Planificateur"
-            status="soon"
-            soonLabel="Disponible dans votre version définitive"
+            to="/dashboard/photo-to-document"
+            status="active"
           />
           <Item
             icon={Mail}
             label="Emails"
-            status="soon"
-            soonLabel="Arrive en Sprint 6 (Gmail readonly)"
+            to="/dashboard/emails"
+            status="active"
           />
 
           <SectionHeader label="Outils" />
+          <Item
+            icon={Sunrise}
+            label="Briefing du jour"
+            to="/dashboard/briefing"
+            status="active"
+          />
+          <Item
+            icon={Users}
+            label="Mon équipe"
+            to="/dashboard/mon-equipe"
+            status="active"
+          />
           <Item
             icon={Settings2}
             label="Automatisations"
             to="/dashboard/automations"
             status="active"
           />
+
+          <SectionHeader label="Paramètres" />
           <Item
-            icon={Link2}
-            label="Connexions"
-            status="soon"
-            soonLabel="Arrive en Sprint 6"
+            icon={Euro}
+            label="Grille tarifaire"
+            to="/dashboard/settings/tarifs"
+            status="active"
           />
 
           <SectionHeader label="Agents IA" />
           <Item
-            icon={Bot}
-            label="Mes agents IA"
-            status="soon"
-            soonLabel="Arrive en Sprint 5"
+            icon={Sparkles}
+            label="Agent Rapport client"
+            to="/dashboard/agent-rapport"
+            status="active"
           />
           <Item
             icon={BarChart3}
-            label="Rapport client"
-            status="soon"
-            soonLabel="Arrive en Sprint 4"
-          />
-
-          <SectionHeader label="Et encore plus" />
-          <Item
-            icon={ShieldCheck}
-            label="RGPD / Sécurité"
-            status="soon"
-            soonLabel="Page vitrine — Sprint 6"
-          />
-          <Item
-            icon={LayoutGrid}
-            label="Par secteur"
-            status="soon"
-            soonLabel="Page vitrine — Sprint 6"
-          />
-          <Item
-            icon={Building2}
-            label="Qui sommes-nous"
-            status="soon"
-            soonLabel="Page vitrine — Sprint 6"
-          />
-          <Item
-            icon={Sparkles}
-            label="Tarification"
-            status="soon"
-            soonLabel="Page vitrine — Sprint 6"
+            label="Rapport client (Q&A)"
+            to="/dashboard/clients"
+            status="active"
           />
         </nav>
       </aside>

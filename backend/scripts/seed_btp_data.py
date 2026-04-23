@@ -15,7 +15,7 @@ from typing import Optional
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from db.models import Client, Email, Invoice, Quote, Supplier
+from db.models import Client, Email, Invoice, Quote, Supplier, TarifGrid
 
 _SEED_PATH = Path(__file__).resolve().parent.parent / "data" / "btp_seed.json"
 
@@ -43,23 +43,67 @@ async def seed_btp_data(db: AsyncSession, user_id: str) -> dict[str, int]:
     no-op and every count in the returned dict is 0.
 
     Returns a dict of inserted row counts:
-        {"suppliers": N, "clients": N, "invoices": N, "quotes": N, "emails": N}
-    """
-    # ── Idempotence guard ───────────────────────────────────────────────────
-    existing = await db.execute(
-        select(Client.id)
-        .where(Client.user_id == user_id, Client.is_seed.is_(True))
-        .limit(1)
-    )
-    if existing.scalar_one_or_none() is not None:
-        return {"suppliers": 0, "clients": 0, "invoices": 0, "quotes": 0, "emails": 0}
+        {"suppliers": N, "clients": N, "invoices": N, "quotes": N, "emails": N, "tarif_grids": N}
 
+    Idempotence is now per-resource: the main block (suppliers/clients/invoices/
+    quotes/emails) only runs if no seed client exists yet. The tarif_grids block
+    runs independently: it backfills tarifs for tenants seeded before Sprint 3.
+    """
     # ── Load payload ────────────────────────────────────────────────────────
     with _SEED_PATH.open("r", encoding="utf-8") as f:
         payload = json.load(f)
 
-    counts = {"suppliers": 0, "clients": 0, "invoices": 0, "quotes": 0, "emails": 0}
+    counts = {"suppliers": 0, "clients": 0, "invoices": 0, "quotes": 0, "emails": 0, "tarif_grids": 0}
 
+    # ── Idempotence guard for the main block ────────────────────────────────
+    existing_client = await db.execute(
+        select(Client.id)
+        .where(Client.user_id == user_id, Client.is_seed.is_(True))
+        .limit(1)
+    )
+    skip_main_block = existing_client.scalar_one_or_none() is not None
+
+    if skip_main_block:
+        # Jump straight to the tarif_grids backfill below.
+        pass
+    else:
+        supplier_id_by_name, client_id_by_name, invoice_id_by_number, quote_id_by_number = (
+            await _seed_main_block(db, user_id, payload, counts)
+        )
+
+    # ── Tarif grids (Sprint 3, runs independently) ──────────────────────────
+    existing_tarif = await db.execute(
+        select(TarifGrid.id)
+        .where(TarifGrid.user_id == user_id, TarifGrid.is_seed.is_(True))
+        .limit(1)
+    )
+    if existing_tarif.scalar_one_or_none() is None:
+        for row in payload.get("tarif_grids", []):
+            tarif = TarifGrid(
+                user_id=user_id,
+                is_seed=True,
+                key=row["key"],
+                label=row["label"],
+                unit=row["unit"],
+                unit_price_ht=row["unit_price_ht"],
+                vat_rate=row["vat_rate"],
+                category=row.get("category"),
+            )
+            db.add(tarif)
+            counts["tarif_grids"] += 1
+
+    await db.commit()
+    return counts
+
+
+async def _seed_main_block(
+    db: AsyncSession,
+    user_id: str,
+    payload: dict,
+    counts: dict[str, int],
+) -> tuple[dict[str, str], dict[str, str], dict[str, str], dict[str, str]]:
+    """Insert suppliers, clients, invoices, quotes, emails. Shared between the
+    initial seed and any future re-seed operations."""
     # ── Suppliers ───────────────────────────────────────────────────────────
     supplier_id_by_name: dict[str, str] = {}
     for row in payload["suppliers"]:
@@ -195,5 +239,4 @@ async def seed_btp_data(db: AsyncSession, user_id: str) -> dict[str, int]:
         db.add(email)
         counts["emails"] += 1
 
-    await db.commit()
-    return counts
+    return supplier_id_by_name, client_id_by_name, invoice_id_by_number, quote_id_by_number

@@ -83,7 +83,10 @@ export type MorningBriefing = {
 };
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
-  const res = await fetch(`${API}${path}`, options);
+  const res = await fetch(`${API}${path}`, {
+    ...options,
+    credentials: "include",
+  });
   if (!res.ok) {
     const text = await res.text().catch(() => res.statusText);
     throw new Error(`${res.status} ${text}`);

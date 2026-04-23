@@ -37,11 +37,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from auth.dependencies import get_current_user
 from db.database import get_db
 from db.models import AccessToken, OAuthConnection, WatchedFolder
-from services.crypto import CryptoConfigError, encrypt_token
+from services.crypto import CryptoConfigError, decrypt_token, encrypt_token
 from services.drive_service import (
     DriveServiceError,
     build_oauth_flow,
     exchange_code_for_tokens,
+    list_folders,
 )
 
 logger = logging.getLogger(__name__)
@@ -63,6 +64,7 @@ def _generate_state(user_id: str) -> str:
     _oauth_states[token] = {
         "expiry": time.time() + _STATE_TTL_SECONDS,
         "user_id": user_id,
+        "code_verifier": None,
     }
     return token
 
@@ -95,6 +97,10 @@ async def drive_connect(
             include_granted_scopes="true",
             prompt="consent",
         )
+        # Persist the PKCE code_verifier so the callback can restore it
+        # on the fresh Flow used for `fetch_token`. google-auth-oauthlib
+        # (1.2+) auto-generates it during `authorization_url()`.
+        _oauth_states[state]["code_verifier"] = getattr(flow, "code_verifier", None)
         return {"auth_url": auth_url}
     except DriveServiceError as exc:
         raise HTTPException(500, str(exc)) from exc
@@ -127,7 +133,9 @@ async def drive_callback(
         return _error_html("État OAuth mal formé (user introuvable).")
 
     try:
-        token_payload = exchange_code_for_tokens(code)
+        token_payload = exchange_code_for_tokens(
+            code, code_verifier=entry.get("code_verifier")
+        )
     except DriveServiceError as exc:
         return _error_html(str(exc), status=502)
 
@@ -182,6 +190,62 @@ async def drive_disconnect(
     )
     await db.commit()
     return {"success": True}
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Folder picker (Sprint 4 bonus)
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+# Multi-tenant: isolated to user.id.
+@drive_router.get("/folders")
+async def list_drive_folders(
+    search: str = "",
+    db: AsyncSession = Depends(get_db),
+    user: AccessToken = Depends(get_current_user),
+) -> list[dict[str, Any]]:
+    """List the prospect's Drive folders (flat, max 100).
+
+    Powers the folder picker combobox on `/dashboard/clients` and
+    `/dashboard/automations`. Optional `search` query filters by
+    `name contains`.
+    """
+    connection = await _get_connection(db, user.id)
+    if connection is None:
+        raise HTTPException(400, "Google Drive n'est pas connecté.")
+
+    try:
+        access_plain = decrypt_token(connection.access_token)
+        refresh_plain = (
+            decrypt_token(connection.refresh_token)
+            if connection.refresh_token
+            else None
+        )
+    except Exception as exc:
+        logger.warning("Drive token decrypt failed for user=%s: %s", user.id, exc)
+        raise HTTPException(500, "Jetons Drive illisibles, reconnectez votre Drive.") from exc
+
+    scopes = json.loads(connection.scopes) if connection.scopes else []
+
+    try:
+        folders, refreshed = list_folders(
+            access_token=access_plain,
+            refresh_token=refresh_plain,
+            expires_at=connection.expires_at,
+            scopes=scopes,
+            search=search.strip() or None,
+        )
+    except DriveServiceError as exc:
+        raise HTTPException(502, str(exc)) from exc
+
+    # Persist refreshed access token if Google rotated it mid-call.
+    if refreshed.token and refreshed.token != access_plain:
+        connection.access_token = encrypt_token(refreshed.token)
+        if refreshed.expiry:
+            connection.expires_at = refreshed.expiry
+        await db.commit()
+
+    return folders
 
 
 # ─────────────────────────────────────────────────────────────────────────────

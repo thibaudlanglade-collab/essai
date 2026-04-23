@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Archive,
+  FileText,
   Inbox,
   Mail,
   MailOpen,
@@ -20,6 +22,7 @@ import TopicsSettingsModal from "./TopicsSettingsModal";
 import AttachmentsList from "./AttachmentsList";
 import EmailsPresentation from "./EmailsPresentation";
 import DemoMailbox from "./DemoMailbox";
+import EmailHtmlBody from "./EmailHtmlBody";
 
 function timeAgo(iso: string): string {
   const diff = Date.now() - new Date(iso).getTime();
@@ -29,13 +32,6 @@ function timeAgo(iso: string): string {
   if (hours < 24) return `${hours}h`;
   const days = Math.floor(hours / 24);
   return `${days}j`;
-}
-
-function stripScripts(html: string): string {
-  return html.replace(
-    /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
-    "",
-  );
 }
 
 const PRIORITY_CHIPS = [
@@ -49,6 +45,7 @@ const PRIORITY_CHIPS = [
 type Props = { onExit: () => void };
 
 export default function EmailsView({ onExit: _onExit }: Props) {
+  const navigate = useNavigate();
   const [demoView, setDemoView] = useState<"presentation" | "mailbox" | null>(null);
   const {
     status,
@@ -153,15 +150,69 @@ export default function EmailsView({ onExit: _onExit }: Props) {
 
   const hasBriefingBadge = briefing && !briefing.is_read;
 
-  // Demo flow: presentation page → demo mailbox (for non-connected users)
-  if (demoView === "mailbox") {
-    return <DemoMailbox onBack={() => setDemoView("presentation")} />;
-  }
-  if (demoView === "presentation" || (!status?.connected && demoView === null)) {
-    // Show presentation page when not connected (default) or explicitly navigated
-    if (!status?.connected) {
-      return <EmailsPresentation onVisualize={() => setDemoView("mailbox")} />;
+  // Resizable split between the email list (left) and the detail pane (right).
+  // Persisted in localStorage so the prospect keeps their preferred layout.
+  const MIN_LIST_WIDTH = 260;
+  const MAX_LIST_WIDTH = 560;
+  const [listWidth, setListWidth] = useState<number>(() => {
+    try {
+      const stored = localStorage.getItem("synthese.emails.listWidth");
+      if (stored) {
+        const n = parseInt(stored, 10);
+        if (!Number.isNaN(n) && n >= MIN_LIST_WIDTH && n <= MAX_LIST_WIDTH) return n;
+      }
+    } catch { /* localStorage unavailable */ }
+    return 340;
+  });
+  const [isResizing, setIsResizing] = useState(false);
+
+  useEffect(() => {
+    if (!isResizing) return;
+    const onMove = (e: MouseEvent) => {
+      // The split x-origin is the left edge of the dashboard content area
+      // (the sidebar is fixed 240px on large screens). Resolve by clientX
+      // relative to the aside bounding rect.
+      const aside = document.getElementById("emails-list-pane");
+      if (!aside) return;
+      const rect = aside.getBoundingClientRect();
+      const next = Math.min(
+        MAX_LIST_WIDTH,
+        Math.max(MIN_LIST_WIDTH, e.clientX - rect.left),
+      );
+      setListWidth(next);
+    };
+    const onUp = () => {
+      setIsResizing(false);
+      try {
+        localStorage.setItem("synthese.emails.listWidth", String(listWidth));
+      } catch { /* ignore */ }
+    };
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onUp);
+    document.body.style.cursor = "col-resize";
+    document.body.style.userSelect = "none";
+    return () => {
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseup", onUp);
+      document.body.style.cursor = "";
+      document.body.style.userSelect = "";
+    };
+  }, [isResizing, listWidth]);
+
+  // Once Gmail is connected, force the real mailbox — any stale demo state
+  // (user clicked "Visualiser la démo" earlier) must not hide the real inbox.
+  useEffect(() => {
+    if (status?.connected && demoView !== null) {
+      setDemoView(null);
     }
+  }, [status?.connected]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Demo flow only applies when Gmail is NOT connected.
+  if (!status?.connected) {
+    if (demoView === "mailbox") {
+      return <DemoMailbox onBack={() => setDemoView("presentation")} />;
+    }
+    return <EmailsPresentation onVisualize={() => setDemoView("mailbox")} />;
   }
 
   return (
@@ -261,7 +312,11 @@ export default function EmailsView({ onExit: _onExit }: Props) {
         <div className="flex flex-1 min-h-0">
 
           {/* ── LEFT PANE ───────────────────────────────────────────────── */}
-          <aside className="w-96 min-w-80 border-r border-violet-100/60 dark:border-gray-800 flex flex-col min-h-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm">
+          <aside
+            id="emails-list-pane"
+            style={{ width: `${listWidth}px` }}
+            className="shrink-0 border-r border-violet-100/60 dark:border-gray-800 flex flex-col min-h-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm"
+          >
 
             {/* Filters header — fixed, does not scroll */}
             <div className="shrink-0 border-b border-gray-100">
@@ -410,74 +465,131 @@ export default function EmailsView({ onExit: _onExit }: Props) {
                   <RefreshCw className="h-5 w-5 text-gray-300 animate-spin" />
                 </div>
               )}
-              {emails.map((email) => (
-                <button
-                  key={email.id}
-                  onClick={() => {
-                    void selectEmail(email.id);
-                    if (!email.is_read) void markAsRead(email.id);
-                  }}
-                  className={`w-full text-left px-4 py-3.5 border-b border-gray-100 hover:bg-gray-50 transition-colors flex gap-3 ${
-                    selectedEmailId === email.id ? "bg-blue-50/50" : ""
-                  }`}
-                >
-                  {/* Unread dot */}
-                  <div className="pt-1.5 shrink-0 w-2">
-                    {!email.is_read && (
-                      <div className="w-2 h-2 rounded-full bg-blue-500" />
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between gap-1 mb-0.5">
-                      <span
-                        className={`text-sm truncate ${
-                          email.is_read
-                            ? "text-gray-500"
-                            : "text-gray-900 font-semibold"
+              {emails.map((email) => {
+                const senderLabel = email.from_name || email.from_email || "?";
+                const initials = senderLabel
+                  .replace(/[<>"]/g, "")
+                  .split(/[\s@.]+/)
+                  .filter(Boolean)
+                  .slice(0, 2)
+                  .map((w) => w[0]?.toUpperCase() ?? "")
+                  .join("") || "?";
+                // Stable color from sender string
+                let hash = 0;
+                for (let i = 0; i < senderLabel.length; i++) {
+                  hash = (hash * 31 + senderLabel.charCodeAt(i)) >>> 0;
+                }
+                const palette = [
+                  "bg-violet-100 text-violet-700",
+                  "bg-blue-100 text-blue-700",
+                  "bg-emerald-100 text-emerald-700",
+                  "bg-amber-100 text-amber-700",
+                  "bg-rose-100 text-rose-700",
+                  "bg-cyan-100 text-cyan-700",
+                  "bg-indigo-100 text-indigo-700",
+                  "bg-pink-100 text-pink-700",
+                ];
+                const avatarClass = palette[hash % palette.length];
+                const previewText = (email.ai_summary || email.snippet || "").trim();
+                return (
+                  <button
+                    key={email.id}
+                    onClick={() => {
+                      void selectEmail(email.id);
+                      if (!email.is_read) void markAsRead(email.id);
+                    }}
+                    className={`w-full text-left px-4 py-3 border-b border-gray-100 hover:bg-gray-50 transition-colors flex gap-3 ${
+                      selectedEmailId === email.id ? "bg-blue-50/50" : ""
+                    } ${!email.is_read ? "bg-white" : "bg-gray-50/40"}`}
+                  >
+                    {/* Avatar */}
+                    <div className="relative shrink-0 pt-0.5">
+                      <div
+                        className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-semibold ${avatarClass}`}
+                      >
+                        {initials}
+                      </div>
+                      {!email.is_read && (
+                        <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-blue-500 border-2 border-white" />
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-baseline justify-between gap-2 mb-0.5">
+                        <span
+                          className={`text-sm truncate ${
+                            email.is_read
+                              ? "text-gray-600"
+                              : "text-gray-900 font-semibold"
+                          }`}
+                        >
+                          {senderLabel}
+                        </span>
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          {email.is_starred && (
+                            <Star className="h-3.5 w-3.5 text-amber-400 fill-amber-400" />
+                          )}
+                          <span className={`text-[11px] shrink-0 ${
+                            email.is_read ? "text-gray-400" : "text-blue-600 font-medium"
+                          }`}>
+                            {timeAgo(email.received_at)}
+                          </span>
+                        </div>
+                      </div>
+                      <p
+                        className={`text-[13px] truncate ${
+                          email.is_read ? "text-gray-600" : "text-gray-900 font-medium"
                         }`}
                       >
-                        {email.from_name || email.from_email}
-                      </span>
-                      <div className="flex items-center gap-1.5 shrink-0">
-                        {email.is_starred && (
-                          <Star className="h-3.5 w-3.5 text-amber-400 fill-amber-400" />
-                        )}
-                        <span className="text-xs text-gray-400">
-                          {timeAgo(email.received_at)}
-                        </span>
-                      </div>
+                        {email.subject || "(sans objet)"}
+                      </p>
+                      {previewText && (
+                        <div className="mt-1 flex items-start gap-1.5">
+                          {email.ai_summary && (
+                            <Sparkles className="h-3 w-3 shrink-0 mt-0.5 text-violet-400" />
+                          )}
+                          <p className="text-xs text-gray-500 line-clamp-2 leading-snug">
+                            {previewText}
+                          </p>
+                        </div>
+                      )}
+                      {(email.topic || email.priority || (email.attachments_count ?? 0) > 0) && (
+                        <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                          {email.topic && (
+                            <TopicBadge topic={topicsMap[email.topic]} size="sm" />
+                          )}
+                          {email.priority && (
+                            <PriorityBadge priority={email.priority} size="sm" />
+                          )}
+                          {(email.attachments_count ?? 0) > 0 && (
+                            <span className="flex items-center gap-0.5 text-gray-400 text-xs">
+                              <Paperclip className="h-3 w-3" />
+                              {email.attachments_count}
+                            </span>
+                          )}
+                        </div>
+                      )}
                     </div>
-                    <p className="text-xs text-gray-700 truncate">
-                      {email.subject || "(sans objet)"}
-                    </p>
-                    <p className="text-xs text-gray-400 truncate mt-0.5">
-                      {email.snippet}
-                    </p>
-                    {/* Topic + priority + attachment badges */}
-                    {(email.topic || email.priority || (email.attachments_count ?? 0) > 0) && (
-                      <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
-                        {email.topic && (
-                          <TopicBadge topic={topicsMap[email.topic]} size="sm" />
-                        )}
-                        {email.priority && (
-                          <PriorityBadge priority={email.priority} size="sm" />
-                        )}
-                        {(email.attachments_count ?? 0) > 0 && (
-                          <span className="flex items-center gap-0.5 text-gray-400 text-xs">
-                            <Paperclip className="h-3 w-3" />
-                            {email.attachments_count}
-                          </span>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </button>
-              ))}
+                  </button>
+                );
+              })}
             </div>
           </aside>
 
+          {/* ── RESIZE HANDLE ──────────────────────────────────────────── */}
+          <div
+            role="separator"
+            aria-orientation="vertical"
+            aria-label="Redimensionner la liste d'emails"
+            onMouseDown={(e) => { e.preventDefault(); setIsResizing(true); }}
+            onDoubleClick={() => setListWidth(340)}
+            className={`shrink-0 w-1 cursor-col-resize bg-gray-200 hover:bg-violet-300 transition-colors ${
+              isResizing ? "bg-violet-400" : ""
+            }`}
+            title="Glissez pour ajuster, double-clic pour réinitialiser"
+          />
+
           {/* ── RIGHT PANE ──────────────────────────────────────────────── */}
-          <main className="flex-1 min-h-0 flex flex-col bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm">
+          <main className="flex-1 min-w-0 min-h-0 flex flex-col bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm">
             {!selectedEmail && (
               <div className="flex-1 flex items-center justify-center">
                 <div className="flex flex-col items-center gap-3 text-center">
@@ -554,50 +666,56 @@ export default function EmailsView({ onExit: _onExit }: Props) {
                   </div>
                 </div>
 
-                {/* "Répondre avec Synthèse" action row */}
-                <div className="shrink-0 border-b border-gray-100 px-8 py-3 flex items-center gap-2">
-                  <button
-                    onClick={handleOpenReply}
-                    className="flex items-center gap-2 text-sm px-4 py-2.5 rounded-lg font-medium transition-all
-                      bg-gradient-to-r from-violet-500 to-blue-500 text-white hover:from-violet-600 hover:to-blue-600 shadow-sm"
-                  >
-                    <Sparkles className="h-4 w-4" />
-                    Répondre avec Synthèse
-                  </button>
-                </div>
+                {/* Action row + Summary (en haut, avant le corps) */}
+                <div className="shrink-0 border-b border-gray-100 px-8 py-3 space-y-3">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <button
+                      onClick={handleOpenReply}
+                      className="flex items-center gap-2 text-sm px-4 py-2.5 rounded-lg font-medium transition-all
+                        bg-gradient-to-r from-violet-500 to-blue-500 text-white hover:from-violet-600 hover:to-blue-600 shadow-sm"
+                    >
+                      <Sparkles className="h-4 w-4" />
+                      Répondre avec Synthèse
+                    </button>
+                    <button
+                      onClick={() =>
+                        navigate(`/dashboard/devis?from_email=${encodeURIComponent(String(selectedEmail.id))}`)
+                      }
+                      className="flex items-center gap-2 text-sm px-4 py-2.5 rounded-lg font-medium border border-violet-200 bg-white text-violet-700 hover:bg-violet-50 transition-all"
+                      title="Créer un devis à partir du contenu de cet email"
+                    >
+                      <FileText className="h-4 w-4" />
+                      Créer un devis
+                    </button>
+                  </div>
 
-                {/* Email body — scrollable */}
-                <div className="flex-1 overflow-y-auto min-h-0 px-8 py-5">
-                  {selectedEmail.body_plain ? (
-                    <pre className="whitespace-pre-wrap text-sm text-gray-600 font-sans leading-relaxed">
-                      {selectedEmail.body_plain}
-                    </pre>
-                  ) : selectedEmail.body_html ? (
-                    <div
-                      className="text-sm text-gray-600 leading-relaxed"
-                      dangerouslySetInnerHTML={{
-                        __html: stripScripts(selectedEmail.body_html),
-                      }}
-                    />
-                  ) : (
-                    <p className="text-sm text-gray-400">
-                      Corps du message non disponible.
-                    </p>
-                  )}
-
-                  {/* Summary card */}
                   {selectedEmail.ai_summary && (
-                    <div className="mt-6 p-4 rounded-xl bg-gradient-to-r from-violet-50 to-blue-50 dark:from-violet-900/20 dark:to-blue-900/20 border border-violet-200 dark:border-violet-700">
+                    <div className="p-4 rounded-xl bg-gradient-to-r from-violet-50 to-blue-50 dark:from-violet-900/20 dark:to-blue-900/20 border border-violet-200 dark:border-violet-700">
                       <div className="flex items-center gap-1.5 mb-2">
                         <Sparkles className="h-3.5 w-3.5 text-violet-500" />
                         <span className="text-xs font-semibold text-violet-700 dark:text-violet-400">
                           Résumé
                         </span>
                       </div>
-                      <p className="text-xs text-gray-600 leading-relaxed">
+                      <p className="text-sm text-gray-700 leading-relaxed break-words">
                         {selectedEmail.ai_summary}
                       </p>
                     </div>
+                  )}
+                </div>
+
+                {/* Email body — HTML rendu dans un iframe sandboxé, plain text en fallback */}
+                <div className="flex-1 overflow-y-auto min-h-0">
+                  {selectedEmail.body_html ? (
+                    <EmailHtmlBody html={selectedEmail.body_html} />
+                  ) : selectedEmail.body_plain ? (
+                    <pre className="px-8 py-5 whitespace-pre-wrap break-words text-sm text-gray-700 font-sans leading-relaxed max-w-full">
+                      {selectedEmail.body_plain}
+                    </pre>
+                  ) : (
+                    <p className="px-8 py-5 text-sm text-gray-400">
+                      Corps du message non disponible.
+                    </p>
                   )}
                 </div>
 

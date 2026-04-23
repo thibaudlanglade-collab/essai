@@ -22,6 +22,7 @@ import ComprendreView from "@/pages/ComprendreView";
 import { GradientCard } from "@/components/ui/gradient-card";
 import { BentoGridShowcase } from "@/components/ui/bento-product-features";
 import { Switch } from "@/components/ui/switch";
+import BoostedFeaturesSection from "@/components/BoostedFeaturesSection";
 
 const INTEGRATION_GRADIENT_MAP: Record<string, "orange" | "blue" | "purple" | "gray" | "green" | "teal"> = {
   "Gmail":            "orange",
@@ -630,6 +631,9 @@ export default function HomeView({ onComprendreClick, onRgpdClick }: { onCompren
 
       {/* SECTION — COMPRENDRE SYNTHÈSE (page complète intégrée) */}
       <ComprendreView />
+
+      {/* SECTION — FONCTIONNALITÉS BOOSTÉES (outils de base × IA) */}
+      <BoostedFeaturesSection />
 
       {/* SECTION — POURQUOI ÇA N'EXISTAIT PAS AVANT */}
       <div className="mb-16 sm:mb-20">

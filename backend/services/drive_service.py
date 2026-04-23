@@ -79,8 +79,15 @@ def build_oauth_flow(state: str) -> Flow:
     return flow
 
 
-def exchange_code_for_tokens(code: str) -> dict[str, Any]:
+def exchange_code_for_tokens(
+    code: str, code_verifier: Optional[str] = None
+) -> dict[str, Any]:
     """Exchange the authorization code for access + refresh tokens.
+
+    `code_verifier` is the PKCE verifier captured at `/connect` time.
+    `google-auth-oauthlib` auto-generates it during `authorization_url()`
+    and the caller must pass it back here, otherwise Google rejects the
+    exchange with `invalid_grant: Missing code verifier`.
 
     Returns a dict ready to be stored after encryption:
         {
@@ -92,6 +99,8 @@ def exchange_code_for_tokens(code: str) -> dict[str, Any]:
         }
     """
     flow = build_oauth_flow(state="")  # state already validated by caller
+    if code_verifier is not None:
+        flow.code_verifier = code_verifier
     try:
         flow.fetch_token(code=code)
     except Exception as exc:
@@ -215,6 +224,217 @@ def list_new_files_in_folder(
     return result.get("files", []), creds
 
 
+def list_folders(
+    *,
+    access_token: str,
+    refresh_token: Optional[str],
+    expires_at: Optional[datetime],
+    scopes: list[str],
+    search: Optional[str] = None,
+    page_size: int = 100,
+) -> tuple[list[dict[str, Any]], Credentials]:
+    """List the folders the prospect sees in their "Mon Drive" root.
+
+    Matches the default Drive UI view: owned folders, not trashed, sitting
+    at the root of "My Drive". Third-party apps (Colab, Drive-for-Desktop
+    sync) create hidden folders like `.bin` or `(auth)` via OAuth —
+    invisible in the Drive UI but returned by the API; we drop them on
+    ownership + hidden-name heuristics below.
+
+    `search` filters by `name contains <search>` (case-insensitive on
+    Drive's side). Returns `(items, refreshed_creds)` so the caller can
+    persist any refreshed access_token back.
+
+    Each item is `{id, name, modifiedTime, parents}`.
+    """
+    service, creds = _service(
+        access_token=access_token,
+        refresh_token=refresh_token,
+        expires_at=expires_at,
+        scopes=scopes,
+    )
+    query_parts = [
+        "mimeType = 'application/vnd.google-apps.folder'",
+        "trashed = false",
+        "'me' in owners",
+        # Restrict to the root of "My Drive" — sub-folders are not
+        # reachable from here but the prospect can still paste an ID
+        # manually if they really want a deeper target.
+        "'root' in parents",
+    ]
+    if search:
+        safe = search.replace("\\", "\\\\").replace("'", "\\'")
+        query_parts.append(f"name contains '{safe}'")
+    try:
+        result = (
+            service.files()
+            .list(
+                q=" and ".join(query_parts),
+                fields="files(id, name, modifiedTime, parents)",
+                pageSize=page_size,
+                orderBy="name",
+            )
+            .execute()
+        )
+    except Exception as exc:
+        raise DriveServiceError(f"Drive folders.list failed: {exc}") from exc
+
+    raw_items = result.get("files", [])
+    # Drop hidden / app-managed folders (names starting with '.', '(' or
+    # wrapped in system markers). These belong to Colab, Drive-for-Desktop,
+    # third-party OAuth apps, etc.
+    items: list[dict[str, Any]] = []
+    for f in raw_items:
+        name = (f.get("name") or "").strip()
+        if not name:
+            continue
+        if name.startswith(".") or name.startswith("("):
+            continue
+        items.append(f)
+    return items, creds
+
+
+_GOOGLE_NATIVE_EXPORTS: dict[str, tuple[str, str]] = {
+    # Google Doc → plain text + .txt so the generic text branch of
+    # `extract_file_content` picks it up.
+    "application/vnd.google-apps.document": ("text/plain", "text"),
+    # Google Sheet → CSV (readable as text).
+    "application/vnd.google-apps.spreadsheet": ("text/csv", "text"),
+    # Google Slides → plain text dump of the speaker notes + slide body.
+    "application/vnd.google-apps.presentation": ("text/plain", "text"),
+}
+
+
+def is_google_native(mime_type: Optional[str]) -> bool:
+    """Google-native Docs/Sheets/Slides need `files.export`, not `get_media`."""
+    return bool(mime_type) and mime_type in _GOOGLE_NATIVE_EXPORTS
+
+
+def fetch_file_content(
+    *,
+    access_token: str,
+    refresh_token: Optional[str],
+    expires_at: Optional[datetime],
+    scopes: list[str],
+    file_id: str,
+    mime_type: Optional[str],
+) -> tuple[bytes, str, Credentials]:
+    """Fetch the readable content of a Drive file.
+
+    Returns `(bytes, file_type_hint, refreshed_creds)` where `file_type_hint`
+    is one of `"pdf" | "image" | "docx" | "text" | "auto"` — ready to be
+    passed as `file_type` to the `extract_file_content` skill.
+
+    Behaviour:
+      * For Google-native Docs/Sheets/Slides, calls `files.export_media`
+        to an export format (text/plain, text/csv).
+      * For everything else, downloads the raw bytes via `files.get_media`.
+    """
+    service, creds = _service(
+        access_token=access_token,
+        refresh_token=refresh_token,
+        expires_at=expires_at,
+        scopes=scopes,
+    )
+
+    if is_google_native(mime_type):
+        export_mime, hint = _GOOGLE_NATIVE_EXPORTS[mime_type or ""]
+        try:
+            request = service.files().export_media(
+                fileId=file_id, mimeType=export_mime
+            )
+            buffer = io.BytesIO()
+            downloader = MediaIoBaseDownload(buffer, request)
+            done = False
+            while not done:
+                _, done = downloader.next_chunk()
+            return buffer.getvalue(), hint, creds
+        except Exception as exc:
+            raise DriveServiceError(
+                f"Drive file export ({mime_type} → {export_mime}) failed: {exc}"
+            ) from exc
+
+    try:
+        request = service.files().get_media(fileId=file_id)
+        buffer = io.BytesIO()
+        downloader = MediaIoBaseDownload(buffer, request)
+        done = False
+        while not done:
+            _, done = downloader.next_chunk()
+        return buffer.getvalue(), "auto", creds
+    except Exception as exc:
+        raise DriveServiceError(f"Drive file download failed: {exc}") from exc
+
+
+def list_folder_files_recursive(
+    *,
+    access_token: str,
+    refresh_token: Optional[str],
+    expires_at: Optional[datetime],
+    scopes: list[str],
+    folder_id: str,
+    max_files: int = 30,
+    max_depth: int = 3,
+) -> tuple[list[dict[str, Any]], Credentials]:
+    """Breadth-first walk of a Drive folder and its sub-folders.
+
+    Returns up to `max_files` non-folder items found in the tree, stopping
+    at depth `max_depth` (the configured folder itself is depth 0). Caller
+    still needs to apply ownership / trashed filters at the query level
+    — this helper does, via the same clauses as `list_new_files_in_folder`.
+
+    Used by the Rapport Client service so that a folder like
+    `TEL LE PHOENIX / 2026 / Factures` is fully covered by selecting
+    `TEL LE PHOENIX` at the top level.
+    """
+    service, creds = _service(
+        access_token=access_token,
+        refresh_token=refresh_token,
+        expires_at=expires_at,
+        scopes=scopes,
+    )
+
+    files_out: list[dict[str, Any]] = []
+    queue: list[tuple[str, int]] = [(folder_id, 0)]
+    visited: set[str] = set()
+
+    while queue and len(files_out) < max_files:
+        current_id, depth = queue.pop(0)
+        if current_id in visited:
+            continue
+        visited.add(current_id)
+
+        try:
+            result = (
+                service.files()
+                .list(
+                    q=f"'{current_id}' in parents and trashed = false",
+                    fields="files(id, name, mimeType, modifiedTime, parents)",
+                    pageSize=100,
+                    orderBy="modifiedTime desc",
+                )
+                .execute()
+            )
+        except Exception as exc:
+            # A single sub-folder failing should not kill the whole walk.
+            logger.warning("Drive sub-folder list failed for %s: %s", current_id, exc)
+            continue
+
+        for item in result.get("files", []):
+            is_folder = (
+                item.get("mimeType") == "application/vnd.google-apps.folder"
+            )
+            if is_folder:
+                if depth < max_depth:
+                    queue.append((item["id"], depth + 1))
+            else:
+                files_out.append(item)
+                if len(files_out) >= max_files:
+                    break
+
+    return files_out, creds
+
+
 def download_file_bytes(
     *,
     access_token: str,
@@ -223,7 +443,12 @@ def download_file_bytes(
     scopes: list[str],
     file_id: str,
 ) -> tuple[bytes, Credentials]:
-    """Download a file's raw bytes. Returns (bytes, refreshed_creds)."""
+    """Download a file's raw bytes. Returns (bytes, refreshed_creds).
+
+    Kept for Sprint 3 callers (watch_folder_scheduler) that only handle
+    plain binary files. New code should use `fetch_file_content` which
+    handles Google-native formats too.
+    """
     service, creds = _service(
         access_token=access_token,
         refresh_token=refresh_token,

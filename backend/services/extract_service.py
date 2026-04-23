@@ -295,17 +295,73 @@ async def _read_content(
     if resolved_type == "pdf":
         return "pdf", str(data.get("text") or "")
     if resolved_type == "image":
-        # Images with no text layer — classify_document_type won't work on
-        # empty text. We surface an explicit error so the frontend tells
-        # the prospect to use a PDF / photo lisible (OCR vision path à
-        # ajouter Sprint 3.5 si besoin).
-        raise ExtractError(
-            "Le document est une image. Le pipeline texte ne peut pas "
-            "encore la lire (OCR visuel prévu pour une prochaine itération). "
-            "Essayez avec un PDF ou collez le texte manuellement."
-        )
+        image_bytes = data.get("image_bytes")
+        image_format = str(data.get("format") or "jpeg")
+        if not isinstance(image_bytes, bytes):
+            raise ExtractError("extract_file_content: image_bytes manquant.")
+        text = await _ocr_image(image_bytes, image_format)
+        if not text.strip():
+            raise ExtractError(
+                "Aucun texte n'a pu être lu dans cette photo. "
+                "Essayez une photo plus nette ou mieux cadrée."
+            )
+        return "image", text
     # Plain text / docx
     return "text", str(data.get("text") or "")
+
+
+async def _ocr_image(image_bytes: bytes, image_format: str) -> str:
+    """Transcribe all visible text in a photo via GPT-4o vision."""
+    import base64 as _b64
+    import re as _re
+
+    from openai import AsyncOpenAI
+
+    import config as _config
+
+    mime = "image/jpeg" if image_format in ("jpeg", "jpg") else "image/png"
+    b64 = _b64.b64encode(image_bytes).decode("ascii")
+    client = AsyncOpenAI(api_key=_config.OPENAI_API_KEY)
+    response = await client.chat.completions.create(
+        model="gpt-4o",
+        temperature=0.0,
+        max_tokens=4096,
+        messages=[
+            {
+                "role": "system",
+                "content": (
+                    "Tu es un outil d'OCR haute fidélité. Tu lis une photo "
+                    "(note manuscrite, ticket, tableau, formulaire, facture) "
+                    "et tu retournes TOUT le texte lisible en respectant la mise "
+                    "en page d'origine.\n\n"
+                    "RÈGLES STRICTES :\n"
+                    "1. Jamais de markdown, jamais de ``` ni de **gras** ni de titres ##.\n"
+                    "2. Pour un tableau : UNE ligne par rangée, colonnes séparées "
+                    "par une tabulation (\\t). Inclure la ligne d'en-tête en premier.\n"
+                    "3. Pour du texte courant : sauts de ligne conservés.\n"
+                    "4. Pour les listes : tiret - en début de ligne.\n"
+                    "5. Ne jamais inventer un contenu illisible. Si un mot est "
+                    "ambigu, retourne la graphie la plus probable sans annotation.\n"
+                    "6. N'ajoute aucun commentaire, aucun 'voici le texte'."
+                ),
+            },
+            {
+                "role": "user",
+                "content": [
+                    {"type": "text", "text": "Transcris tout le texte visible dans cette image."},
+                    {
+                        "type": "image_url",
+                        "image_url": {"url": f"data:{mime};base64,{b64}"},
+                    },
+                ],
+            },
+        ],
+    )
+    raw = (response.choices[0].message.content or "").strip()
+    # Strip any lingering markdown code fences just in case.
+    raw = _re.sub(r"^```[a-zA-Z]*\s*\n?", "", raw)
+    raw = _re.sub(r"\n?```\s*$", "", raw)
+    return raw.strip()
 
 
 # ─────────────────────────────────────────────────────────────────────────────

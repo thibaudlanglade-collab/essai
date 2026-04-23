@@ -13,6 +13,18 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import {
+  Bell,
+  Check,
+  Clock,
+  FolderInput,
+  Mail,
+  MessagesSquare,
+  Plus,
+  RotateCw,
+  Sparkles,
+  Zap,
+} from "lucide-react";
+import {
   disconnectDrive,
   disconnectWatchedFolder,
   getDriveStatus,
@@ -22,6 +34,21 @@ import {
   type DriveStatus,
   type WatchedFolder,
 } from "@/api/driveClient";
+import DriveFolderPicker, {
+  type DriveFolderPickerValue,
+} from "@/components/DriveFolderPicker/DriveFolderPicker";
+import {
+  AUTOMATION_TEMPLATES,
+  type AutomationTemplate,
+} from "@/data/automatisationsDemoData";
+
+const TPL_ICON_MAP: Record<string, typeof Mail> = {
+  Mail,
+  FolderInput,
+  MessagesSquare,
+  RotateCw,
+  Bell,
+};
 
 
 export default function AutomationsView() {
@@ -64,6 +91,142 @@ export default function AutomationsView() {
           loading={loading}
           onRefresh={refresh}
         />
+        <TemplatesSection />
+      </div>
+    </div>
+  );
+}
+
+// ── Templates prêts à l'emploi ──────────────────────────────────────────────
+
+function TemplatesSection() {
+  const [activated, setActivated] = useState<Set<string>>(new Set());
+  const categories = Array.from(
+    new Set(AUTOMATION_TEMPLATES.map((t) => t.category)),
+  );
+
+  function activate(id: string) {
+    setActivated((prev) => new Set(prev).add(id));
+  }
+
+  return (
+    <section className="bg-white rounded-lg border border-gray-200 p-6 mt-6">
+      <div className="flex items-start justify-between gap-4 mb-3">
+        <div>
+          <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-violet-50 border border-violet-200 text-[11px] font-medium text-violet-700 mb-2">
+            <Sparkles className="h-3 w-3" />
+            Bibliothèque
+          </div>
+          <h2 className="text-lg font-semibold text-gray-900">
+            Modèles prêts à l'emploi
+          </h2>
+        </div>
+      </div>
+      <p className="text-sm text-gray-700 leading-relaxed mb-6">
+        Plutôt que de partir d'une page blanche, choisissez un modèle déjà
+        paramétré pour les besoins courants. Vous l'adaptez ensuite à vos
+        dossiers et vos règles.
+      </p>
+
+      {categories.map((category) => {
+        const templates = AUTOMATION_TEMPLATES.filter(
+          (t) => t.category === category,
+        );
+        return (
+          <div key={category} className="mb-7 last:mb-0">
+            <h3 className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-3">
+              {category}
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {templates.map((tpl) => (
+                <TemplateCard
+                  key={tpl.id}
+                  template={tpl}
+                  activated={activated.has(tpl.id)}
+                  onActivate={() => activate(tpl.id)}
+                />
+              ))}
+            </div>
+          </div>
+        );
+      })}
+    </section>
+  );
+}
+
+function TemplateCard({
+  template,
+  activated,
+  onActivate,
+}: {
+  template: AutomationTemplate;
+  activated: boolean;
+  onActivate: () => void;
+}) {
+  const Icon = TPL_ICON_MAP[template.iconName] || Zap;
+
+  return (
+    <div className="rounded-lg border border-gray-200 p-4 hover:border-violet-200 hover:shadow-sm transition-all flex flex-col">
+      <div className="flex items-start gap-3 mb-3">
+        <div
+          className={`w-9 h-9 rounded-lg ${template.iconBg} flex items-center justify-center shrink-0`}
+        >
+          <Icon className={`h-4 w-4 ${template.iconColor}`} />
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-1 flex-wrap">
+            <h4 className="font-semibold text-gray-900 text-sm leading-tight">
+              {template.title}
+            </h4>
+            {template.popular && (
+              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 uppercase tracking-wide shrink-0">
+                Populaire
+              </span>
+            )}
+          </div>
+          <p className="text-xs text-gray-600 leading-relaxed">
+            {template.description}
+          </p>
+        </div>
+      </div>
+
+      <div className="bg-stone-50 rounded p-2.5 mb-3 space-y-1.5">
+        <div className="flex items-start gap-2 text-xs">
+          <span className="font-semibold text-amber-700 shrink-0">Quand</span>
+          <span className="text-gray-700">{template.trigger}</span>
+        </div>
+        <div className="flex items-start gap-2 text-xs">
+          <span className="font-semibold text-emerald-700 shrink-0">Alors</span>
+          <span className="text-gray-700">{template.action}</span>
+        </div>
+      </div>
+
+      <div className="flex items-center justify-between mt-auto">
+        <span className="inline-flex items-center gap-1 text-[11px] text-gray-500">
+          <Clock className="h-3 w-3" />~{template.estimatedSetupMinutes} min
+        </span>
+        <button
+          type="button"
+          onClick={onActivate}
+          disabled={activated}
+          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-semibold transition-all ${
+            activated
+              ? "bg-emerald-50 text-emerald-700 border border-emerald-200 cursor-default"
+              : "bg-gray-900 text-white hover:bg-gray-700"
+          }`}
+        >
+          {activated ? (
+            <>
+              <Check className="h-3.5 w-3.5" />
+              Activé
+            </>
+          ) : (
+            <>
+              <Plus className="h-3.5 w-3.5" />
+              Activer
+            </>
+          )}
+        </button>
       </div>
     </div>
   );
@@ -148,8 +311,10 @@ function Volet2Card({
 }) {
   const [busy, setBusy] = useState<string | null>(null);
   const [localError, setLocalError] = useState<string | null>(null);
-  const [folderIdDraft, setFolderIdDraft] = useState("");
-  const [folderNameDraft, setFolderNameDraft] = useState("");
+  const [pickerValue, setPickerValue] = useState<DriveFolderPickerValue>({
+    folder_id: "",
+    folder_name: "",
+  });
   const popupRef = useRef<Window | null>(null);
 
   const connected = !!status?.connected;
@@ -208,17 +373,16 @@ function Volet2Card({
   }
 
   async function handleSetupWatched() {
-    const fid = folderIdDraft.trim();
+    const fid = pickerValue.folder_id.trim();
     if (!fid) return;
     setBusy("setup");
     setLocalError(null);
     try {
       await setupWatchedFolder({
         folder_id: fid,
-        folder_name: folderNameDraft.trim() || undefined,
+        folder_name: pickerValue.folder_name.trim() || undefined,
       });
-      setFolderIdDraft("");
-      setFolderNameDraft("");
+      setPickerValue({ folder_id: "", folder_name: "" });
       await onRefresh();
     } catch (err) {
       setLocalError(err instanceof Error ? err.message : "Erreur inconnue.");
@@ -325,10 +489,8 @@ function Volet2Card({
             />
           ) : (
             <WatchedFolderForm
-              folderIdDraft={folderIdDraft}
-              folderNameDraft={folderNameDraft}
-              setFolderIdDraft={setFolderIdDraft}
-              setFolderNameDraft={setFolderNameDraft}
+              pickerValue={pickerValue}
+              onPickerChange={setPickerValue}
               onSubmit={handleSetupWatched}
               busy={busy === "setup"}
             />
@@ -387,57 +549,33 @@ function WatchedFolderDisplay({
 }
 
 function WatchedFolderForm({
-  folderIdDraft,
-  folderNameDraft,
-  setFolderIdDraft,
-  setFolderNameDraft,
+  pickerValue,
+  onPickerChange,
   onSubmit,
   busy,
 }: {
-  folderIdDraft: string;
-  folderNameDraft: string;
-  setFolderIdDraft: (v: string) => void;
-  setFolderNameDraft: (v: string) => void;
+  pickerValue: DriveFolderPickerValue;
+  onPickerChange: (next: DriveFolderPickerValue) => void;
   onSubmit: () => void;
   busy: boolean;
 }) {
   return (
     <div className="rounded border border-gray-200 p-4">
       <p className="text-sm text-gray-700 mb-3">
-        Dans Google Drive, ouvrez le dossier à surveiller. L'URL a la forme{" "}
-        <code className="bg-stone-100 px-1 rounded text-[12px]">
-          drive.google.com/drive/folders/<span className="text-gray-500">XXXXX</span>
-        </code>
-        . Copiez la partie XXXXX et collez-la ci-dessous.
+        Choisissez un dossier Drive dans la liste ci-dessous. Synthèse le
+        consulte toutes les cinq minutes et classe les nouveaux fichiers.
       </p>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
-        <label className="block">
-          <span className="block text-xs font-medium text-gray-700 mb-1">
-            ID du dossier
-          </span>
-          <input
-            value={folderIdDraft}
-            onChange={(e) => setFolderIdDraft(e.target.value)}
-            placeholder="1a2B3c4D…"
-            className="w-full rounded border border-gray-300 px-3 py-2 text-sm font-mono focus:outline-none focus:border-gray-700"
-          />
-        </label>
-        <label className="block">
-          <span className="block text-xs font-medium text-gray-700 mb-1">
-            Nom affiché (optionnel)
-          </span>
-          <input
-            value={folderNameDraft}
-            onChange={(e) => setFolderNameDraft(e.target.value)}
-            placeholder="Factures reçues"
-            className="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:border-gray-700"
-          />
-        </label>
+      <div className="mb-3">
+        <DriveFolderPicker
+          value={pickerValue}
+          onChange={onPickerChange}
+          label="Dossier à surveiller"
+        />
       </div>
       <button
         type="button"
         onClick={onSubmit}
-        disabled={busy || !folderIdDraft.trim()}
+        disabled={busy || !pickerValue.folder_id.trim()}
         className="px-4 py-2 rounded bg-gray-900 text-white text-sm font-medium hover:bg-gray-700 disabled:opacity-50 transition-colors"
       >
         {busy ? "Activation…" : "Activer la surveillance"}

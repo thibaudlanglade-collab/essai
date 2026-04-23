@@ -26,7 +26,11 @@ logger = logging.getLogger(__name__)
 _scheduler: Optional[AsyncIOScheduler] = None
 
 
-async def sync_connection(connection_id: int, db: AsyncSession) -> dict:
+async def sync_connection(
+    connection_id: int,
+    db: AsyncSession,
+    max_messages: int = 50,
+) -> dict:
     """Sync emails for a single GmailConnection.
 
     Returns: {new_emails_count, total_fetched, errors}
@@ -46,7 +50,7 @@ async def sync_connection(connection_id: int, db: AsyncSession) -> dict:
         service = get_gmail_service(connection)
         message_ids, new_history_id = list_message_ids(
             service,
-            max_results=50,
+            max_results=max_messages,
             history_id=connection.history_id,
         )
     except GmailServiceError as exc:
@@ -66,6 +70,7 @@ async def sync_connection(connection_id: int, db: AsyncSession) -> dict:
             continue
 
         email = Email(
+            user_id=connection.user_id,
             gmail_id=parsed["gmail_id"],
             thread_id=parsed["thread_id"],
             connection_id=connection_id,
@@ -81,12 +86,15 @@ async def sync_connection(connection_id: int, db: AsyncSession) -> dict:
             labels=parsed["labels"],
             is_read=parsed["is_read"],
             is_starred=parsed["is_starred"],
+            is_seed=False,
+            is_from_gmail=True,
         )
         db.add(email)
         await db.flush()  # Populate email.id before creating attachments
 
         for att_data in parsed.get("attachments", []):
             att = EmailAttachment(
+                user_id=connection.user_id,
                 email_id=email.id,
                 gmail_attachment_id=att_data["gmail_attachment_id"],
                 filename=att_data["filename"],
@@ -97,7 +105,7 @@ async def sync_connection(connection_id: int, db: AsyncSession) -> dict:
 
         new_emails_count += 1
 
-    connection.last_sync_at = datetime.now(timezone.utc)
+    connection.last_sync_at = datetime.utcnow()
     if new_history_id:
         connection.history_id = new_history_id
 
@@ -140,7 +148,7 @@ async def classify_all_pending() -> None:
         import asyncio
         from sqlalchemy import and_
 
-        before = datetime.now(timezone.utc)
+        before = datetime.utcnow()
 
         async with async_session_maker() as db:
             result = await classify_pending_emails(db, batch_size=10)

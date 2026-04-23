@@ -83,7 +83,7 @@ async def classify_pending_emails(
 
             email.priority = result_cls.data["priority"]
             email.topic = result_cls.data["topic"]
-            email.classified_at = datetime.now(timezone.utc)
+            email.classified_at = datetime.utcnow()
 
             # Summarize if body is long enough
             body_len = len(email.body_plain or "")
@@ -128,7 +128,7 @@ async def classify_pending_emails(
 
 async def _get_sent_samples(connection: GmailConnection) -> list[dict]:
     """Fetch the 20 most recent sent emails with a 1-hour in-memory cache."""
-    now = datetime.now(timezone.utc)
+    now = datetime.utcnow()
     cached = _sent_cache.get(connection.id)
     if cached is not None:
         ts, samples = cached
@@ -244,7 +244,7 @@ async def generate_today_briefing(db: AsyncSession) -> dict[str, Any]:
     """Generate (or return cached) today's morning briefing."""
     from skills.core.generate_morning_briefing import execute as briefing_execute
 
-    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    today = datetime.utcnow().strftime("%Y-%m-%d")
 
     # Return existing briefing if already generated today
     existing = (
@@ -256,7 +256,7 @@ async def generate_today_briefing(db: AsyncSession) -> dict[str, Any]:
         return existing.to_dict()
 
     # Fetch emails from the last 24 hours
-    since = datetime.now(timezone.utc) - timedelta(hours=24)
+    since = datetime.utcnow() - timedelta(hours=24)
     result = await db.execute(
         select(Email)
         .where(Email.received_at >= since)

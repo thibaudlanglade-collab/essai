@@ -1738,5 +1738,151 @@
       "related_quote_number": "DV-2026-006",
       "related_invoice_number": null
     }
+  ],
+  "tarif_grids": [
+    {
+      "key": "peinture_murale_m2",
+      "label": "Peinture murale deux couches standard",
+      "unit": "m²",
+      "unit_price_ht": 25.0,
+      "vat_rate": 0.1,
+      "category": "Peinture"
+    },
+    {
+      "key": "peinture_plafond_m2",
+      "label": "Peinture plafond",
+      "unit": "m²",
+      "unit_price_ht": 22.0,
+      "vat_rate": 0.1,
+      "category": "Peinture"
+    },
+    {
+      "key": "enduit_lissage_m2",
+      "label": "Enduit de lissage avant peinture",
+      "unit": "m²",
+      "unit_price_ht": 18.0,
+      "vat_rate": 0.1,
+      "category": "Peinture"
+    },
+    {
+      "key": "placo_ba13_m2",
+      "label": "Pose placo BA13 sur ossature métallique",
+      "unit": "m²",
+      "unit_price_ht": 55.0,
+      "vat_rate": 0.1,
+      "category": "Cloisons"
+    },
+    {
+      "key": "placo_hydrofuge_m2",
+      "label": "Pose placoplâtre hydrofuge salle d'eau",
+      "unit": "m²",
+      "unit_price_ht": 62.0,
+      "vat_rate": 0.1,
+      "category": "Cloisons"
+    },
+    {
+      "key": "cloison_brique_m2",
+      "label": "Cloison brique plâtrière 5 cm",
+      "unit": "m²",
+      "unit_price_ht": 85.0,
+      "vat_rate": 0.1,
+      "category": "Cloisons"
+    },
+    {
+      "key": "demolition_cloison_ml",
+      "label": "Démolition cloison légère",
+      "unit": "ml",
+      "unit_price_ht": 45.0,
+      "vat_rate": 0.1,
+      "category": "Démolition"
+    },
+    {
+      "key": "evacuation_gravats_m3",
+      "label": "Évacuation gravats benne 10 m³",
+      "unit": "m³",
+      "unit_price_ht": 95.0,
+      "vat_rate": 0.2,
+      "category": "Démolition"
+    },
+    {
+      "key": "carrelage_sol_m2",
+      "label": "Pose carrelage sol grès cérame",
+      "unit": "m²",
+      "unit_price_ht": 65.0,
+      "vat_rate": 0.1,
+      "category": "Sols"
+    },
+    {
+      "key": "faience_murale_m2",
+      "label": "Pose faïence murale salle de bain",
+      "unit": "m²",
+      "unit_price_ht": 75.0,
+      "vat_rate": 0.1,
+      "category": "Sols"
+    },
+    {
+      "key": "ragreage_m2",
+      "label": "Ragréage sol autolissant",
+      "unit": "m²",
+      "unit_price_ht": 28.0,
+      "vat_rate": 0.1,
+      "category": "Sols"
+    },
+    {
+      "key": "chape_ravoirage_m2",
+      "label": "Chape de ravoirage",
+      "unit": "m²",
+      "unit_price_ht": 38.0,
+      "vat_rate": 0.1,
+      "category": "Sols"
+    },
+    {
+      "key": "isolation_laine_m2",
+      "label": "Isolation laine de verre 100 mm sous rampants",
+      "unit": "m²",
+      "unit_price_ht": 35.0,
+      "vat_rate": 0.055,
+      "category": "Isolation"
+    },
+    {
+      "key": "douche_italienne_u",
+      "label": "Pose douche italienne complète",
+      "unit": "u",
+      "unit_price_ht": 1250.0,
+      "vat_rate": 0.1,
+      "category": "Plomberie"
+    },
+    {
+      "key": "wc_depose_repose_u",
+      "label": "Dépose et repose WC suspendu",
+      "unit": "u",
+      "unit_price_ht": 180.0,
+      "vat_rate": 0.1,
+      "category": "Plomberie"
+    },
+    {
+      "key": "mo_artisan_h",
+      "label": "Main d'œuvre artisan qualifié",
+      "unit": "h",
+      "unit_price_ht": 48.0,
+      "vat_rate": 0.1,
+      "category": "Main d'œuvre"
+    },
+    {
+      "key": "mo_manoeuvre_h",
+      "label": "Main d'œuvre manœuvre",
+      "unit": "h",
+      "unit_price_ht": 35.0,
+      "vat_rate": 0.1,
+      "category": "Main d'œuvre"
+    },
+    {
+      "key": "deplacement_j",
+      "label": "Déplacement forfaitaire journée",
+      "unit": "j",
+      "unit_price_ht": 75.0,
+      "vat_rate": 0.1,
+      "category": "Divers"
+    }
   ]
 }

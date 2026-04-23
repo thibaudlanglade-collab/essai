@@ -27,6 +27,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from auth.dependencies import SESSION_COOKIE_NAME, get_current_user
 from db.access_tokens import (
     close_session,
+    create_token,
     get_by_token,
     mark_welcome_shown,
     open_session,
@@ -37,6 +38,23 @@ from db.models import AccessToken
 
 # Cookie lifetime — brief §3: 30 days so the prospect can revisit the app.
 SESSION_COOKIE_MAX_AGE = 30 * 24 * 3600
+
+# Anonymous trial default — lines up with the cold-email flow.
+ANONYMOUS_TRIAL_DAYS = 14
+
+
+def _anonymous_trial_base_url() -> str:
+    """Origin that serves the `/app/{token}` activation flow.
+
+    Must point to the **frontend** (not the backend directly): the Vite dev
+    proxy forwards `/app/*` to the backend, but the Set-Cookie in the 302
+    response is scoped to whatever origin the browser hit. If the browser
+    hit the backend origin, `/welcome` (served by the SPA on the frontend
+    origin) won't see the cookie.
+
+    In prod, set `SYNTHESE_APP_URL=https://app.synthese.fr` on Railway.
+    """
+    return os.environ.get("SYNTHESE_APP_URL", "http://localhost:5173").rstrip("/")
 
 
 def _cookie_secure() -> bool:
@@ -186,6 +204,37 @@ async def auth_logout(
     await close_session(db, user)
     response.delete_cookie(SESSION_COOKIE_NAME, path="/")
     return {"ok": True}
+
+
+@router.post("/api/auth/start-anonymous-trial")
+async def start_anonymous_trial(db: AsyncSession = Depends(get_db)) -> dict:
+    """Mint a fresh anonymous 14-day trial and return its activation URL.
+
+    Called by the public landing page (`te` project) when a visitor clicks
+    the "Start my demo" CTA. No name, email, or form — the URL is the
+    credential. The caller receives `{ token, access_url }` and should
+    redirect the browser to `access_url`; the usual `/app/{token}` flow
+    then sets the httpOnly session cookie and lands on `/welcome`.
+
+    The dashboard starts EMPTY: trial visitors are expected to bring their
+    own data via the in-app entry points (Smart Extract, Devis form,
+    Agent Rapport ingestion, Gmail connection). Seeding fake BTP data
+    here would dilute the "test with your own data" promise of the trial.
+
+    TODO(prod): add IP-based rate-limiting before exposing publicly —
+    anyone can spam this endpoint and create unbounded tokens.
+    """
+    token = await create_token(
+        db,
+        prospect_name=None,
+        prospect_email=None,
+        company_name=None,
+        duration_days=ANONYMOUS_TRIAL_DAYS,
+    )
+    return {
+        "token": token.token,
+        "access_url": f"{_anonymous_trial_base_url()}/app/{token.token}",
+    }
 
 
 @router.post("/api/welcome/seen")

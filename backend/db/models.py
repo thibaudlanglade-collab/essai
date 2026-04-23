@@ -830,6 +830,56 @@ class Quote(Base):
         }
 
 
+class TarifGrid(Base):
+    """Grille tarifaire du prospect (postes et prix unitaires).
+
+    Sert de référence au générateur de devis (Sprint 3) pour produire des
+    lignes cohérentes avec les tarifs réels du prospect. Un seed BTP est
+    inséré à la création du tenant (cf. `scripts/seed_btp_data.py`).
+    Le prospect peut ensuite ajouter/modifier/supprimer librement.
+    """
+
+    __tablename__ = "tarif_grids"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_new_uuid)
+    user_id: Mapped[str] = mapped_column(
+        String(36),
+        ForeignKey(_USER_FK, ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    key: Mapped[str] = mapped_column(String(100), nullable=False)
+    label: Mapped[str] = mapped_column(String(255), nullable=False)
+    unit: Mapped[str] = mapped_column(String(50), nullable=False)
+    unit_price_ht: Mapped[float] = mapped_column(Numeric(10, 2), nullable=False)
+    vat_rate: Mapped[float] = mapped_column(
+        Numeric(5, 4), nullable=False, default=0.20
+    )
+    category: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    is_seed: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, nullable=False, server_default=func.now()
+    )
+
+    __table_args__ = (
+        UniqueConstraint("user_id", "key", name="uq_tarif_grids_user_key"),
+    )
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "key": self.key,
+            "label": self.label,
+            "unit": self.unit,
+            "unit_price_ht": float(self.unit_price_ht) if self.unit_price_ht is not None else None,
+            "vat_rate": float(self.vat_rate) if self.vat_rate is not None else None,
+            "category": self.category,
+            "is_seed": self.is_seed,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+        }
+
+
 class Extraction(Base):
     """Smart Extract (§5.1) history: raw document → structured data."""
 
@@ -904,6 +954,48 @@ class WatchedFolder(Base):
         }
 
 
+class ClientReportFolder(Base):
+    """Drive folders the prospect wants searched when asking questions
+    about a client on the Rapport Client page (brief §5.3).
+
+    Tenant-level: all enabled folders are searched for every client
+    question. A prospect typically configures 1-3 folders that contain
+    their BTP archives (devis envoyés, factures émises, scans chantier),
+    on top of whatever is already ingested in the DB or polled by the
+    Sprint 3 watched folder.
+    """
+
+    __tablename__ = "client_report_folders"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_new_uuid)
+    user_id: Mapped[str] = mapped_column(
+        String(36),
+        ForeignKey(_USER_FK, ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    provider: Mapped[str] = mapped_column(
+        String(50), nullable=False, default="google_drive"
+    )
+    folder_id: Mapped[str] = mapped_column(String(255), nullable=False)
+    folder_name: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    is_enabled: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, nullable=False, server_default=func.now()
+    )
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "provider": self.provider,
+            "folder_id": self.folder_id,
+            "folder_name": self.folder_name,
+            "is_enabled": self.is_enabled,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+        }
+
+
 class ActivityLog(Base):
     """Structured activity log (brief §12 monitoring)."""
 
@@ -931,5 +1023,84 @@ class ActivityLog(Base):
             "user_id": self.user_id,
             "action": self.action,
             "metadata": self.activity_metadata,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+        }
+
+
+class AssistantConversation(Base):
+    """A multi-turn conversation between a prospect and the assistant.
+
+    Owned by a single `access_token` (the prospect) and cascade-deleted
+    when the token is removed (RGPD + trial expiry cleanup).
+    """
+
+    __tablename__ = "assistant_conversations"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    user_id: Mapped[str] = mapped_column(
+        String(36),
+        ForeignKey("access_tokens.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    title: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, nullable=False, server_default=func.now()
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime, nullable=False, server_default=func.now(), onupdate=func.now()
+    )
+
+    messages: Mapped[list["AssistantMessage"]] = relationship(
+        "AssistantMessage",
+        back_populates="conversation",
+        cascade="all, delete-orphan",
+        order_by="AssistantMessage.id",
+    )
+
+    def to_dict(self, include_messages: bool = False) -> dict[str, Any]:
+        result: dict[str, Any] = {
+            "id": self.id,
+            "title": self.title,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "updated_at": self.updated_at.isoformat() if self.updated_at else None,
+        }
+        if include_messages:
+            result["messages"] = [m.to_dict() for m in self.messages]
+        return result
+
+
+class AssistantMessage(Base):
+    """One message in an assistant conversation.
+
+    `content_json` stores the full OpenAI-shape message dict (role, content,
+    tool_calls, tool_call_id, …) so the API loop can be resumed across turns
+    without re-deriving state.
+    """
+
+    __tablename__ = "assistant_messages"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    conversation_id: Mapped[int] = mapped_column(
+        Integer,
+        ForeignKey("assistant_conversations.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    role: Mapped[str] = mapped_column(String(32), nullable=False)
+    content_json: Mapped[str] = mapped_column(Text, nullable=False, default="{}")
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, nullable=False, server_default=func.now()
+    )
+
+    conversation: Mapped["AssistantConversation"] = relationship(
+        "AssistantConversation", back_populates="messages"
+    )
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "id": self.id,
+            "role": self.role,
+            "content": json.loads(self.content_json or "{}"),
             "created_at": self.created_at.isoformat() if self.created_at else None,
         }

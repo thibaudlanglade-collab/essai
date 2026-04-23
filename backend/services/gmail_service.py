@@ -12,6 +12,11 @@ import re
 from datetime import datetime, timezone
 from email.utils import parseaddr, parsedate_to_datetime
 
+# Google adds previously-granted scopes (e.g. Drive when already linked) to
+# the token response, which oauthlib rejects with a strict "scope changed"
+# error. This env var tells oauthlib to accept the wider scope set.
+os.environ.setdefault("OAUTHLIB_RELAX_TOKEN_SCOPE", "1")
+
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import Flow
 from googleapiclient.discovery import build
@@ -84,7 +89,9 @@ def exchange_code_for_tokens(code: str, code_verifier: Optional[str] = None) -> 
     except Exception as exc:
         raise GmailServiceError(f"Userinfo fetch failed: {exc}") from exc
 
-    expiry = creds.expiry or datetime.now(timezone.utc)
+    expiry = creds.expiry or datetime.utcnow()
+    if expiry.tzinfo is not None:
+        expiry = expiry.astimezone(timezone.utc).replace(tzinfo=None)
 
     return {
         "access_token": creds.token,
@@ -119,7 +126,10 @@ def refresh_access_token(connection: GmailConnection) -> dict:
         raise GmailServiceError(f"Token refresh failed: {exc}") from exc
 
     connection.access_token = creds.token
-    connection.token_expiry = creds.expiry or datetime.now(timezone.utc)
+    expiry = creds.expiry or datetime.utcnow()
+    if expiry.tzinfo is not None:
+        expiry = expiry.astimezone(timezone.utc).replace(tzinfo=None)
+    connection.token_expiry = expiry
 
     return {
         "access_token": creds.token,
@@ -129,12 +139,13 @@ def refresh_access_token(connection: GmailConnection) -> dict:
 
 def get_gmail_service(connection: GmailConnection):
     """Build a Gmail API service client. Auto-refreshes token if expired."""
-    now = datetime.now(timezone.utc)
+    # Both sides naive UTC (DB stores TIMESTAMP WITHOUT TIME ZONE).
+    now = datetime.utcnow()
     expiry = connection.token_expiry
-    if expiry.tzinfo is None:
-        expiry = expiry.replace(tzinfo=timezone.utc)
+    if expiry is not None and expiry.tzinfo is not None:
+        expiry = expiry.astimezone(timezone.utc).replace(tzinfo=None)
 
-    if expiry <= now:
+    if expiry is None or expiry <= now:
         refresh_access_token(connection)
 
     creds = Credentials(
@@ -183,15 +194,33 @@ def list_message_ids(
                         ids.append(msg_id)
             return ids, new_history_id
         else:
-            resp = (
-                service.users()
-                .messages()
-                .list(userId="me", maxResults=max_results)
-                .execute()
-            )
-            new_history_id = resp.get("historyId", "")
-            messages = resp.get("messages", [])
-            ids = [m["id"] for m in messages]
+            # Paginate: Gmail caps each call at 500 messages. For large
+            # inboxes we fetch up to `max_results` total across pages so
+            # older but still-recent emails (Promotions tab, etc.) land in.
+            ids: list[str] = []
+            new_history_id = ""
+            page_token: Optional[str] = None
+            remaining = max_results
+            while remaining > 0:
+                page_size = min(remaining, 500)
+                resp = (
+                    service.users()
+                    .messages()
+                    .list(
+                        userId="me",
+                        maxResults=page_size,
+                        pageToken=page_token,
+                    )
+                    .execute()
+                )
+                if not new_history_id:
+                    new_history_id = resp.get("historyId", "")
+                page_messages = resp.get("messages", [])
+                ids.extend(m["id"] for m in page_messages)
+                page_token = resp.get("nextPageToken")
+                if not page_token or not page_messages:
+                    break
+                remaining = max_results - len(ids)
             return ids, new_history_id
     except HttpError as exc:
         raise GmailServiceError(f"Gmail API error listing messages: {exc}") from exc
@@ -339,14 +368,15 @@ def fetch_message_full(service, message_id: str) -> Optional[dict]:
             if addr
         ]
 
-    # Date
+    # Date — Postgres column is TIMESTAMP WITHOUT TIME ZONE, so we store
+    # naive UTC (tz-aware datetimes crash asyncpg's codec).
     date_raw = headers.get("date", "")
     try:
         received_at = parsedate_to_datetime(date_raw)
-        if received_at.tzinfo is None:
-            received_at = received_at.replace(tzinfo=timezone.utc)
+        if received_at.tzinfo is not None:
+            received_at = received_at.astimezone(timezone.utc).replace(tzinfo=None)
     except Exception:
-        received_at = datetime.now(timezone.utc)
+        received_at = datetime.utcnow()
 
     # Body
     body_plain, body_html = _extract_parts(payload)

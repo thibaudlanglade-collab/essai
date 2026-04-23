@@ -265,8 +265,14 @@ async def gmail_sync_now(
     if connection is None:
         raise HTTPException(status_code=404, detail="Aucune connexion Gmail trouvée.")
 
+    # Manual refresh: force a wide full-list fetch (no history_id incremental)
+    # so emails the user sees in Gmail but that were missed on first sync
+    # (older than the initial 50, in a Promotions tab, etc.) are pulled in.
+    connection.history_id = None
+    await db.commit()
+
     try:
-        sync_result = await sync_connection(connection.id, db)
+        sync_result = await sync_connection(connection.id, db, max_messages=500)
     except GmailServiceError as exc:
         raise HTTPException(status_code=502, detail=str(exc)) from exc
 

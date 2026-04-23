@@ -76,7 +76,7 @@ async def force_generate_briefing(
     """Force-regenerate today's briefing (deletes existing if any)."""
     from services.email_intelligence import generate_today_briefing
 
-    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    today = datetime.utcnow().strftime("%Y-%m-%d")
     await db.execute(
         delete(MorningBriefing).where(
             MorningBriefing.briefing_date == today,
@@ -128,9 +128,8 @@ async def email_stats(
     user: AccessToken = Depends(get_current_user),
 ) -> dict[str, int]:
     """Return email count summary."""
-    today_start = datetime.combine(date.today(), datetime.min.time()).replace(
-        tzinfo=timezone.utc
-    )
+    # Naive UTC — Postgres column is TIMESTAMP WITHOUT TIME ZONE.
+    today_start = datetime.combine(date.today(), datetime.min.time())
 
     total = (
         await db.execute(
@@ -182,6 +181,19 @@ async def list_emails(
 ) -> dict[str, Any]:
     """List emails with pagination and optional filters."""
     conditions = [Email.user_id == user.id, Email.is_archived.is_(False)]
+
+    # Once Gmail is connected, seed (demo) emails are hidden so the prospect
+    # only sees their real inbox. Before connection, seeds remain visible as
+    # a discovery sample.
+    gmail_exists = (
+        await db.execute(
+            select(func.count(GmailConnection.id)).where(
+                GmailConnection.user_id == user.id
+            )
+        )
+    ).scalar_one() or 0
+    if gmail_exists > 0:
+        conditions.append(Email.is_seed.is_(False))
 
     if unread_only:
         conditions.append(Email.is_read.is_(False))
@@ -388,7 +400,7 @@ async def classify_now(
 
     email.priority = cls_result.data["priority"]
     email.topic = cls_result.data["topic"]
-    email.classified_at = datetime.now(timezone.utc)
+    email.classified_at = datetime.utcnow()
 
     if len(email.body_plain or "") > 500:
         sum_result = await summarize_execute(
@@ -588,7 +600,7 @@ async def download_attachment(
 
     att.is_downloaded = True
     att.local_path = str(file_path)
-    att.downloaded_at = datetime.now(timezone.utc)
+    att.downloaded_at = datetime.utcnow()
     await db.commit()
 
     disposition = "inline" if att.mime_type in {
@@ -649,7 +661,7 @@ async def extract_attachment(
         file_path.write_bytes(raw_bytes)
         att.is_downloaded = True
         att.local_path = str(file_path)
-        att.downloaded_at = datetime.now(timezone.utc)
+        att.downloaded_at = datetime.utcnow()
         await db.commit()
 
     result = await extract_execute(

@@ -11,27 +11,41 @@
  * `useAuth`'s outlet context provided by `<ProtectedLayout>`.
  */
 import { useState } from "react";
-import { Menu } from "lucide-react";
+import { Info, Menu } from "lucide-react";
 import { Outlet, useLocation, useNavigate, useOutletContext } from "react-router-dom";
 import DashboardSidebar from "@/components/DashboardSidebar/DashboardSidebar";
+import FeatureInfoModal from "@/components/DashboardSidebar/FeatureInfoModal";
+import { FEATURE_INFOS } from "@/data/featureInfos";
 import { logout } from "@/hooks/useAuth";
 import type { AuthContextShape } from "@/layouts/ProtectedLayout";
 
 
-const PAGE_TITLES: Record<string, string> = {
-  "/dashboard": "Mon espace",
-  "/dashboard/extract": "Smart Extract",
-  "/dashboard/automations": "Automatisations",
+interface PageMeta {
+  title: string;
+  infoKey: string;
+}
+
+const PAGE_META: Record<string, PageMeta> = {
+  "/dashboard": { title: "Mon espace", infoKey: "mon-espace" },
+  "/dashboard/chat-assistant": { title: "Assistant Synthèse", infoKey: "assistant-synthese" },
+  "/dashboard/extract": { title: "Smart Extract", infoKey: "smart-extract" },
+  "/dashboard/photo-to-document": { title: "Photo → PDF / Excel", infoKey: "photo-pdf-excel" },
+  "/dashboard/emails": { title: "Emails", infoKey: "emails" },
+  "/dashboard/automations": { title: "Automatisations", infoKey: "automatisations" },
+  "/dashboard/briefing": { title: "Briefing du jour", infoKey: "briefing" },
+  "/dashboard/mon-equipe": { title: "Mon équipe", infoKey: "mon-equipe" },
+  "/dashboard/clients": { title: "Rapport client", infoKey: "rapport-client" },
+  "/dashboard/agent-rapport": { title: "Agent Rapport client", infoKey: "agent-rapport" },
 };
 
 
-function titleFor(pathname: string): string {
+function metaFor(pathname: string): PageMeta {
   // Exact match first, then fallback to the closest prefix.
-  if (PAGE_TITLES[pathname]) return PAGE_TITLES[pathname];
-  const prefix = Object.keys(PAGE_TITLES)
+  if (PAGE_META[pathname]) return PAGE_META[pathname];
+  const prefix = Object.keys(PAGE_META)
     .filter((p) => pathname.startsWith(p))
     .sort((a, b) => b.length - a.length)[0];
-  return prefix ? PAGE_TITLES[prefix] : "Mon espace";
+  return prefix ? PAGE_META[prefix] : PAGE_META["/dashboard"];
 }
 
 
@@ -41,6 +55,7 @@ export default function DashboardShell() {
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
+  const [infoOpen, setInfoOpen] = useState(false);
 
   async function handleLogout() {
     setLoggingOut(true);
@@ -52,7 +67,8 @@ export default function DashboardShell() {
     navigate("/", { replace: true });
   }
 
-  const pageTitle = titleFor(location.pathname);
+  const pageMeta = metaFor(location.pathname);
+  const pageInfo = FEATURE_INFOS[pageMeta.infoKey] ?? null;
 
   return (
     <div className="min-h-screen bg-stone-50">
@@ -74,8 +90,19 @@ export default function DashboardShell() {
               <Menu className="h-5 w-5" />
             </button>
             <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">
-              {pageTitle}
+              {pageMeta.title}
             </h1>
+            {pageInfo && (
+              <button
+                type="button"
+                onClick={() => setInfoOpen(true)}
+                title={pageInfo.tooltip}
+                aria-label={`En savoir plus sur ${pageMeta.title}`}
+                className="group flex items-center justify-center w-8 h-8 rounded-full text-violet-500 hover:text-white hover:bg-gradient-to-r hover:from-violet-500 hover:to-blue-500 hover:shadow-md hover:shadow-violet-200 transition-all"
+              >
+                <Info className="h-5 w-5 drop-shadow-[0_0_4px_rgba(139,92,246,0.4)] group-hover:drop-shadow-none" />
+              </button>
+            )}
           </div>
 
           <div className="flex items-center gap-4">
@@ -100,6 +127,12 @@ export default function DashboardShell() {
           <Outlet context={{ user }} />
         </main>
       </div>
+
+      <FeatureInfoModal
+        open={infoOpen && pageInfo !== null}
+        info={pageInfo}
+        onClose={() => setInfoOpen(false)}
+      />
     </div>
   );
 }

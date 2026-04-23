@@ -22,3 +22,4 @@ plyer>=2.1.0
 watchdog>=4.0.0
 duckduckgo-search>=5.0.0
 httpx>=0.25.0
+reportlab>=4.0.0

@@ -4,137 +4,355 @@ import {
   MessageSquare,
   Bot,
   User,
-  FileSpreadsheet,
-  Database,
-  FileText,
   Mail,
+  Search,
+  BarChart3,
+  AlertCircle,
+  Users,
+  Truck,
+  FileText,
+  Receipt,
+  FolderOpen,
+  Loader2,
+  Check,
+  Copy,
 } from "lucide-react"
+import ReactMarkdown, { type Components } from "react-markdown"
+import { streamChat, type StreamEvent } from "../../api/assistantClient"
+
+const MARKDOWN_COMPONENTS: Components = {
+  p: ({ children }) => (
+    <p className="text-sm leading-relaxed text-gray-800 mb-2 last:mb-0">{children}</p>
+  ),
+  h1: ({ children }) => (
+    <h3 className="text-sm font-semibold text-gray-900 mt-3 mb-1.5 first:mt-0">{children}</h3>
+  ),
+  h2: ({ children }) => (
+    <h3 className="text-sm font-semibold text-gray-900 mt-3 mb-1.5 first:mt-0">{children}</h3>
+  ),
+  h3: ({ children }) => (
+    <h3 className="text-sm font-semibold text-gray-900 mt-3 mb-1.5 first:mt-0">{children}</h3>
+  ),
+  h4: ({ children }) => (
+    <h4 className="text-[13px] font-semibold text-gray-900 mt-2 mb-1 first:mt-0">{children}</h4>
+  ),
+  ul: ({ children }) => (
+    <ul className="list-disc pl-5 text-sm text-gray-800 mb-2 space-y-0.5">{children}</ul>
+  ),
+  ol: ({ children }) => (
+    <ol className="list-decimal pl-5 text-sm text-gray-800 mb-2 space-y-0.5">{children}</ol>
+  ),
+  li: ({ children }) => <li className="leading-relaxed">{children}</li>,
+  strong: ({ children }) => <strong className="font-semibold text-gray-900">{children}</strong>,
+  em: ({ children }) => <em className="italic">{children}</em>,
+  code: ({ children }) => (
+    <code className="px-1 py-0.5 rounded bg-gray-100 text-gray-800 text-[12px] font-mono">
+      {children}
+    </code>
+  ),
+  a: ({ href, children }) => (
+    <a href={href} target="_blank" rel="noreferrer" className="text-violet-600 underline">
+      {children}
+    </a>
+  ),
+}
 
 interface ChatAssistantViewProps {
   onExit?: () => void
 }
 
 const SUGGESTED_QUESTIONS = [
-  "Quelles sont les factures en retard de Vallourec ce trimestre ?",
-  "Qui sont nos 5 plus gros clients cette année ?",
-  "Résume-moi le contrat Safran et ses pénalités",
-  "Prépare-moi un point sur Renault Trucks",
-  "Quels fournisseurs ont le plus de non-conformités ?",
+  "Donne-moi la répartition de mes devis par statut",
+  "Mme Garcia — donne-moi tout ce que tu sais sur elle",
+  "J'ai une réunion avec la Mairie de Rochefort-du-Gard demain, fais-moi une synthèse",
+  "Quels sont mes 5 plus gros clients en CA accepté ?",
+  "Combien je dois à mes fournisseurs ?",
 ]
 
-type SourceType = "database" | "spreadsheet" | "document" | "email"
+type SourceIcon =
+  | "search"
+  | "mail"
+  | "count"
+  | "clients"
+  | "suppliers"
+  | "quotes"
+  | "invoices"
+  | "drive"
 
-interface Source {
-  label: string
-  type: SourceType
+const SOURCE_ICONS: Record<SourceIcon, typeof Search> = {
+  search: Search,
+  mail: Mail,
+  count: BarChart3,
+  clients: Users,
+  suppliers: Truck,
+  quotes: FileText,
+  invoices: Receipt,
+  drive: FolderOpen,
 }
 
-interface PresetAnswer {
-  answer: string
-  sources: Source[]
+const SOURCE_STYLES: Record<SourceIcon, string> = {
+  search: "bg-amber-50 text-amber-700",
+  mail: "bg-amber-50 text-amber-700",
+  count: "bg-amber-50 text-amber-700",
+  clients: "bg-blue-50 text-blue-700",
+  suppliers: "bg-orange-50 text-orange-700",
+  quotes: "bg-indigo-50 text-indigo-700",
+  invoices: "bg-emerald-50 text-emerald-700",
+  drive: "bg-sky-50 text-sky-700",
 }
 
-const PRESET_ANSWERS: Record<string, PresetAnswer> = {
-  "Quelles sont les factures en retard de Vallourec ce trimestre ?": {
-    answer:
-      "Vallourec a 2 factures en retard ce trimestre :\n\n• FAC-2025-0287 — 34 200 € HT — échéance dépassée de 18 jours\n• FAC-2025-0315 — 12 800 € HT — échéance dépassée de 6 jours\n\nMontant total en retard : 47 000 € HT.\n\nLe délai moyen de paiement de Vallourec est de 42 jours (vs 30 jours contractuels). Une relance a été envoyée le 10/04 par Pierre. Aucune réponse reçue à ce jour.",
-    sources: [
-      { label: "Base comptabilité", type: "database" },
-      { label: "Emails Pierre → Vallourec", type: "email" },
-      { label: "Contrat Vallourec 2024", type: "document" },
-    ],
-  },
-  "Qui sont nos 5 plus gros clients cette année ?": {
-    answer:
-      "Top 5 clients par CA cumulé en 2025 :\n\n1. Renault Trucks — 487 320 € HT (+12% vs 2024)\n2. Safran — 342 100 € HT (-3% vs 2024)\n3. Airbus — 298 750 € HT (+8% vs 2024)\n4. Stellantis — 187 600 € HT (nouveau client)\n5. Michelin — 156 400 € HT (+5% vs 2024)\n\nCA total top 5 : 1 472 170 € HT, soit 68% de votre CA global.",
-    sources: [
-      { label: "CRM commercial", type: "database" },
-      { label: "Tableau suivi CA 2025.xlsx", type: "spreadsheet" },
-    ],
-  },
-  "Résume-moi le contrat Safran et ses pénalités": {
-    answer:
-      "Contrat Safran — signé le 15/01/2024, valable 2 ans.\n\nPérimètre : fourniture de pièces titane pour le programme LEAP.\n\nConditions clés :\n• Délai de livraison : 4 semaines max après commande\n• Pénalités de retard : 0,5% du montant par jour de retard, plafonnées à 10%\n• Clause qualité : taux de non-conformité < 2% sur 12 mois glissants\n\nSituation actuelle :\n• Taux de non-conformité : 1,3% (conforme)\n• Aucune pénalité appliquée à ce jour\n• Prochaine revue contrat : juillet 2025",
-    sources: [
-      { label: "Contrat Safran 2024.pdf", type: "document" },
-      { label: "Suivi qualité Safran.xlsx", type: "spreadsheet" },
-      { label: "CRM commercial", type: "database" },
-    ],
-  },
-  "Prépare-moi un point sur Renault Trucks": {
-    answer:
-      "Point Renault Trucks — généré le " +
-      new Date().toLocaleDateString("fr-FR") +
-      "\n\nCA 2025 : 487 320 € HT (+12% vs N-1)\nCommandes en cours : 4 (2 livrées, 1 en production, 1 en attente)\nFactures impayées : 0 — client à jour\nDélai moyen de paiement : 28 jours (stable)\n\nDerniers échanges :\n• 14/04 — Pierre a confirmé la livraison des tubes cuivre\n• 11/04 — Renault demande accélération sur les plaques titane\n• 08/04 — Devis envoyé pour commande spéciale\n\nPoints d'attention :\n• Demande d'accélération sur CMD-2025-0901 (plaques titane) — vérifier planning production\n• Potentiel nouveau marché évoqué par Pierre il y a 3 jours",
-    sources: [
-      { label: "CRM commercial", type: "database" },
-      { label: "Emails Pierre", type: "email" },
-      { label: "Suivi commandes.xlsx", type: "spreadsheet" },
-      { label: "Facturation 2025", type: "database" },
-    ],
-  },
-  "Quels fournisseurs ont le plus de non-conformités ?": {
-    answer:
-      "Fournisseurs classés par taux de non-conformité (12 mois glissants) :\n\n1. Vallourec — 22% de non-conformités (sur 45 livraisons)\n   → Problèmes récurrents : dimensions hors tolérance, délais non respectés\n   → Recommandation : envisager remplacement par Tubacex\n\n2. Fonderies du Sud — 8% (sur 24 livraisons)\n   → Problème ponctuel de traitement de surface en février\n\n3. Acier Plus — 3% (sur 67 livraisons)\n   → Conforme, incidents isolés\n\nTous les autres fournisseurs sont sous le seuil de 2%.",
-    sources: [
-      { label: "Suivi qualité fournisseurs.xlsx", type: "spreadsheet" },
-      { label: "Base fournisseurs", type: "database" },
-      { label: "Rapports non-conformité", type: "document" },
-    ],
-  },
-}
-
-const SOURCE_STYLES: Record<
-  SourceType,
-  { bg: string; text: string; Icon: typeof Database }
-> = {
-  database: { bg: "bg-purple-50", text: "text-purple-700", Icon: Database },
-  spreadsheet: { bg: "bg-green-50", text: "text-green-700", Icon: FileSpreadsheet },
-  document: { bg: "bg-blue-50", text: "text-blue-700", Icon: FileText },
-  email: { bg: "bg-amber-50", text: "text-amber-700", Icon: Mail },
+interface ToolStep {
+  tool: string
+  input: Record<string, unknown>
+  status: "running" | "ok" | "error"
+  summary?: Record<string, unknown>
+  errorText?: string
 }
 
 interface ChatMessage {
-  role: "user" | "assistant"
+  role: "user" | "assistant" | "error"
   content: string
-  sources?: Source[]
+  steps?: ToolStep[]
+}
+
+function iconFor(tool: string): SourceIcon {
+  switch (tool) {
+    case "search_emails":
+      return "search"
+    case "read_email":
+      return "mail"
+    case "count_emails":
+      return "count"
+    case "search_clients":
+      return "clients"
+    case "search_suppliers":
+      return "suppliers"
+    case "search_quotes":
+      return "quotes"
+    case "search_invoices":
+      return "invoices"
+    case "search_drive_documents":
+      return "drive"
+    default:
+      return "search"
+  }
+}
+
+function labelFor(tool: string, input: Record<string, unknown>): string {
+  const q = (input.query as string) || ""
+  if (tool === "search_emails") {
+    const from = (input.from_email as string) || ""
+    return q
+      ? `Recherche emails : « ${q} »`
+      : from
+      ? `Emails de ${from}`
+      : "Recherche dans les emails"
+  }
+  if (tool === "read_email") return `Lecture email #${input.email_id ?? ""}`
+  if (tool === "count_emails") return "Statistiques emails"
+  if (tool === "search_clients") {
+    const type = (input.type as string) || ""
+    return q
+      ? `Clients : « ${q} »`
+      : type
+      ? `Clients ${type}`
+      : "Recherche clients"
+  }
+  if (tool === "search_suppliers") {
+    const city = (input.city as string) || ""
+    return q
+      ? `Fournisseurs : « ${q} »`
+      : city
+      ? `Fournisseurs à ${city}`
+      : "Recherche fournisseurs"
+  }
+  if (tool === "search_quotes") {
+    const client = (input.client_name as string) || ""
+    const status = (input.status as string) || ""
+    const parts = [client && `« ${client} »`, status && `statut ${status}`]
+      .filter(Boolean)
+      .join(" – ")
+    return parts ? `Devis ${parts}` : "Recherche devis"
+  }
+  if (tool === "search_invoices") {
+    const supplier = (input.supplier_name as string) || ""
+    return supplier ? `Factures ${supplier}` : "Factures fournisseurs"
+  }
+  if (tool === "search_drive_documents") {
+    const mime = (input.mime_type_contains as string) || ""
+    return q
+      ? `Drive : « ${q} »`
+      : mime
+      ? `Drive (${mime})`
+      : "Recherche Drive"
+  }
+  return tool
+}
+
+function summaryPreview(summary: Record<string, unknown> | undefined): string {
+  if (!summary) return ""
+  if (summary.ok === false) {
+    return typeof summary.error === "string" ? `erreur : ${summary.error}` : "erreur"
+  }
+  const count = summary.count as number | undefined
+  const total =
+    (summary.total_ht as number | undefined) ?? (summary.total_ttc as number | undefined)
+  if (count !== undefined && total !== undefined && total > 0) {
+    return `${count} résultat${count > 1 ? "s" : ""} — ${total.toLocaleString(
+      "fr-FR",
+    )} €`
+  }
+  if (count !== undefined) {
+    return `${count} résultat${count > 1 ? "s" : ""}`
+  }
+  return "OK"
+}
+
+function CopyButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false)
+  const onClick = async () => {
+    try {
+      await navigator.clipboard.writeText(text)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1500)
+    } catch {
+      // ignore
+    }
+  }
+  return (
+    <button
+      onClick={onClick}
+      type="button"
+      className="inline-flex items-center gap-1 text-[11px] text-gray-400 hover:text-gray-700 transition-colors"
+    >
+      {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+      {copied ? "Copié" : "Copier"}
+    </button>
+  )
 }
 
 export default function ChatAssistantView(_props: ChatAssistantViewProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [input, setInput] = useState("")
-  const [isTyping, setIsTyping] = useState(false)
+  const [isStreaming, setIsStreaming] = useState(false)
+  const [liveSteps, setLiveSteps] = useState<ToolStep[]>([])
+  const [conversationId, setConversationId] = useState<number | undefined>(undefined)
   const endRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" })
-  }, [messages, isTyping])
+  }, [messages, liveSteps, isStreaming])
 
-  const sendMessage = (text: string) => {
+  const sendMessage = async (text: string) => {
     const userMsg: ChatMessage = { role: "user", content: text }
     setMessages((prev) => [...prev, userMsg])
     setInput("")
-    setIsTyping(true)
+    setIsStreaming(true)
+    setLiveSteps([])
 
-    const preset = PRESET_ANSWERS[text]
+    let pendingSteps: ToolStep[] = []
+    let answer = ""
 
-    setTimeout(() => {
+    const handleEvent = (ev: StreamEvent) => {
+      if (ev.type === "conversation") {
+        setConversationId(ev.conversation_id)
+      } else if (ev.type === "tool_call") {
+        pendingSteps = [
+          ...pendingSteps,
+          { tool: ev.tool, input: ev.input, status: "running" },
+        ]
+        setLiveSteps([...pendingSteps])
+      } else if (ev.type === "tool_result") {
+        // Update the last matching running step for this tool
+        for (let i = pendingSteps.length - 1; i >= 0; i--) {
+          if (pendingSteps[i].tool === ev.tool && pendingSteps[i].status === "running") {
+            pendingSteps[i] = {
+              ...pendingSteps[i],
+              status: ev.summary.ok ? "ok" : "error",
+              summary: ev.summary,
+              errorText: ev.summary.error as string | undefined,
+            }
+            break
+          }
+        }
+        setLiveSteps([...pendingSteps])
+      } else if (ev.type === "answer") {
+        answer = ev.text
+      } else if (ev.type === "error") {
+        answer = `Je n'ai pas pu te répondre : ${ev.detail}`
+      }
+    }
+
+    try {
+      await streamChat(text, conversationId, handleEvent)
       const assistantMsg: ChatMessage = {
         role: "assistant",
-        content: preset
-          ? preset.answer
-          : "Je n'ai pas trouvé cette information dans les données de démonstration. Dans votre version personnalisée, je pourrais interroger vos vrais documents, emails et bases de données pour vous répondre.",
-        sources: preset ? preset.sources : undefined,
+        content: answer || "(réponse vide)",
+        steps: pendingSteps,
       }
       setMessages((prev) => [...prev, assistantMsg])
-      setIsTyping(false)
-    }, 1500 + Math.random() * 1000)
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err)
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "error",
+          content: `Je n'ai pas pu te répondre (${message}). Réessaie dans un instant.`,
+          steps: pendingSteps,
+        },
+      ])
+    } finally {
+      setIsStreaming(false)
+      setLiveSteps([])
+    }
+  }
+
+  const renderSteps = (steps: ToolStep[] | undefined, compact = false) => {
+    if (!steps || steps.length === 0) return null
+    return (
+      <div
+        className={`flex flex-wrap gap-1.5 ${compact ? "mt-3 pt-3 border-t border-gray-100" : ""}`}
+      >
+        {compact && (
+          <p className="basis-full text-[10px] text-gray-400 uppercase tracking-wider font-semibold mb-1">
+            Sources
+          </p>
+        )}
+        {steps.map((step, j) => {
+          const Icon = SOURCE_ICONS[iconFor(step.tool)]
+          const style = SOURCE_STYLES[iconFor(step.tool)]
+          return (
+            <span
+              key={j}
+              className={`inline-flex items-center gap-1 text-[10px] font-medium px-2 py-1 rounded-md ${style}`}
+            >
+              {step.status === "running" ? (
+                <Loader2 className="h-3 w-3 animate-spin" />
+              ) : step.status === "error" ? (
+                <AlertCircle className="h-3 w-3" />
+              ) : (
+                <Icon className="h-3 w-3" />
+              )}
+              <span>{labelFor(step.tool, step.input)}</span>
+              {step.status === "ok" && (
+                <span className="text-gray-500 font-normal">
+                  · {summaryPreview(step.summary)}
+                </span>
+              )}
+              {step.status === "error" && (
+                <span className="text-red-600 font-normal">· échec</span>
+              )}
+            </span>
+          )
+        })}
+      </div>
+    )
   }
 
   return (
     <div className="flex flex-col h-full">
       <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-6">
-        {messages.length === 0 ? (
+        {messages.length === 0 && !isStreaming ? (
           <div className="max-w-2xl mx-auto text-center py-12">
             <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-violet-50 mb-5">
               <MessageSquare className="h-7 w-7 text-violet-500" />
@@ -143,16 +361,17 @@ export default function ChatAssistantView(_props: ChatAssistantViewProps) {
               Discuter avec Synthèse
             </h2>
             <p className="text-base text-gray-600 mb-2">
-              Posez une question sur vos données. Synthèse interroge vos sources
-              et vous répond avec les références.
+              Pose une question sur tes clients, fournisseurs, devis, factures
+              ou emails. Synthèse croise tes données et te répond avec les
+              sources.
             </p>
             <p className="text-sm text-violet-600 italic mb-8">
-              Comme un collègue qui connaît tous vos dossiers.
+              Comme un collègue qui connaît tous tes dossiers.
             </p>
 
-            <div className="space-y-2 max-w-lg mx-auto">
+            <div className="space-y-2 max-w-xl mx-auto">
               <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold mb-3">
-                Essayez une question
+                Essaie une question
               </p>
               {SUGGESTED_QUESTIONS.map((q) => (
                 <button
@@ -174,45 +393,47 @@ export default function ChatAssistantView(_props: ChatAssistantViewProps) {
                   msg.role === "user" ? "justify-end" : "justify-start"
                 }`}
               >
-                {msg.role === "assistant" && (
-                  <div className="w-8 h-8 rounded-lg bg-violet-100 flex items-center justify-center shrink-0 mt-1">
-                    <Bot className="h-4 w-4 text-violet-600" />
+                {msg.role !== "user" && (
+                  <div
+                    className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-1 ${
+                      msg.role === "error" ? "bg-red-100" : "bg-violet-100"
+                    }`}
+                  >
+                    {msg.role === "error" ? (
+                      <AlertCircle className="h-4 w-4 text-red-600" />
+                    ) : (
+                      <Bot className="h-4 w-4 text-violet-600" />
+                    )}
                   </div>
                 )}
                 <div
-                  className={`max-w-[80%] ${
+                  className={`max-w-[85%] sm:max-w-[80%] min-w-0 ${
                     msg.role === "user"
                       ? "bg-violet-500 text-white rounded-2xl rounded-br-md px-4 py-3"
-                      : "bg-white border border-gray-200 rounded-2xl rounded-bl-md px-5 py-4"
+                      : msg.role === "error"
+                      ? "bg-red-50 border border-red-200 rounded-2xl rounded-bl-md px-4 sm:px-5 py-3 sm:py-4"
+                      : "bg-white border border-gray-200 rounded-2xl rounded-bl-md px-4 sm:px-5 py-3 sm:py-4"
                   }`}
                 >
-                  <p
-                    className={`text-sm whitespace-pre-line leading-relaxed ${
-                      msg.role === "user" ? "text-white" : "text-gray-800"
-                    }`}
-                  >
-                    {msg.content}
-                  </p>
-                  {msg.sources && msg.sources.length > 0 && (
-                    <div className="mt-3 pt-3 border-t border-gray-100">
-                      <p className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold mb-2">
-                        Sources
-                      </p>
-                      <div className="flex flex-wrap gap-1.5">
-                        {msg.sources.map((src, j) => {
-                          const style = SOURCE_STYLES[src.type]
-                          const SrcIcon = style.Icon
-                          return (
-                            <span
-                              key={j}
-                              className={`inline-flex items-center gap-1 text-[10px] font-medium px-2 py-1 rounded-md ${style.bg} ${style.text}`}
-                            >
-                              <SrcIcon className="h-3 w-3" />
-                              {src.label}
-                            </span>
-                          )
-                        })}
-                      </div>
+                  {msg.role === "user" ? (
+                    <p className="text-sm whitespace-pre-line leading-relaxed break-words text-white">
+                      {msg.content}
+                    </p>
+                  ) : (
+                    <div
+                      className={`max-w-none break-words ${
+                        msg.role === "error" ? "text-red-800" : "text-gray-800"
+                      }`}
+                    >
+                      <ReactMarkdown components={MARKDOWN_COMPONENTS}>
+                        {msg.content}
+                      </ReactMarkdown>
+                    </div>
+                  )}
+                  {renderSteps(msg.steps, true)}
+                  {msg.role === "assistant" && (
+                    <div className="mt-3 flex justify-end">
+                      <CopyButton text={msg.content} />
                     </div>
                   )}
                 </div>
@@ -223,26 +444,32 @@ export default function ChatAssistantView(_props: ChatAssistantViewProps) {
                 )}
               </div>
             ))}
-            {isTyping && (
+
+            {/* Live typing bubble while streaming */}
+            {isStreaming && (
               <div className="flex gap-3">
                 <div className="w-8 h-8 rounded-lg bg-violet-100 flex items-center justify-center shrink-0 mt-1">
                   <Bot className="h-4 w-4 text-violet-600 animate-pulse" />
                 </div>
-                <div className="bg-white border border-gray-200 rounded-2xl rounded-bl-md px-5 py-4">
-                  <div className="flex gap-1">
-                    <div
-                      className="w-2 h-2 rounded-full bg-gray-300 animate-bounce"
-                      style={{ animationDelay: "0ms" }}
-                    />
-                    <div
-                      className="w-2 h-2 rounded-full bg-gray-300 animate-bounce"
-                      style={{ animationDelay: "150ms" }}
-                    />
-                    <div
-                      className="w-2 h-2 rounded-full bg-gray-300 animate-bounce"
-                      style={{ animationDelay: "300ms" }}
-                    />
-                  </div>
+                <div className="bg-white border border-gray-200 rounded-2xl rounded-bl-md px-4 sm:px-5 py-3 sm:py-4 min-w-[120px]">
+                  {liveSteps.length === 0 ? (
+                    <div className="flex gap-1 items-center h-5">
+                      <div
+                        className="w-2 h-2 rounded-full bg-gray-300 animate-bounce"
+                        style={{ animationDelay: "0ms" }}
+                      />
+                      <div
+                        className="w-2 h-2 rounded-full bg-gray-300 animate-bounce"
+                        style={{ animationDelay: "150ms" }}
+                      />
+                      <div
+                        className="w-2 h-2 rounded-full bg-gray-300 animate-bounce"
+                        style={{ animationDelay: "300ms" }}
+                      />
+                    </div>
+                  ) : (
+                    renderSteps(liveSteps)
+                  )}
                 </div>
               </div>
             )}
@@ -258,14 +485,19 @@ export default function ChatAssistantView(_props: ChatAssistantViewProps) {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === "Enter" && input.trim()) sendMessage(input.trim())
+              if (e.key === "Enter" && input.trim() && !isStreaming) {
+                sendMessage(input.trim())
+              }
             }}
-            placeholder="Posez une question sur vos données..."
-            className="flex-1 px-4 py-3 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
+            placeholder="Pose une question sur tes données..."
+            disabled={isStreaming}
+            className="flex-1 px-4 py-3 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent disabled:bg-gray-50"
           />
           <button
-            onClick={() => input.trim() && sendMessage(input.trim())}
-            disabled={!input.trim()}
+            onClick={() =>
+              input.trim() && !isStreaming && sendMessage(input.trim())
+            }
+            disabled={!input.trim() || isStreaming}
             className="px-4 py-3 bg-violet-500 text-white rounded-xl hover:bg-violet-600 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
           >
             <Send className="h-5 w-5" />
