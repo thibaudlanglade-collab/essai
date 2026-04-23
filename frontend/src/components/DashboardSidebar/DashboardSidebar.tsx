@@ -295,9 +295,10 @@ export default function DashboardSidebar({
           <Item
             icon={BarChart3}
             label="Rapport client (Q&A)"
+            mode="clients"
             activeMode={activeMode}
-            status="soon"
-            soonLabel="Arrive dans votre version définitive"
+            status="active"
+            onClick={go("/clients")}
           />
         </nav>
       </aside>

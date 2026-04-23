@@ -27,6 +27,7 @@ import DashboardHomeView from "./pages/DashboardHomeView";
 import BriefingView from "./pages/BriefingView";
 import MonEquipeView from "./pages/MonEquipeView";
 import TarifsView from "./pages/TarifsView";
+import ClientsView from "./pages/ClientsView";
 import MentionsLegalesView from "./pages/MentionsLegalesView";
 import PolitiqueConfidentialiteView from "./pages/PolitiqueConfidentialiteView";
 import AgentRapportDemo from "./components/AgentRapportDemo";
@@ -65,6 +66,7 @@ const WORKSPACE_PAGES = [
   ...TRIAL_FEATURE_PAGES,
   "dashboard",
   "tarifs",
+  "clients",
 ] as const;
 
 const PAGE_TITLES: Record<string, string> = {
@@ -81,6 +83,7 @@ const PAGE_TITLES: Record<string, string> = {
   briefing: "Briefing du jour",
   "mon-equipe": "Mon équipe",
   tarifs: "Grille tarifaire",
+  clients: "Rapport client",
   rgpd: "RGPD",
   features: "Par secteur",
   comprendre: "Comprendre Synthèse",
@@ -99,7 +102,7 @@ export default function App() {
   const { loading, error: featuresError } = useFeatures();
   const [selected, setSelected] = useState<Feature | null>(null);
   const { run, start, reset } = useWorkflowRun();
-  const [activeMode, setActiveMode] = useState<"home" | "classic" | "chat-assistant" | "smart" | "photo-to-document" | "meeting-transcriber" | "planner" | "emails" | "automations" | "agents-ia" | "agent-rapport" | "rgpd" | "features" | "comprendre" | "contact" | "qui-sommes-nous" | "tarification" | "demo" | "welcome" | "dashboard" | "briefing" | "mon-equipe" | "tarifs" | "mentions-legales" | "politique-confidentialite">("home");
+  const [activeMode, setActiveMode] = useState<"home" | "classic" | "chat-assistant" | "smart" | "photo-to-document" | "meeting-transcriber" | "planner" | "emails" | "automations" | "agents-ia" | "agent-rapport" | "rgpd" | "features" | "comprendre" | "contact" | "qui-sommes-nous" | "tarification" | "demo" | "welcome" | "dashboard" | "briefing" | "mon-equipe" | "tarifs" | "clients" | "mentions-legales" | "politique-confidentialite">("home");
   const navigate = useNavigate();
 
   // Mobile sidebar
@@ -545,6 +548,8 @@ export default function App() {
           {activeMode === "mon-equipe" && <MonEquipeView />}
 
           {activeMode === "tarifs" && <TarifsView />}
+
+          {activeMode === "clients" && <ClientsView />}
 
           {activeMode === "demo" && <DemoView />}
 
