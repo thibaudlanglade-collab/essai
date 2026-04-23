@@ -269,9 +269,10 @@ export default function DashboardSidebar({
           <Item
             icon={Euro}
             label="Grille tarifaire"
+            mode="tarifs"
             activeMode={activeMode}
-            status="soon"
-            soonLabel="Arrive dans votre version définitive"
+            status="active"
+            onClick={go("/tarifs")}
           />
 
           <SectionHeader label="Agents IA" />

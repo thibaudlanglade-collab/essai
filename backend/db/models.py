@@ -9,7 +9,18 @@ import uuid
 from datetime import datetime
 from typing import Any, Optional
 
-from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Integer, String, Text, func
+from sqlalchemy import (
+    Boolean,
+    DateTime,
+    Float,
+    ForeignKey,
+    Integer,
+    Numeric,
+    String,
+    Text,
+    UniqueConstraint,
+    func,
+)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from db.database import Base
@@ -483,4 +494,55 @@ class MorningBriefing(Base):
             "urgent_count": self.urgent_count,
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "is_read": self.is_read,
+        }
+
+
+class TarifGrid(Base):
+    """Grille tarifaire du prospect (postes et prix unitaires).
+
+    Chaque prospect possède sa propre grille de prix unitaires qui servira de
+    référence au générateur de devis. Le prospect peut ajouter, modifier et
+    supprimer des entrées. Toutes les lignes sont scopées par `user_id`.
+    """
+
+    __tablename__ = "tarif_grids"
+
+    id: Mapped[str] = mapped_column(
+        String(36), primary_key=True, default=lambda: str(uuid.uuid4())
+    )
+    user_id: Mapped[str] = mapped_column(
+        String(36),
+        ForeignKey("access_tokens.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    key: Mapped[str] = mapped_column(String(100), nullable=False)
+    label: Mapped[str] = mapped_column(String(255), nullable=False)
+    unit: Mapped[str] = mapped_column(String(50), nullable=False)
+    unit_price_ht: Mapped[float] = mapped_column(Numeric(10, 2), nullable=False)
+    vat_rate: Mapped[float] = mapped_column(
+        Numeric(5, 4), nullable=False, default=0.20
+    )
+    category: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    is_seed: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, nullable=False, server_default=func.now()
+    )
+
+    __table_args__ = (
+        UniqueConstraint("user_id", "key", name="uq_tarif_grids_user_key"),
+    )
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "key": self.key,
+            "label": self.label,
+            "unit": self.unit,
+            "unit_price_ht": float(self.unit_price_ht) if self.unit_price_ht is not None else None,
+            "vat_rate": float(self.vat_rate) if self.vat_rate is not None else None,
+            "category": self.category,
+            "is_seed": self.is_seed,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
         }
