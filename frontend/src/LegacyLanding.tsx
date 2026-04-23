@@ -43,6 +43,7 @@ import ComprendreView from "./pages/ComprendreView";
 import ContactView from "./pages/ContactView";
 import QuiSommesNousView from "./pages/QuiSommesNousView";
 import TarificationView from "./pages/TarificationView";
+import PourquoiSyntheseView from "./pages/PourquoiSyntheseView";
 import AgentRapportDemo from "./components/AgentRapportDemo";
 import Footer from "./components/Footer";
 import { useFeatures } from "./hooks/useFeatures";
@@ -67,6 +68,7 @@ const PAGE_TITLES: Record<string, string> = {
   comprendre: "Comprendre Synthèse",
   contact: "Contact",
   "qui-sommes-nous": "Qui sommes-nous",
+  "pourquoi-synthese": "Notre différence",
   tarification: "Tarification",
   classic: "Synthèse",
 };
@@ -122,7 +124,7 @@ export default function LegacyLanding() {
   const { loading, error: featuresError } = useFeatures();
   const [selected, setSelected] = useState<Feature | null>(null);
   const { run, start, reset } = useWorkflowRun();
-  const [activeMode, setActiveMode] = useState<"home" | "classic" | "chat-assistant" | "smart" | "photo-to-document" | "meeting-transcriber" | "planner" | "emails" | "automations" | "agents-ia" | "agent-rapport" | "rgpd" | "features" | "comprendre" | "contact" | "qui-sommes-nous" | "tarification" | "demo" | "mentions-legales" | "politique-confidentialite">("home");
+  const [activeMode, setActiveMode] = useState<"home" | "classic" | "chat-assistant" | "smart" | "photo-to-document" | "meeting-transcriber" | "planner" | "emails" | "automations" | "agents-ia" | "agent-rapport" | "rgpd" | "features" | "comprendre" | "contact" | "qui-sommes-nous" | "pourquoi-synthese" | "tarification" | "demo" | "mentions-legales" | "politique-confidentialite">("home");
   const navigate = useNavigate();
 
   // Mobile sidebar
@@ -270,6 +272,12 @@ export default function LegacyLanding() {
     setActiveMode("tarification");
   }
 
+  function handlePourquoiClick() {
+    reset();
+    setSelected(null);
+    setActiveMode("pourquoi-synthese");
+  }
+
   const pageTitle = selected?.name ?? PAGE_TITLES[activeMode] ?? "Synthèse";
 
   return (
@@ -319,6 +327,8 @@ export default function LegacyLanding() {
         quiSommesNousModeActive={activeMode === "qui-sommes-nous"}
         onTarificationClick={() => { handleTarificationClick(); setSidebarOpen(false); }}
         tarificationModeActive={activeMode === "tarification"}
+        onPourquoiClick={() => { handlePourquoiClick(); setSidebarOpen(false); }}
+        pourquoiModeActive={activeMode === "pourquoi-synthese"}
         onHomeClick={() => { handleHomeClick(); setSidebarOpen(false); }}
         onComprendreClick={() => { handleHomeClick(); setSidebarOpen(false); }}
         comprenderModeActive={activeMode === "home"}
@@ -352,6 +362,8 @@ export default function LegacyLanding() {
           {activeMode === "qui-sommes-nous" && <QuiSommesNousView />}
 
           {activeMode === "tarification" && <TarificationView />}
+
+          {activeMode === "pourquoi-synthese" && <PourquoiSyntheseView />}
 
           {activeMode === "chat-assistant" && (
             <ChatAssistantView onExit={() => setActiveMode("classic")} />
