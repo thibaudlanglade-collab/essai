@@ -21,7 +21,6 @@ import {
   Trash2,
 } from "lucide-react";
 import type { AuthContextShape } from "@/layouts/ProtectedLayout";
-import DashboardRadar from "@/components/DashboardRadar";
 
 
 interface QuickStartCard {
@@ -108,9 +107,6 @@ export default function DashboardHome() {
           L'équipe de Synthèse vous souhaite un bon essai.
         </p>
       </div>
-
-      {/* RADAR — live signals from the user's own data */}
-      <DashboardRadar />
 
       {/* QUICK START */}
       <section className="mb-12">

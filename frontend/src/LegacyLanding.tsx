@@ -17,7 +17,9 @@
  * `<ProtectedLayout>`).
  */
 import { useEffect, useRef, useState } from "react";
-import { Sparkles, MessageSquare } from "lucide-react";
+import { Sparkles, MessageSquare, Rocket, ArrowRight } from "lucide-react";
+import { getTrial, setTrialResumeUrl } from "./lib/trial";
+import { startAnonymousTrial } from "./lib/trialApi";
 import { Sidebar } from "./components/Sidebar/Sidebar";
 import { Topbar } from "./components/Topbar/Topbar";
 import WorkflowLauncher from "./components/WorkflowLauncher/WorkflowLauncher";
@@ -65,6 +67,77 @@ const PAGE_TITLES: Record<string, string> = {
   tarification: "Tarification",
   classic: "Synthèse",
 };
+
+
+/**
+ * Sticky top banner on the marketing landing.
+ *
+ * Shows "Commencer ma démo gratuite" by default and flips to
+ * "Reprendre ma démo" once the visitor has a valid trial cookie with a
+ * backend-minted `access_url`.
+ */
+function TopDemoBanner() {
+  const [resumeUrl, setResumeUrl] = useState<string | undefined>(undefined);
+  const [starting, setStarting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const trial = getTrial();
+    if (trial?.resumeUrl) setResumeUrl(trial.resumeUrl);
+  }, []);
+
+  async function onClick() {
+    if (resumeUrl) {
+      window.location.href = resumeUrl;
+      return;
+    }
+    setStarting(true);
+    setError(null);
+    try {
+      const { access_url } = await startAnonymousTrial();
+      setTrialResumeUrl(access_url);
+      window.location.href = access_url;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+      setStarting(false);
+    }
+  }
+
+  const label = resumeUrl
+    ? "Reprendre ma démo"
+    : starting
+    ? "Création de votre espace…"
+    : "Commencer ma démo gratuite";
+
+  return (
+    <div className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-violet-500 to-blue-500 px-3 sm:px-6 py-2 sm:py-2.5 shadow-sm">
+      <div className="max-w-6xl mx-auto flex items-center justify-center gap-2 sm:gap-4 flex-wrap text-center">
+        <span className="text-[10px] sm:text-xs text-white">
+          <Sparkles className="inline h-3 w-3 mr-1 sm:mr-1.5" />
+          <span className="hidden sm:inline">
+            Bienvenue sur Synthèse — essai gratuit 14 jours, sans carte bancaire.
+          </span>
+          <span className="sm:hidden">Essai gratuit 14j</span>
+        </span>
+        <button
+          onClick={onClick}
+          disabled={starting}
+          className="inline-flex items-center gap-1.5 bg-white/95 hover:bg-white disabled:opacity-60 text-violet-700 text-[11px] sm:text-xs font-semibold px-3 py-1 rounded-full transition-colors shadow-sm"
+        >
+          <Rocket className="h-3 w-3" />
+          {label}
+          <ArrowRight className="h-3 w-3" />
+        </button>
+        {error && (
+          <span className="text-[10px] sm:text-xs text-red-100">
+            {error}
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
+
 
 export default function LegacyLanding() {
   const { loading, error: featuresError } = useFeatures();
@@ -222,22 +295,8 @@ export default function LegacyLanding() {
 
   return (
     <div className="min-h-screen bg-stone-100 dark:bg-gradient-to-br dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
-      {/* Welcome banner */}
-      <div className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-violet-500 to-blue-500 px-3 sm:px-6 py-2 sm:py-2.5 text-center shadow-sm">
-        <span className="text-[10px] sm:text-xs text-white">
-          <Sparkles className="inline h-3 w-3 mr-1 sm:mr-1.5" />
-          <span className="hidden sm:inline">
-            Bienvenue sur Synthèse — explorez librement nos fonctionnalités.
-          </span>
-          <span className="sm:hidden">Bienvenue sur Synthèse</span>
-          <button
-            onClick={() => navigate("/contact")}
-            className="underline font-medium ml-1 hover:text-white/90 transition-colors"
-          >
-            Une question&nbsp;? Contactez-nous
-          </button>
-        </span>
-      </div>
+      {/* Welcome banner — CTA démo + contact */}
+      <TopDemoBanner />
 
       {/* Floating CTA */}
       <button
