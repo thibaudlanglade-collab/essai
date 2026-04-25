@@ -1,5 +1,6 @@
 import { MessageSquare, Eye, Database, FileText, Lightbulb, Shield, History } from "lucide-react"
 import { CHAT_FEATURES } from "@/data/chatAssistantDemoData"
+import ContextBadge from "@/components/ContextBadge"
 
 const ICON_MAP: Record<string, any> = {
   MessageSquare, Database, FileText, Lightbulb, Shield, History
@@ -12,6 +13,12 @@ interface ChatAssistantPresentationProps {
 export default function ChatAssistantPresentation({ onVisualize }: ChatAssistantPresentationProps) {
   return (
     <div className="max-w-5xl mx-auto py-10 px-6">
+
+      <ContextBadge
+        variant="feature"
+        label="Fonctionnalité de base"
+        description="Une fonctionnalité qu'on connaît, mais boostée par l'IA et adaptée à votre métier."
+      />
 
       {/* HERO */}
       <div className="text-center mb-16 max-w-3xl mx-auto">

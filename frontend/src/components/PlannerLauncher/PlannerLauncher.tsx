@@ -16,6 +16,7 @@ import { DocumentPreviewModal } from "./DocumentPreviewModal";
 import { LoadingSteps, mapBackendToVisualStep } from "./LoadingSteps";
 import { StructuredResultRenderer } from "./StructuredResultRenderer";
 import { generateResultPdf } from "./generatePdf";
+import ContextBadge from "@/components/ContextBadge";
 
 // ── Demo examples (NEW complex documents) ─────────────────────────────────────
 
@@ -161,6 +162,11 @@ export function PlannerLauncher() {
 
   return (
     <div className="p-8">
+      <ContextBadge
+        variant="feature"
+        label="Fonctionnalité de base"
+        description="Une fonctionnalité qu'on connaît, mais boostée par l'IA et adaptée à votre métier."
+      />
       <div className="max-w-3xl mx-auto">
         {/* ── HERO SECTION ───────────────────────────────────────────── */}
         <div className="text-center mb-12">

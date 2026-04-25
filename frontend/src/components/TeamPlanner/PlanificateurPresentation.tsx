@@ -3,6 +3,7 @@ import {
   Users, GraduationCap, Plane, MoveHorizontal,
   Save, Siren
 } from "lucide-react"
+import ContextBadge from "@/components/ContextBadge"
 
 const PLANIFICATEUR_FEATURES = [
   {
@@ -48,6 +49,12 @@ interface PlanificateurPresentationProps {
 export default function PlanificateurPresentation({ onVisualize }: PlanificateurPresentationProps) {
   return (
     <div className="max-w-5xl mx-auto py-10 px-6">
+
+      <ContextBadge
+        variant="feature"
+        label="Fonctionnalité de base"
+        description="Une fonctionnalité qu'on connaît, mais boostée par l'IA et adaptée à votre métier."
+      />
 
       {/* HERO */}
       <div className="text-center mb-16 max-w-3xl mx-auto">

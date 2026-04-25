@@ -44,6 +44,7 @@ import {
   type IngestPayload,
 } from "@/api/agentRapportClient";
 import RapportRenderer from "@/components/AgentRapport/RapportRenderer";
+import ContextBadge from "@/components/ContextBadge";
 
 type Phase = "input" | "ingesting" | "intent" | "composing" | "result" | "error";
 type SourceTab = "text" | "csv" | "pdf";
@@ -233,6 +234,12 @@ export default function AgentRapportPage() {
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-10">
+      <ContextBadge
+        variant="agent"
+        label="Exemple d'agent IA"
+        description="Voici un agent que nous avons construit. Le vôtre sera différent — conçu pour vos cas d'usage à vous."
+      />
+
       <Header phase={phase} onReset={reset} />
 
       <Stepper phase={phase} />

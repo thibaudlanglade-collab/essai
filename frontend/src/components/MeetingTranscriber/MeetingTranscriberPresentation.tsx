@@ -1,5 +1,6 @@
 import { Mic, Eye, FileAudio, Link2, CheckCircle2, Settings2, MessageSquare, Globe } from "lucide-react"
 import { MEETING_FEATURES } from "@/data/meetingTranscriberDemoData"
+import ContextBadge from "@/components/ContextBadge"
 
 const ICON_MAP: Record<string, any> = {
   FileAudio, Link2, CheckCircle2, Settings2, MessageSquare, Globe
@@ -12,6 +13,12 @@ interface MeetingTranscriberPresentationProps {
 export default function MeetingTranscriberPresentation({ onVisualize }: MeetingTranscriberPresentationProps) {
   return (
     <div className="max-w-5xl mx-auto py-10 px-6">
+
+      <ContextBadge
+        variant="feature"
+        label="Fonctionnalité de base"
+        description="Une fonctionnalité qu'on connaît, mais boostée par l'IA et adaptée à votre métier."
+      />
 
       {/* HERO */}
       <div className="text-center mb-16 max-w-3xl mx-auto">

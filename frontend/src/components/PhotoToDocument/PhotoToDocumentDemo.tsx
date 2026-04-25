@@ -7,6 +7,7 @@ import jsPDF from "jspdf"
 import autoTable from "jspdf-autotable"
 import * as XLSX from "xlsx"
 import { PHOTO_EXAMPLES, type PhotoExample } from "@/data/photoToDocumentDemoData"
+import ContextBadge from "@/components/ContextBadge"
 
 const ICON_MAP: Record<string, any> = { Pen, Receipt, Table }
 
@@ -200,6 +201,11 @@ export default function PhotoToDocumentDemo({ onBack }: PhotoToDocumentDemoProps
 
   return (
     <div className="max-w-5xl mx-auto py-10 px-6">
+      <ContextBadge
+        variant="feature"
+        label="Fonctionnalité de base"
+        description="Une fonctionnalité qu'on connaît, mais boostée par l'IA et adaptée à votre métier."
+      />
 
       <button
         onClick={onBack}

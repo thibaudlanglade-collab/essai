@@ -9,6 +9,7 @@ import {
   RENAULT_TRUCKS_REPORT,
   type ProcessingStep,
 } from "@/data/agentRapportDemoData"
+import ContextBadge from "@/components/ContextBadge"
 
 const STEP_ICONS: Record<string, React.ElementType> = {
   Search, Package, FileText, MessageSquare, BarChart3,
@@ -62,6 +63,11 @@ export default function AgentRapportDemo({ onBack }: Props) {
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-10">
+      <ContextBadge
+        variant="agent"
+        label="Exemple d'agent IA"
+        description="Voici un agent que nous avons construit. Le vôtre sera différent — conçu pour vos cas d'usage à vous."
+      />
       {/* Header */}
       <div className="flex items-start justify-between gap-4 mb-8">
         <div>

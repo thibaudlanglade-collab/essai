@@ -1,5 +1,6 @@
 import { Camera, Eye, PenTool, Table, Receipt, Globe, Palette, Smartphone } from "lucide-react"
 import { PHOTO_FEATURES } from "@/data/photoToDocumentDemoData"
+import ContextBadge from "@/components/ContextBadge"
 
 const ICON_MAP: Record<string, any> = {
   PenTool, Table, Receipt, Globe, Palette, Smartphone
@@ -12,6 +13,12 @@ interface PhotoToDocumentPresentationProps {
 export default function PhotoToDocumentPresentation({ onVisualize }: PhotoToDocumentPresentationProps) {
   return (
     <div className="max-w-5xl mx-auto py-10 px-6">
+
+      <ContextBadge
+        variant="feature"
+        label="Fonctionnalité de base"
+        description="Une fonctionnalité qu'on connaît, mais boostée par l'IA et adaptée à votre métier."
+      />
 
       {/* HERO */}
       <div className="text-center mb-16 max-w-3xl mx-auto">

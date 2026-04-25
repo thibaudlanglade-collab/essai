@@ -4,12 +4,13 @@ import {
   Wallet, Wrench, HandHeart,
   X, CheckCircle2, CalendarCheck,
   Shield,
-  Smartphone, CloudSun, FileSpreadsheet, Camera,
+  Smartphone, CloudSun, FileSpreadsheet, Mic,
   TrendingUp, RefreshCw, Leaf,
   Building2, Sparkles, Rocket,
   Play,
   Scale, Check, ArrowRight,
   Zap, Handshake, Search, BookOpen, Target,
+  LayoutGrid,
 } from "lucide-react";
 import DemoCallout from "@/components/DemoCallout";
 import { GlobeInteractive } from "@/components/ui/cobe-globe-interactive";
@@ -191,7 +192,7 @@ function BentoSupportCard() {
       </div>
       <h3 className="text-xl font-bold text-gray-900 mb-3">Vous n'êtes jamais seul</h3>
       <p className="text-sm text-gray-600 leading-relaxed flex-1">
-        Pas de chatbot anonyme ni de support qui ne répond jamais. Une vraie personne vous accompagne au démarrage, reste joignable, comprend votre métier, et fait évoluer Synthèse avec vous. Comme un collègue technique, mais en mieux.
+        Pas de chatbot anonyme ni de support qui ne répond jamais. Une vraie personne vous accompagne, reste joignable, comprend votre métier, et vous tient au courant des nouvelles IA qui peuvent vous servir. Comme un collègue technique qui fait la veille à votre place.
       </p>
       <div className="mt-auto pt-6 flex items-center justify-between">
         <button className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
@@ -208,15 +209,15 @@ function BentoPricingCard() {
   return (
     <div className="h-full bg-gradient-to-br from-pink-100 via-rose-50 to-orange-100 rounded-2xl border border-pink-300/50 shadow-md shadow-pink-500/10 p-6 flex flex-col justify-between gap-3">
       <div>
-        <h3 className="text-base font-semibold text-gray-900 mb-2">Payez pour ce que vous utilisez vraiment</h3>
+        <h3 className="text-base font-semibold text-gray-900 mb-2">Vous payez la veille, pas un logiciel qui vieillit</h3>
         <p className="text-sm text-gray-600 leading-relaxed">
-          Avec un logiciel classique, vous payez 100% du prix pour utiliser 20% des fonctionnalités. Avec Synthèse, on construit ensemble exactement ce dont vous avez besoin. Vous payez pour ce que vous utilisez, pas pour les 80% de fonctions qui prennent la poussière.
+          L'IA bouge tous les mois. Si vous achetez un outil aujourd'hui, il est dépassé dans six mois. Avec Synthèse, vous payez une équipe qui suit ce qui sort, sélectionne ce qui sert votre métier, et le branche dans vos outils. Vous payez ce qui évolue, pas ce qui vieillit.
         </p>
       </div>
       <div className="flex items-baseline gap-2">
         <Wallet className="h-5 w-5 text-violet-500 shrink-0 mb-1" />
-        <span className="text-2xl font-bold text-gray-900">1 outil</span>
-        <span className="text-sm text-gray-500">construit pour vous</span>
+        <span className="text-2xl font-bold text-gray-900">1 abonnement</span>
+        <span className="text-sm text-gray-500">tout inclus, à jour</span>
       </div>
     </div>
   )
@@ -231,14 +232,14 @@ function BentoStatCard() {
       />
       <div className="relative z-10 flex h-full flex-col justify-between p-6">
         <div>
-          <h3 className="text-base font-semibold text-gray-900 mb-2">On évolue avec vous</h3>
+          <h3 className="text-base font-semibold text-gray-900 mb-2">Vous gardez votre avance</h3>
           <p className="text-sm text-gray-600 leading-relaxed">
-            Synthèse n'est pas un achat ponctuel. C'est une relation sur le long terme. Vous grandissez, votre logiciel grandit avec vous. Vos besoins changent en mars ? On adapte en mars. Vous avez une nouvelle idée en juin ? On la construit en juin.
+            L'IA évolue chaque mois. On surveille, on teste, on garde ce qui sert votre métier et on l'intègre dans Synthèse. Vos outils restent à la pointe, sans que vous ayez à suivre une seule news IA. Vos concurrents courent après les nouveautés — vous, vous les avez déjà.
           </p>
         </div>
         <div className="flex items-end gap-2">
           <TrendingUp className="h-5 w-5 text-violet-500 shrink-0 mb-1" />
-          <span className="text-4xl font-bold text-gray-900/90">On avance ensemble.</span>
+          <span className="text-4xl font-bold text-gray-900/90">Vous restez en tête.</span>
         </div>
       </div>
     </div>
@@ -249,18 +250,18 @@ function BentoEvolveCard() {
   return (
     <div className="h-full bg-gradient-to-br from-indigo-100 via-violet-100 to-purple-100 rounded-2xl border border-indigo-300/50 shadow-md shadow-indigo-500/10 p-6 flex flex-col justify-between gap-3">
       <div className="flex items-start justify-between gap-2">
-        <h3 className="text-base font-semibold text-gray-900">Flexible, évolutif, modulable</h3>
+        <h3 className="text-base font-semibold text-gray-900">Une IA sort. Elle arrive chez vous.</h3>
         <span className="inline-flex items-center text-[10px] font-semibold px-2 py-0.5 rounded-md bg-violet-50 text-violet-700 border border-violet-200 uppercase tracking-wider shrink-0">
-          Sur-mesure
+          En continu
         </span>
       </div>
       <p className="text-sm text-gray-600 leading-relaxed">
-        Votre activité change ? Synthèse change avec vous. On ajoute une nouvelle automatisation, un nouvel agent IA, une nouvelle source de données quand vous en avez besoin. Pas besoin de migrer vers un autre logiciel quand vous grandissez.
+        Chaque mois, une nouvelle IA arrive sur le marché. Si elle peut servir votre métier, on l'intègre dans Synthèse. Pas besoin d'attendre une « mise à jour majeure », ni de payer un supplément. L'écosystème grandit avec l'IA — vous, vous en bénéficiez sans rien faire.
       </p>
       <div className="flex justify-between text-xs text-gray-400 border-t border-gray-100 pt-3">
-        <span>personnalisable</span>
-        <span>évolutif</span>
-        <span>modulable</span>
+        <span>veille</span>
+        <span>tri</span>
+        <span>intégration</span>
       </div>
     </div>
   )
@@ -272,9 +273,9 @@ function BentoImprovementCard() {
       <div className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-50 shrink-0">
         <RefreshCw className="h-5 w-5 text-amber-600" />
       </div>
-      <h3 className="text-base font-semibold text-gray-900">Rien n'est parfait, même pas nous</h3>
+      <h3 className="text-base font-semibold text-gray-900">On audit votre setup régulièrement</h3>
       <p className="text-sm text-gray-600 leading-relaxed">
-        Le premier mois, il y a toujours des choses auxquelles on n'avait pas pensé. C'est normal. C'est pour ça qu'on fait des audits réguliers : on prend du recul, on regarde ce qui marche et ce qui marche moins, on ajuste. L'objectif, c'est de faire évoluer Synthèse chaque semaine pour qu'il vous corresponde parfaitement. Et la chance qu'on a, c'est qu'on peut tout modifier à 100%.
+        Tous les mois, on prend du recul ensemble : on regarde ce qui tourne bien, ce qui peut être ajusté, et surtout les nouvelles IA sorties depuis qui pourraient vous être utiles. Pas pour vous vendre plus — pour que vos outils restent toujours en phase avec ce qui se fait de mieux. Le monde de l'IA bouge vite, on s'assure que vous bougez avec.
       </p>
     </div>
   )
@@ -317,7 +318,7 @@ function BentoSecurityCard() {
    ═══════════════════════════════════════════════════════════════════════════ */
 
 const PERSONALIZATION_ICON_MAP: Record<string, any> = {
-  Smartphone, CloudSun, FileSpreadsheet, Camera,
+  Smartphone, CloudSun, FileSpreadsheet, Mic,
 }
 
 const PERSONALIZATION_EXAMPLES = [
@@ -337,9 +338,9 @@ const PERSONALIZATION_EXAMPLES = [
     description: "On connecte Synthèse dessus. Vous continuez de l'utiliser comme avant, mais il devient intelligent : il se met à jour tout seul, répond à vos questions, et vous alerte quand quelque chose cloche."
   },
   {
-    iconName: "Camera",
-    title: "Vos techniciens prennent des photos sur le terrain ?",
-    description: "On les transforme automatiquement en rapports d'intervention classés par client. La photo arrive, le rapport se génère, le dossier se range. Sans intervention de votre part."
+    iconName: "Mic",
+    title: "Vos réunions ne sont jamais retranscrites ?",
+    description: "Les nouvelles IA de transcription ont fait un bond énorme cette année. On capte l'audio, on génère un compte-rendu structuré, on extrait les décisions et les actions à faire. Sans rien à taper."
   }
 ]
 
@@ -490,6 +491,105 @@ export default function HomeView({ onComprendreClick, onRgpdClick }: { onCompren
     <div>
       <HeroSection onComprendreClick={onComprendreClick} />
 
+      {/* SECTION — NOTRE MÉTHODE EN 4 ÉTAPES */}
+      <section className="pt-12 sm:pt-16 md:pt-20 pb-8 sm:pb-10">
+        <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
+          <AnimatedContainer className="text-center mb-10 sm:mb-12 max-w-3xl mx-auto">
+            <span className="inline-block text-[11px] sm:text-xs font-bold uppercase tracking-widest text-violet-600 mb-3">
+              Notre méthode
+            </span>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-gray-900 leading-tight mb-4">
+              Le meilleur de l'IA, traduit dans votre métier.
+            </h2>
+            <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
+              On part de votre secteur. On regarde les IA qui sortent. On garde
+              celles qui peuvent vraiment vous servir. On les adapte à votre
+              façon de travailler. Et on regroupe tout dans une seule app —
+              simple, claire, faite pour vous.
+            </p>
+          </AnimatedContainer>
+
+          <AnimatedContainer
+            delay={0.15}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+          >
+            {[
+              {
+                step: "01",
+                Icon: Search,
+                title: "On suit l'IA pour vous",
+                desc: "Chaque semaine, on regarde tout ce qui sort. On teste, on évalue, on garde ce qui sort vraiment du lot.",
+              },
+              {
+                step: "02",
+                Icon: Target,
+                title: "On vérifie si c'est adaptable",
+                desc: "Toutes les IA ne sont pas pertinentes pour votre métier. On teste, on évalue : est-ce que ça vous fait gagner du temps ? Est-ce que ça s'intègre proprement à votre façon de travailler ? On ne garde que ce qui passe le test.",
+              },
+              {
+                step: "03",
+                Icon: Wrench,
+                title: "On l'adapte à votre métier",
+                desc: "On configure l'IA pour qu'elle parle votre langage métier et qu'elle s'intègre aux outils que vous utilisez déjà. Vos fonctions habituelles deviennent simplement plus puissantes. Aucune habitude à changer.",
+              },
+              {
+                step: "04",
+                Icon: LayoutGrid,
+                title: "Synthèse devient votre app",
+                desc: "Tout ce qu'on a adapté pour vous arrive dans Synthèse — votre application. Une interface familière qui regroupe vos outils, vos fonctions et l'IA dans un seul endroit. Simple dès le premier jour.",
+              },
+            ].map((item, i) => {
+              const Icon = item.Icon;
+              return (
+                <div
+                  key={i}
+                  className="relative bg-gradient-to-br from-violet-50 via-fuchsia-50/50 to-pink-50/30 rounded-2xl border border-violet-200/60 p-5 sm:p-6 shadow-sm"
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-blue-500 shadow-md shadow-violet-500/20">
+                      <Icon className="h-5 w-5 text-white" />
+                    </div>
+                    <span className="text-2xl font-bold text-violet-200 leading-none">
+                      {item.step}
+                    </span>
+                  </div>
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2 leading-tight">
+                    {item.title}
+                  </h3>
+                  <p className="text-sm text-gray-600 leading-relaxed">
+                    {item.desc}
+                  </p>
+                </div>
+              );
+            })}
+          </AnimatedContainer>
+
+          {/* BLOC RÉSULTAT */}
+          <AnimatedContainer delay={0.3} className="mt-10 sm:mt-12">
+            <div className="relative rounded-3xl overflow-hidden border border-violet-200/60 bg-white shadow-lg shadow-violet-500/5">
+              <div
+                className="absolute inset-0 bg-gradient-to-br from-violet-50 via-white to-fuchsia-50/40"
+                aria-hidden
+              />
+              <div className="relative z-10 px-6 sm:px-10 md:px-14 py-10 sm:py-14 md:py-16 text-center max-w-3xl mx-auto">
+                <span className="inline-flex items-center gap-2 text-[11px] sm:text-xs font-bold uppercase tracking-widest text-violet-600 mb-5">
+                  <Sparkles className="h-3.5 w-3.5" />
+                  Au final
+                </span>
+                <p className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-900 leading-snug">
+                  Les fonctionnalités que vous utilisez tous les jours, équipées
+                  des dernières avancées IA et adaptées à votre métier.{" "}
+                  <span className="bg-gradient-to-r from-violet-600 to-fuchsia-500 bg-clip-text text-transparent">
+                    Vos concurrents découvrent l'IA — vous l'utilisez déjà sans
+                    y penser.
+                  </span>
+                </p>
+              </div>
+            </div>
+          </AnimatedContainer>
+        </div>
+      </section>
+
       {/* ENCART VIDÉO — résumé de Synthèse en vidéo */}
       <section className="pt-10 sm:pt-14 pb-4 sm:pb-6">
         <div className="mx-auto w-full max-w-4xl px-4">
@@ -551,20 +651,20 @@ export default function HomeView({ onComprendreClick, onRgpdClick }: { onCompren
         <div className="mx-auto w-full max-w-5xl space-y-8 px-4">
           <AnimatedContainer className="mx-auto max-w-3xl text-center">
             <span className="inline-block text-[11px] sm:text-xs font-bold uppercase tracking-widest text-violet-600 mb-3">
-              Concrètement, on fait quoi
+              Notre métier, c'est de suivre le vôtre
             </span>
             <h2 className="font-display text-3xl sm:text-4xl tracking-tight text-balance md:text-5xl lg:text-6xl leading-tight text-gray-900">
-              Tout le travail que vous ne devriez plus faire à la main.
+              Vous gardez vos outils. On y branche les meilleures IA du moment.
             </h2>
             <p className="text-muted-foreground mt-4 text-sm tracking-wide text-balance md:text-base leading-relaxed">
-              Synthèse est un assistant IA qui travaille <strong>dans vos outils du
-              quotidien</strong> — Gmail, Excel, Drive, WhatsApp, votre CRM,
-              votre compta. Il lit vos emails, classe vos documents, extrait les
-              données de vos PDF, met à jour vos tableaux, rédige vos réponses,
-              génère vos plannings, transcrit vos réunions, surveille vos
-              factures. Tout ce qui vous prend du temps aujourd'hui devient
-              automatique demain — sans changer vos habitudes, sans migration,
-              sans nouveau logiciel à apprendre.
+              Notre travail, c'est de suivre <strong>tout ce qui sort en IA</strong> —
+              chaque semaine, chaque mois. De réfléchir à ce qui peut vraiment
+              servir votre métier et votre façon de travailler. Et de l'installer
+              dans les outils que vous utilisez déjà : Gmail, Excel, Drive,
+              WhatsApp, votre CRM, votre compta. Vous gardez vos habitudes. On
+              vous donne les superpouvoirs. Pendant que vos concurrents se
+              demandent quelle IA choisir, vous avez déjà les meilleures,
+              prêtes à l'emploi.
             </p>
           </AnimatedContainer>
 
@@ -573,7 +673,7 @@ export default function HomeView({ onComprendreClick, onRgpdClick }: { onCompren
               Quelques scénarios
             </span>
             <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
-              Quatre situations typiques — entre beaucoup d'autres.
+              Quatre exemples — la liste s'allonge à chaque nouvelle IA qui sort.
             </p>
           </AnimatedContainer>
 
@@ -650,31 +750,31 @@ export default function HomeView({ onComprendreClick, onRgpdClick }: { onCompren
             {/* LEFT — Contenu "Jarvis" */}
             <div className="flex flex-col justify-center px-5 py-7 sm:px-8 sm:py-10 md:px-12 md:border-r border-violet-200/60 order-2 md:order-1">
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-display text-gray-900 mb-5 sm:mb-8 leading-tight">
-                Synthèse, c'est cette petite voix que vous avez tous les jours.
+                Toutes ces phrases que vous vous dites sur l'IA.
               </h2>
 
               <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
                 <p className="text-sm sm:text-base text-gray-700 italic leading-relaxed">
-                  « Si seulement mes emails pouvaient se trier tout seuls. »
+                  « J'aimerais bien m'y mettre, mais je ne sais pas par où commencer. »
                 </p>
                 <p className="text-sm sm:text-base text-gray-700 italic leading-relaxed">
-                  « Si seulement mes fichiers se rangeaient dans le bon dossier. »
+                  « Une nouvelle IA sort tous les mois — comment savoir laquelle est utile pour moi ? »
                 </p>
                 <p className="text-sm sm:text-base text-gray-700 italic leading-relaxed">
-                  « Si seulement quelqu'un pouvait me faire un résumé en arrivant au bureau. »
+                  « Mon concurrent a automatisé X, je ne veux pas me laisser distancer. »
                 </p>
                 <p className="text-sm sm:text-base text-gray-700 italic leading-relaxed">
-                  « Si seulement j'avais un assistant qui connaît mes dossiers par cœur. »
+                  « J'ai pas le temps de tout tester, j'ai un métier à faire tourner. »
                 </p>
               </div>
 
               <p className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-3 sm:mb-4 leading-tight">
-                C'est exactement ce que fait Synthèse.
+                C'est exactement notre job.
               </p>
 
               <p className="text-sm sm:text-base text-gray-700 leading-relaxed">
-                Et ce ne sont que des exemples. Si vous pouvez le décrire, on peut
-                le construire. La seule limite, c'est votre imagination.
+                On suit, on trie, on adapte, on installe. Vous, vous travaillez —
+                comme avant, mais avec les meilleures IA du moment dans vos outils.
               </p>
             </div>
 
@@ -690,7 +790,7 @@ export default function HomeView({ onComprendreClick, onRgpdClick }: { onCompren
         <div className="mt-8 sm:mt-10 mx-auto max-w-3xl">
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-5 px-5 py-4 sm:px-7 sm:py-5 rounded-2xl bg-gradient-to-r from-violet-100/80 via-fuchsia-50 to-violet-100/80 border border-violet-200/80 shadow-sm">
             <p className="text-base sm:text-[15px] font-medium text-gray-800 text-center sm:text-left">
-              Curieux de voir cette petite voix à l'œuvre ?
+              Envie de voir ce que ça donne sur votre métier ?
             </p>
             <button
               onClick={() => navigate("/demo")}
@@ -712,14 +812,15 @@ export default function HomeView({ onComprendreClick, onRgpdClick }: { onCompren
               Pourquoi Synthèse ?
             </span>
             <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold text-gray-900 leading-tight mb-3">
-              Pourquoi pas un agent IA{" "}
+              Pourquoi pas une IA{" "}
               <span className="bg-gradient-to-r from-violet-600 via-fuchsia-500 to-amber-500 bg-clip-text text-transparent">
                 comme les autres ?
               </span>
             </h2>
             <p className="text-sm sm:text-base text-gray-600 max-w-2xl mx-auto leading-relaxed">
-              Tous les jours, une nouvelle boîte vous démarche avec "son" agent IA.
-              On comprend la lassitude. Voici ce qui change avec Synthèse.
+              Il sort une nouvelle IA toutes les semaines. Vous n'avez pas le
+              temps de tout tester, et personne ne vous dit honnêtement laquelle
+              est utile pour votre métier. Voilà ce qui change avec Synthèse.
             </p>
           </AnimatedContainer>
 
@@ -746,14 +847,14 @@ export default function HomeView({ onComprendreClick, onRgpdClick }: { onCompren
 
               {/* Lignes */}
               {[
-                { label: "Personnalisation", others: "Un agent standardisé, peu modifiable", synthese: "Des agents créés sur-mesure, à la demande" },
-                { label: "Coût des agents", others: "Vous payez par agent (souvent cher)", synthese: "Création d'agents gratuite, autant que vous voulez" },
-                { label: "Modèle de paiement", others: "Gros paiement unique — vous pariez à l'aveugle", synthese: "Mensualité sans engagement — suivi, support et mises à jour IA inclus" },
-                { label: "Interface", others: "Aucune, ou très limitée", synthese: "Une vraie interface pensée pour l'usage quotidien" },
-                { label: "Intégration", others: "Un outil de plus dans votre stack", synthese: "S'appuie sur ce que vous avez déjà (mail, agenda…) et le booste" },
-                { label: "Philosophie", others: "Surfe sur la mode de l'IA", synthese: "Un assistant long terme, pas un gadget" },
-                { label: "Évolution", others: "Figé le jour où vous signez", synthese: "Mises à jour continues avec les dernières avancées IA" },
-                { label: "Risque d'obsolescence", others: "Élevé — l'IA bouge vite", synthese: "Zéro — vous êtes toujours à la pointe, sans effort" },
+                { label: "Périmètre IA", others: "Une seule techno isolée (souvent un wrapper ChatGPT)", synthese: "Toutes les IA du marché, sélectionnées et orchestrées ensemble" },
+                { label: "Veille techno", others: "À vous de suivre ce qui sort et de décider", synthese: "On suit pour vous. On garde ce qui sert votre métier." },
+                { label: "Adaptation métier", others: "Outil générique, à vous de l'adapter à votre usage", synthese: "Pensé et configuré pour votre métier dès le départ" },
+                { label: "Intégration", others: "Un outil de plus à apprendre et à ouvrir", synthese: "Branché dans vos outils existants (Gmail, Excel, WhatsApp…)" },
+                { label: "Habitudes de travail", others: "À changer pour utiliser l'outil", synthese: "Inchangées — vous gardez exactement votre façon de faire" },
+                { label: "Évolution avec l'IA", others: "Figé le jour où vous signez", synthese: "Évolue chaque mois avec les nouvelles IA qui sortent" },
+                { label: "Risque d'obsolescence", others: "Élevé — l'IA bouge vite, l'outil ne suit pas", synthese: "Zéro — vous êtes toujours à la pointe, sans effort" },
+                { label: "Modèle économique", others: "Gros paiement unique — vous pariez à l'aveugle", synthese: "Mensualité — veille, adaptation et nouvelles IA incluses" },
               ].map((row, idx, arr) => (
                 <div
                   key={row.label}

@@ -21,6 +21,7 @@ import {
   type ExtractionResult,
   type InvoiceLine,
 } from "@/api/extractClient";
+import ContextBadge from "@/components/ContextBadge";
 
 type Mode = "file" | "text";
 
@@ -178,6 +179,11 @@ export default function ExtractView() {
 
   return (
     <div className="py-10 px-6 sm:px-10">
+      <ContextBadge
+        variant="feature"
+        label="Fonctionnalité de base"
+        description="Une fonctionnalité qu'on connaît, mais boostée par l'IA et adaptée à votre métier."
+      />
       <div className="max-w-5xl mx-auto">
         <HeaderBar />
 

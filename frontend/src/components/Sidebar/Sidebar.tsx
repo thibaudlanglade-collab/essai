@@ -1,4 +1,4 @@
-import { MessageSquare, Zap, Mic, Calendar, Mail, Settings2, Bot, Camera, ShieldCheck, LayoutGrid, BarChart3, Lightbulb, Building2, Sparkles, Rocket, Users, Scale } from "lucide-react";
+import { MessageSquare, Zap, Mic, Calendar, Mail, Settings2, Bot, Camera, ShieldCheck, LayoutGrid, BarChart3, Lightbulb, Building2, Sparkles, Rocket, Scale } from "lucide-react";
 import logoSynthese from "@/assets/logo-synthese.png";
 import { cn } from "@/lib/utils";
 
@@ -19,8 +19,6 @@ interface Props {
   emailsBadgeCount?: number;
   onAutomationsClick?: () => void;
   automationsModeActive?: boolean;
-  onMonEquipeClick?: () => void;
-  monEquipeModeActive?: boolean;
   onAgentsIaClick?: () => void;
   agentsIaModeActive?: boolean;
   onAgentRapportClick?: () => void;
@@ -112,8 +110,6 @@ export function Sidebar({
   emailsBadgeCount = 0,
   onAutomationsClick,
   automationsModeActive,
-  onMonEquipeClick,
-  monEquipeModeActive,
   onAgentsIaClick,
   agentsIaModeActive,
   onAgentRapportClick,
@@ -256,12 +252,6 @@ export function Sidebar({
             Outils
           </span>
         </div>
-        <NavItem
-          icon={Users}
-          label="Mon équipe"
-          isActive={monEquipeModeActive ?? false}
-          onClick={onMonEquipeClick}
-        />
         <NavItem
           icon={Settings2}
           label="Automatisations"

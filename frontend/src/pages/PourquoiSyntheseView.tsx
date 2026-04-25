@@ -36,16 +36,16 @@ type Difference = {
 const DIFFERENCES: Difference[] = [
   {
     icon: Target,
-    title: "Sur-mesure, gratuit, à volonté",
+    title: "Adapté à votre métier, en continu",
     gradient: "bg-gradient-to-br from-violet-50 via-fuchsia-50 to-pink-50",
     border: "border-violet-200/70",
     iconBg: "bg-gradient-to-br from-violet-500 to-fuchsia-500",
     problem:
-      "Les agents IA du marché sont des boîtes noires. Un job = un agent = un abonnement. Besoin d'un deuxième cas d'usage ? Vous repayez.",
+      "Les outils IA du marché sont génériques. Vous payez pour des fonctions qui ne servent pas votre métier, et vous devez vous adapter à eux. À la fin, l'outil ne vous ressemble pas.",
     solution:
-      "Chez nous, dès que vous avez une idée, on vous crée l'agent. Gratuitement. Autant que vous voulez. Il apparaît dans votre interface quelques jours plus tard, prêt à l'emploi.",
+      "On part de votre métier, pas d'une solution standard. Chaque fonctionnalité est calibrée sur votre quotidien. Et dès qu'une nouvelle IA peut vous servir, on l'intègre — sans surcoût, sans nouveau logiciel à apprendre.",
     example:
-      "Un client du BTP nous a demandé un agent qui détecte les devis à risque. 48h après, il était dans son interface.",
+      "Un artisan qui reçoit ses commandes par WhatsApp ne travaille pas comme un cabinet juridique. Synthèse n'est jamais le même outil deux fois.",
   },
   {
     icon: Link2,
@@ -91,8 +91,8 @@ const GUARANTEES: Guarantee[] = [
   },
   {
     icon: Target,
-    title: "Agents sur-mesure, gratuits",
-    description: "Autant que vous en avez besoin. Créés à la demande, adaptés à votre métier.",
+    title: "Adapté à votre métier",
+    description: "Tout est calibré sur votre façon de travailler. On part de votre quotidien, jamais d'un modèle standard.",
     color: "text-fuchsia-600 bg-fuchsia-50 border-fuchsia-100",
   },
   {
@@ -150,16 +150,17 @@ export default function PourquoiSyntheseView() {
                 </div>
 
                 <h2 className="font-display text-2xl sm:text-3xl md:text-4xl text-gray-900 leading-tight mb-5">
-                  Synthèse, c'est votre{" "}
+                  Synthèse, c'est{" "}
                   <span className="bg-gradient-to-r from-violet-600 via-fuchsia-500 to-amber-500 bg-clip-text text-transparent">
-                    conseiller IA personnel.
+                    votre application IA personnelle.
                   </span>
                 </h2>
 
                 <p className="text-gray-700 text-sm sm:text-base md:text-lg leading-relaxed max-w-2xl mx-auto mb-5">
-                  <strong className="text-gray-900">Ce qui se fait de mieux en IA</strong>, directement sur votre application,
-                  adapté à votre métier, <strong className="text-gray-900">votre vocabulaire</strong>, votre manière de travailler — et{" "}
-                  <strong className="text-gray-900">expliqué pour que vous compreniez vraiment ce que vous faites.</strong>
+                  Une application qui regroupe <strong className="text-gray-900">les dernières avancées IA</strong>,
+                  adaptées à votre métier et à <strong className="text-gray-900">votre manière de travailler</strong> — pour que
+                  vous profitiez de ce qui se fait de mieux,{" "}
+                  <strong className="text-gray-900">sans rien à apprendre, sans rien à changer.</strong>
                 </p>
 
                 <p className="font-display text-base sm:text-lg md:text-xl text-gray-900 leading-snug max-w-2xl mx-auto mb-5">
@@ -216,7 +217,7 @@ export default function PourquoiSyntheseView() {
               {
                 num: "3",
                 title: "On réfléchit à l'intégration",
-                description: "Quels agents créer, quelles automatisations ajouter, comment brancher ça à vos outils existants.",
+                description: "Quelles IA intégrer, quelles automatisations ajouter, comment connecter ça à vos outils existants.",
               },
               {
                 num: "4",
@@ -345,7 +346,7 @@ export default function PourquoiSyntheseView() {
                 gradient: "bg-gradient-to-br from-blue-50 via-sky-50 to-indigo-50",
                 border: "border-blue-200/70",
                 iconBg: "bg-gradient-to-br from-blue-500 to-indigo-500",
-                description: "Vous bloquez sur un usage ? Vous voulez adapter une fonctionnalité ? Une nouvelle idée d'agent ? On répond, on construit, on livre. Sans surcoût.",
+                description: "Vous bloquez sur un usage ? Vous voulez adapter une fonctionnalité ? Une nouvelle idée d'automatisation ? On répond, on construit, on livre. Sans surcoût.",
               },
               {
                 icon: Rocket,

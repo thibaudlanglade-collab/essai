@@ -8,6 +8,7 @@ import {
   SUGGESTED_QUESTIONS, SUGGESTED_ANSWERS,
   CONNECTED_SOURCES, ChatMessage, ChatSource, SuggestedQuestion
 } from "@/data/chatAssistantDemoData"
+import ContextBadge from "@/components/ContextBadge"
 
 const QUESTION_ICON_MAP: Record<string, any> = {
   Receipt, TrendingUp, FileText, Users: UsersIcon, AlertTriangle
@@ -100,6 +101,11 @@ export default function ChatAssistantDemo({ onBack }: ChatAssistantDemoProps) {
 
   return (
     <div className="h-[calc(100vh-80px)] flex flex-col">
+      <ContextBadge
+        variant="feature"
+        label="Fonctionnalité de base"
+        description="Une fonctionnalité qu'on connaît, mais boostée par l'IA et adaptée à votre métier."
+      />
 
       {/* Top bar with connected sources */}
       <div className="px-6 py-3 border-b border-gray-200 bg-white flex items-center gap-2 flex-wrap">

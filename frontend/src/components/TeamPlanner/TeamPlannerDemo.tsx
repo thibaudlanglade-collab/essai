@@ -20,6 +20,7 @@ import EmployeesModal from "./EmployeesModal";
 import { useTeamPlanner } from "@/hooks/useTeamPlanner";
 import { useEmployees } from "@/hooks/useEmployees";
 import type { StepStatus } from "@/hooks/useTeamPlanner";
+import ContextBadge from "@/components/ContextBadge";
 
 // ── Step icon helper ──────────────────────────────────────────────────────────
 
@@ -163,6 +164,11 @@ export default function TeamPlannerDemo({ onBack }: Props) {
 
   return (
     <div className="p-8">
+      <ContextBadge
+        variant="feature"
+        label="Fonctionnalité de base"
+        description="Une fonctionnalité qu'on connaît, mais boostée par l'IA et adaptée à votre métier."
+      />
       <div className="max-w-4xl mx-auto flex flex-col gap-6">
 
         {/* ── Back button ────────────────────────────────────────────────── */}

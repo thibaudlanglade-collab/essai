@@ -20,6 +20,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { getConnectUrl } from "../../api/emailsClient";
+import ContextBadge from "@/components/ContextBadge";
 
 interface Feature {
   icon: LucideIcon;
@@ -152,6 +153,12 @@ export default function EmailsPresentation({ onVisualize }: { onVisualize: () =>
 
   return (
     <div className="max-w-5xl mx-auto py-10 px-6 overflow-y-auto h-full">
+      <ContextBadge
+        variant="feature"
+        label="Fonctionnalité de base"
+        description="Une fonctionnalité qu'on connaît, mais boostée par l'IA et adaptée à votre métier."
+      />
+
       {/* HERO */}
       <div className="text-center mb-10 max-w-3xl mx-auto">
         <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-blue-50 mb-5">

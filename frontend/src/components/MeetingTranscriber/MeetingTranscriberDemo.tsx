@@ -5,6 +5,7 @@ import {
   CheckCircle2, Target, AlertCircle, BarChart3, FileAudio
 } from "lucide-react"
 import { MEETING_EXAMPLES, MeetingExample } from "@/data/meetingTranscriberDemoData"
+import ContextBadge from "@/components/ContextBadge"
 
 const ICON_MAP: Record<string, any> = { Briefcase, Users, Factory }
 
@@ -67,6 +68,11 @@ export default function MeetingTranscriberDemo({ onBack }: MeetingTranscriberDem
 
   return (
     <div className="max-w-5xl mx-auto py-10 px-6">
+      <ContextBadge
+        variant="feature"
+        label="Fonctionnalité de base"
+        description="Une fonctionnalité qu'on connaît, mais boostée par l'IA et adaptée à votre métier."
+      />
 
       <button
         onClick={onBack}

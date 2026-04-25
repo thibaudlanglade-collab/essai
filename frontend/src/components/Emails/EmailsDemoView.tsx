@@ -6,6 +6,7 @@ import {
   Paperclip,
   Reply,
 } from "lucide-react";
+import ContextBadge from "@/components/ContextBadge";
 
 // ── Demo email data ───────────────────────────────────────────────────────────
 
@@ -265,6 +266,11 @@ export default function EmailsDemoView({ onExit }: { onExit: () => void }) {
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
+      <ContextBadge
+        variant="feature"
+        label="Fonctionnalité de base"
+        description="Une fonctionnalité qu'on connaît, mais boostée par l'IA et adaptée à votre métier."
+      />
       {/* Demo banner */}
       <div className="shrink-0 bg-violet-50 dark:bg-violet-900/20 border-b border-violet-200 dark:border-violet-700 px-6 py-2.5 flex items-center justify-between">
         <div className="flex items-center gap-2">

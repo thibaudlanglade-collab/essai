@@ -46,12 +46,12 @@ export function HeroSection(_: { onComprendreClick?: () => void } = {}) {
         {/* Subheadline */}
         <motion.p
           {...fadeUp(0.2)}
-          className="mt-4 sm:mt-5 text-center text-[15px] sm:text-base md:text-lg text-muted-foreground max-w-[650px] leading-relaxed font-body px-2"
+          className="mt-4 sm:mt-5 text-center text-[15px] sm:text-base md:text-lg text-muted-foreground max-w-[680px] leading-relaxed font-body px-2"
         >
-          Vos emails, vos documents, vos réunions, vos tableaux, vos relances.
-          Tout ce qui vous fait perdre du temps aujourd'hui peut devenir
-          automatique demain. La seule limite, c'est ce que vous n'avez pas
-          encore imaginé.
+          On suit toutes les nouvelles IA pour vous. On les adapte à votre
+          métier. On les installe dans les outils que vous utilisez déjà —
+          Gmail, Excel, WhatsApp, votre CRM. Vous profitez du meilleur de l'IA
+          sans rien à apprendre, sans rien à changer.
         </motion.p>
 
         {/* Italic tagline */}
@@ -59,7 +59,7 @@ export function HeroSection(_: { onComprendreClick?: () => void } = {}) {
           {...fadeUp(0.25)}
           className="mt-3 text-center text-base text-violet-600 italic font-medium font-body"
         >
-          Configurée avec vous. Pour vous. Selon votre façon de travailler.
+          Vous n'êtes pas dépassé. Vous êtes en avance.
         </motion.p>
 
         {/* Badges */}
