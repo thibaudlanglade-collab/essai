@@ -178,7 +178,7 @@ export default function QuiSommesNousView() {
             </div>
             <div className="flex items-center gap-2 text-sm text-gray-600">
               <Mail className="h-4 w-4 text-violet-400" />
-              <a href="mailto:langlade.thibaud@xn--synthse-6xa.fr" className="hover:text-violet-600 transition-colors break-all">langlade.thibaud@synthèse.fr</a>
+              <a href="mailto:thibaud@synthese.app" className="hover:text-violet-600 transition-colors break-all">thibaud@synthese.app</a>
             </div>
             <div className="flex items-center gap-2 text-sm text-gray-600">
               <Phone className="h-4 w-4 text-violet-400" />

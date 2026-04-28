@@ -46,10 +46,10 @@ export default function ContactView() {
           helper="Lundi → vendredi · 9h-19h"
         />
         <ContactCta
-          href="mailto:langlade.thibaud@xn--synthse-6xa.fr"
+          href="mailto:thibaud@synthese.app"
           icon={<Mail className="h-5 w-5 text-white" />}
           label="Email"
-          value="langlade.thibaud@synthèse.fr"
+          value="thibaud@synthese.app"
           helper="On répond dans la journée"
         />
       </div>

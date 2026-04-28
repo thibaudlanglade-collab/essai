@@ -176,7 +176,7 @@ export default function DemoView() {
           </p>
 
           <a
-            href="mailto:langlade.thibaud@xn--synthse-6xa.fr?subject=Demande%20d'un%20espace%20personnalis%C3%A9"
+            href="mailto:thibaud@synthese.app?subject=Demande%20d'un%20espace%20personnalis%C3%A9"
             className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white text-violet-600 text-sm font-semibold rounded-xl border border-violet-300 hover:bg-violet-50 hover:border-violet-400 transition-all"
           >
             <Mail className="h-4 w-4" />

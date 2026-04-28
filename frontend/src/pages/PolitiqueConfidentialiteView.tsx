@@ -35,10 +35,10 @@ export default function PolitiqueConfidentialiteView() {
           <strong>Thibaud Langlade</strong>. Pour toute question relative à vos données
           personnelles, vous pouvez nous contacter à l'adresse{" "}
           <a
-            href="mailto:langlade.thibaud@xn--synthse-6xa.fr"
+            href="mailto:thibaud@synthese.app"
             className="text-violet-600 hover:underline font-medium"
           >
-            langlade.thibaud@synthèse.fr
+            thibaud@synthese.app
           </a>
           .
         </p>
@@ -219,10 +219,10 @@ export default function PolitiqueConfidentialiteView() {
           <p className="text-sm text-gray-800 leading-relaxed">
             Pour exercer ces droits, écrivez-nous à{" "}
             <a
-              href="mailto:langlade.thibaud@xn--synthse-6xa.fr"
+              href="mailto:thibaud@synthese.app"
               className="text-violet-600 hover:underline font-medium"
             >
-              langlade.thibaud@synthèse.fr
+              thibaud@synthese.app
             </a>
             . Nous répondons dans un délai maximum d'un mois.
           </p>
@@ -261,10 +261,10 @@ export default function PolitiqueConfidentialiteView() {
           Pour toute question relative à cette politique ou au traitement de vos données,
           contactez-nous à{" "}
           <a
-            href="mailto:langlade.thibaud@xn--synthse-6xa.fr"
+            href="mailto:thibaud@synthese.app"
             className="text-violet-600 hover:underline font-medium"
           >
-            langlade.thibaud@synthèse.fr
+            thibaud@synthese.app
           </a>
           .
         </p>

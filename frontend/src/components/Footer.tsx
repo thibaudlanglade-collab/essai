@@ -1,4 +1,4 @@
-import { Sparkles, Mail, Phone, MapPin, User } from "lucide-react";
+import { Sparkles, Mail, Phone, MapPin, User, Facebook, Linkedin } from "lucide-react";
 import { useNavigate } from "../lib/navigate";
 import { openCookieConsent } from "./CookieConsent";
 
@@ -109,10 +109,10 @@ export default function Footer() {
               <li className="flex items-center gap-2">
                 <Mail className="h-3.5 w-3.5 text-gray-400" />
                 <a
-                  href="mailto:langlade.thibaud@xn--synthse-6xa.fr"
+                  href="mailto:thibaud@synthese.app"
                   className="hover:text-violet-600 transition-colors break-all"
                 >
-                  langlade.thibaud@synthèse.fr
+                  thibaud@synthese.app
                 </a>
               </li>
               <li className="flex items-center gap-2">
@@ -127,6 +127,26 @@ export default function Footer() {
               <li className="flex items-center gap-2">
                 <MapPin className="h-3.5 w-3.5 text-gray-400" />
                 France
+              </li>
+              <li className="flex items-center gap-3 pt-1">
+                <a
+                  href="https://www.linkedin.com/company/113218148/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="LinkedIn"
+                  className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:text-violet-600 hover:border-violet-300 transition-colors"
+                >
+                  <Linkedin className="h-4 w-4" />
+                </a>
+                <a
+                  href="https://www.facebook.com/profile.php?id=61560648534495"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Facebook"
+                  className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:text-violet-600 hover:border-violet-300 transition-colors"
+                >
+                  <Facebook className="h-4 w-4" />
+                </a>
               </li>
             </ul>
           </div>

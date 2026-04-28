@@ -24,8 +24,8 @@ export default function MentionsLegalesView() {
         <Field
           label="Email"
           value={
-            <a href="mailto:langlade.thibaud@xn--synthse-6xa.fr" className="text-violet-600 hover:underline">
-              langlade.thibaud@synthèse.fr
+            <a href="mailto:thibaud@synthese.app" className="text-violet-600 hover:underline">
+              thibaud@synthese.app
             </a>
           }
         />
