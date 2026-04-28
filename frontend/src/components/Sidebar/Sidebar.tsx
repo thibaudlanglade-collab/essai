@@ -1,4 +1,4 @@
-import { MessageSquare, Zap, Mic, Calendar, Mail, Settings2, Bot, Camera, ShieldCheck, LayoutGrid, BarChart3, Lightbulb, Building2, Sparkles, Rocket, Scale } from "lucide-react";
+import { MessageSquare, Zap, Mic, Calendar, Mail, Settings2, Bot, Camera, ShieldCheck, LayoutGrid, BarChart3, Lightbulb, Building2, Sparkles, Rocket, Scale, FileText, Repeat, Users } from "lucide-react";
 import logoSynthese from "@/assets/logo-synthese.png";
 import { cn } from "@/lib/utils";
 
@@ -21,6 +21,8 @@ interface Props {
   automationsModeActive?: boolean;
   onAgentsIaClick?: () => void;
   agentsIaModeActive?: boolean;
+  onAgentCategoryClick?: (id: string) => void;
+  activeAgentCategoryId?: string;
   onAgentRapportClick?: () => void;
   agentRapportModeActive?: boolean;
   onRgpdClick?: () => void;
@@ -92,6 +94,38 @@ function NavItem({
   );
 }
 
+/* ── SubNavItem ──────────────────────────────────────────────────────────── */
+
+function SubNavItem({
+  icon: Icon,
+  label,
+  isActive,
+  onClick,
+}: {
+  icon: React.ElementType;
+  label: string;
+  isActive?: boolean;
+  onClick?: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        "flex items-center gap-2.5 px-2.5 py-1.5 rounded-md text-[13px] w-full text-left transition-all duration-150",
+        isActive
+          ? "bg-violet-50 text-violet-700 font-medium dark:bg-violet-500/10 dark:text-violet-300"
+          : "font-normal text-gray-500 hover:bg-white/60 hover:text-gray-800 dark:text-gray-500 dark:hover:bg-white/5 dark:hover:text-gray-200",
+      )}
+    >
+      <Icon className={cn(
+        "h-3.5 w-3.5 shrink-0",
+        isActive ? "text-violet-500" : "text-gray-400 dark:text-gray-500",
+      )} />
+      <span className="flex-1 truncate">{label}</span>
+    </button>
+  );
+}
+
 /* ── Sidebar ─────────────────────────────────────────────────────────────── */
 
 export function Sidebar({
@@ -112,6 +146,8 @@ export function Sidebar({
   automationsModeActive,
   onAgentsIaClick,
   agentsIaModeActive,
+  onAgentCategoryClick,
+  activeAgentCategoryId,
   onAgentRapportClick,
   agentRapportModeActive,
   onRgpdClick,
@@ -271,6 +307,15 @@ export function Sidebar({
           isActive={agentsIaModeActive ?? false}
           onClick={onAgentsIaClick}
         />
+        {onAgentCategoryClick && (
+          <div className="ml-3 pl-3 border-l border-gray-200 dark:border-gray-700 space-y-0.5">
+            <SubNavItem icon={Zap} label="Speed to Lead" isActive={activeAgentCategoryId === "speed-to-lead"} onClick={() => onAgentCategoryClick("speed-to-lead")} />
+            <SubNavItem icon={FileText} label="Traitement de documents" isActive={activeAgentCategoryId === "traitement-documents"} onClick={() => onAgentCategoryClick("traitement-documents")} />
+            <SubNavItem icon={Repeat} label="Suivi & relance" isActive={activeAgentCategoryId === "suivi-relance"} onClick={() => onAgentCategoryClick("suivi-relance")} />
+            <SubNavItem icon={Users} label="Réactivation" isActive={activeAgentCategoryId === "reactivation"} onClick={() => onAgentCategoryClick("reactivation")} />
+            <SubNavItem icon={BarChart3} label="Reporting" isActive={activeAgentCategoryId === "reporting"} onClick={() => onAgentCategoryClick("reporting")} />
+          </div>
+        )}
         <NavItem
           icon={BarChart3}
           label="Rapport client"

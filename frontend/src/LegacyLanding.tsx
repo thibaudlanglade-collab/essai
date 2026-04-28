@@ -35,7 +35,7 @@ import { AutomationsView } from "./components/Automations";
 import { PhotoToDocumentView } from "./components/PhotoToDocument";
 import { MeetingTranscriberView } from "./components/MeetingTranscriber";
 import { ChatAssistantView } from "./components/ChatAssistant";
-import { AgentsIaView } from "./components/AgentsIa";
+import { AgentsIaView, AgentCategoryDetailView } from "./components/AgentsIa";
 import HomeView from "./pages/HomeView";
 import RgpdView from "./pages/RgpdView";
 import FeaturesView from "./pages/FeaturesView";
@@ -62,6 +62,11 @@ const PAGE_TITLES: Record<string, string> = {
   emails: "Emails",
   automations: "Automatisations",
   "agents-ia": "Mes agents IA",
+  "agent-speed-to-lead": "Speed to Lead",
+  "agent-traitement-documents": "Traitement de documents",
+  "agent-suivi-relance": "Suivi & relance",
+  "agent-reactivation": "Réactivation",
+  "agent-reporting": "Reporting",
   "agent-rapport": "Rapport client",
   rgpd: "RGPD",
   features: "Par secteur",
@@ -124,7 +129,7 @@ export default function LegacyLanding() {
   const { loading, error: featuresError } = useFeatures();
   const [selected, setSelected] = useState<Feature | null>(null);
   const { run, start, reset } = useWorkflowRun();
-  const [activeMode, setActiveMode] = useState<"home" | "classic" | "chat-assistant" | "smart" | "photo-to-document" | "meeting-transcriber" | "planner" | "emails" | "automations" | "agents-ia" | "agent-rapport" | "rgpd" | "features" | "comprendre" | "contact" | "qui-sommes-nous" | "pourquoi-synthese" | "tarification" | "demo" | "mentions-legales" | "politique-confidentialite">("home");
+  const [activeMode, setActiveMode] = useState<"home" | "classic" | "chat-assistant" | "smart" | "photo-to-document" | "meeting-transcriber" | "planner" | "emails" | "automations" | "agents-ia" | "agent-speed-to-lead" | "agent-traitement-documents" | "agent-suivi-relance" | "agent-reactivation" | "agent-reporting" | "agent-rapport" | "rgpd" | "features" | "comprendre" | "contact" | "qui-sommes-nous" | "pourquoi-synthese" | "tarification" | "demo" | "mentions-legales" | "politique-confidentialite">("home");
   const navigate = useNavigate();
 
   // Mobile sidebar
@@ -236,6 +241,12 @@ export default function LegacyLanding() {
     setActiveMode("agent-rapport");
   }
 
+  function handleAgentCategoryClick(categoryId: string) {
+    reset();
+    setSelected(null);
+    setActiveMode(`agent-${categoryId}` as typeof activeMode);
+  }
+
   function handleRgpdClick() {
     reset();
     setSelected(null);
@@ -317,6 +328,8 @@ export default function LegacyLanding() {
         automationsModeActive={activeMode === "automations"}
         onAgentsIaClick={() => { handleAgentsIaClick(); setSidebarOpen(false); }}
         agentsIaModeActive={activeMode === "agents-ia"}
+        onAgentCategoryClick={(id) => { handleAgentCategoryClick(id); setSidebarOpen(false); }}
+        activeAgentCategoryId={activeMode.startsWith("agent-") && activeMode !== "agent-rapport" ? activeMode.replace(/^agent-/, "") : undefined}
         onAgentRapportClick={() => { handleAgentRapportClick(); setSidebarOpen(false); }}
         agentRapportModeActive={activeMode === "agent-rapport"}
         onRgpdClick={() => { handleRgpdClick(); setSidebarOpen(false); }}
@@ -385,6 +398,26 @@ export default function LegacyLanding() {
 
           {activeMode === "agents-ia" && (
             <AgentsIaView />
+          )}
+
+          {activeMode === "agent-speed-to-lead" && (
+            <AgentCategoryDetailView categoryId="speed-to-lead" />
+          )}
+
+          {activeMode === "agent-traitement-documents" && (
+            <AgentCategoryDetailView categoryId="traitement-documents" />
+          )}
+
+          {activeMode === "agent-suivi-relance" && (
+            <AgentCategoryDetailView categoryId="suivi-relance" />
+          )}
+
+          {activeMode === "agent-reactivation" && (
+            <AgentCategoryDetailView categoryId="reactivation" />
+          )}
+
+          {activeMode === "agent-reporting" && (
+            <AgentCategoryDetailView categoryId="reporting" />
           )}
 
           {activeMode === "agent-rapport" && (
